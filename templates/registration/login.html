@@ -2,40 +2,6 @@
 {% load i18n %}
 
 {% block content %}
-<div class="container">
-  <form method="post" action="." class="form-signin">
-    {% csrf_token %} 
-    <h2 class="form-signin-heading">Login</h2>
-    {% if form.non_field_errors %}
-        <p>
-        {{ form.non_field_errors }}
-        </p>
-    {% endif %}
-    <input type="text" id="id_username" name="username" class="input-block-level" placeholder="Username">
-    {% if form.username.errors %}
-        <p>{{ form.username.errors.as_text }}</p>
-    {% endif %}
-    <input type="password" id="id_password" name="password" class="input-block-level" placeholder="Password">
-    {% if form.id_password.errors %}
-        <p>{{ form.id_password.errors.as_text }}</p>
-    {% endif %}
-    <input type="hidden" name="next" value="/" />
-    <button class="btn btn-large btn-primary" type="submit">Sign in</button>
-  </form>
-  <p>{% trans "Not member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
-</div> <!-- /container -->
 
 {% endblock %}
 
-    
-<form method="post" action=".">
-  {% csrf_token %} 
-  {{ form.as_p }}
-
-  <input type="submit" value="{% trans 'Log in' %}" />
-  <input type="hidden" name="next" value="{{ next }}" />
-</form>
-
-
-<p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p>
-<p>{% trans "Not member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
