@@ -1,4 +1,4 @@
 djlightcycle
 ============
 
-Django frontend for Lightcycle game
+Django frontend for [Lightcycle](https://github.com/maxiberta/lightcycle) game
