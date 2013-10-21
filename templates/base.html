@@ -1,13 +1,14 @@
 {% load i18n %}
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
   <head>
     <title>Lightcycle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
     <style type="text/css" media="screen">
-    #editor { 
+    #editor {
         display: block;
         position: relative;
         height: 400px;
@@ -89,9 +90,9 @@
                 {% else %}
                     <li><a href="/about">About the game</a></li>
                 {% endif %}
-              
-              
-              
+
+
+
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -101,7 +102,7 @@
   {% else %}
     <div class="container">
       <form method="post" action="/accounts/login/" class="form-signin">
-       {% csrf_token %} 
+       {% csrf_token %}
         <h2 class="form-signin-heading">Login</h2>
         <input type="text" id="id_username" name="username" class="input-block-level" placeholder="Username">
         {% if form.non_field_errors %}
@@ -121,12 +122,12 @@
         <p></p>
         <p>{% trans "Not registered" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
       </form>
-      
+
     </div> <!-- /container -->
 {% endif %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="//code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="{% static '/static/js/bootstrap.min.js' %}"></script>
   </body>
 </html>
