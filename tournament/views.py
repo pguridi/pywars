@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -13,7 +13,7 @@ from lightcycle.basebot import LightCycleBaseBot, LightCycleRandomBot
 from lightcycle.player import Player
 
 
-from models import *
+from models import Challenge, Bot
 
 def index(request):
     return render(request, 'home.html', {'tab' : 'arena'})
@@ -21,14 +21,14 @@ def index(request):
 @login_required
 def scoreboard(request):
     bots = Bot.objects.all().order_by('-points')
-    challengues = Challengue.objects.filter(requested_by=request.user, played=False)
-    if challengues.count() > 0:
-        pending_challengues = True
+    challenges = Challenge.objects.filter(requested_by=request.user, played=False)
+    if challenges.count() > 0:
+        pending_challenges = True
     else:
-        pending_challengues = False
+        pending_challenges = False
     return render(request, 'scoreboard.html', { 'tab' : 'score',
                 'bots' : bots,
-                'pending_challengues' : pending_challengues})
+                'pending_challenges' : pending_challenges})
 
 @login_required
 def upload(request):
