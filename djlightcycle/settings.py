@@ -168,3 +168,6 @@ LOGGING = {
         },
     }
 }
+
+ARENA_WIDTH = 50
+ARENA_HEIGHT = 50
