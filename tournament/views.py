@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
-import simplejson
+import json
 
 from models import *
 
@@ -37,7 +37,7 @@ def upload(request):
         bot.owner = request.user
         bot.code = open('tournament/base_bot.py', 'r').read()
         bot.save()
-    return render(request, 'upload.html', 
+    return render(request, 'upload.html',
         {'tab' : 'upload',
          'bot' : bot})
 
@@ -49,13 +49,13 @@ def about(request):
 @require_POST
 def update_bot(request):
     if request.is_ajax():
-        try:        
+        try:
             bot = Bot.objects.get(owner=request.user)
-            print "data: ", simplejson.loads(request.body)
+            print "data: ", json.loads(request.body)
         except ObjectDoesNotExist:
             print "creating first bot for user"
             bot = Bot()
             bot.owner = request.user
-        bot.code = simplejson.loads(request.body)['code']
+        bot.code = json.loads(request.body)['code']
         bot.save()
     return HttpResponse('/about')
