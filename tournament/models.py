@@ -15,11 +15,11 @@ class Bot(models.Model):
     def __str__(self):
         return "%s - %s" % (self.owner, self.points)
 
-class Challengue(models.Model):
+class Challenge(models.Model):
     requested_by = models.ForeignKey(User)
     creation_date = models.DateTimeField(auto_now=True)
-    challenguer_bot = models.ForeignKey(Bot, related_name="challenguer")
-    challengued_bot = models.ForeignKey(Bot, related_name="challengued")
+    challenguer_bot = models.ForeignKey(Bot, related_name="challenger")
+    challengued_bot = models.ForeignKey(Bot, related_name="challenged")
     played = models.BooleanField(default=False)
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
 

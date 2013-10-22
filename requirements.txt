@@ -1,3 +1,4 @@
 Django==1.5.4
 django-registration==1.0
 wsgiref==0.1.2
+gitgit+https://github.com/maxiberta/lightcycle.git
