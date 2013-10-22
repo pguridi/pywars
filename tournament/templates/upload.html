@@ -2,8 +2,53 @@
 {% load i18n %}
 
 {% block content %}    
-    <div class="container">
-     <p>Here goes the form to upload the bot</p>
-    </div> <!-- /container -->
 
+<div class="container">
+
+    <h3>Write your bot here!</h3>
+    
+    <div id="editor">function foo(items) {
+        var x = "All this is syntax highlighted";
+        return x;
+        }
+    </div>
+<script type="text/javascript">
+    function postBot(data, url)
+    {
+        $.ajax(
+        {
+            url: url,
+            type: "POST",
+            data: JSON.stringify({ code: data}),
+            dataType: "json",
+            async: false,
+            contentType: "application/json"
+        });
+        location.reload();
+    }
+</script>
+    
+<script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/twilight");
+    editor.getSession().setMode("ace/mode/python");
+    editor.getSession().setTabSize(4);
+    editor.setShowPrintMargin(true);
+    editor.setHighlightActiveLine(true);
+    editor.setShowInvisibles(true);
+    var htmlSTring = (function () {/*{{ bot.code }}*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
+    editor.setValue(htmlSTring)
+    editor.clearSelection();
+    editor.moveCursorTo(0, 0);
+    editor.getSession().setUseSoftTabs(true);
+</script>
+<p>Latest update: {{ bot.modification_date }}</p>
+    
+<p>
+    <button type="button" class="btn btn-primary btn-xs" onclick="postBot(editor.getValue(), '/update_bot')">Save</button>
+</p>
+
+
+</div> <!-- /container -->
 {% endblock %}
