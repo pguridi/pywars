@@ -1,9 +1,245 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load staticfiles %} 
+
+
+{% block js %}
+<script type="text/javascript">
+       	
+    function buildGrids(gridPixelSize, color, gap){
+        context.lineWidth = gap;
+        context.strokeStyle = color;
+        // horizontal grid lines
+        for(var i = 0; i <= canvas.height; i = i + gridPixelSize){
+            context.beginPath();
+            context.moveTo(0, i);
+            context.lineTo(canvas.width, i);
+            context.lineWidth = gap;
+            context.closePath();
+            context.stroke();
+        }     
+        // vertical grid lines
+        for(var j = 0; j <= canvas.width; j = j + gridPixelSize){
+            context.beginPath();
+            context.moveTo(j, 0);
+            context.lineTo(j, canvas.height);
+            context.lineWidth = gap;
+            context.closePath();
+            context.stroke();
+        }
+    }
+
+    //[nun, num] = X,Y
+    //var data = {"height": 50, "width": 50, "moves": [{"y": 16, "x": 16, "direction": null, "player": "Player 1"}, {"y": 33, "x": 33, "direction": null, "player": "Player 2"}, {"y": 15, "x": 16, "direction": "N", "player": "Player 1"}, {"y": 34, "x": 33, "direction": "S", "player": "Player 2"}, {"y": 15, "x": 15, "direction": "W", "player": "Player 1"}, {"y": 34, "x": 34, "direction": "E", "player": "Player 2"}, {"y": 16, "x": 15, "direction": "S", "player": "Player 1"}, {"y": 34, "x": 35, "direction": "E", "player": "Player 2"}, {"y": 16, "x": 14, "direction": "W", "player": "Player 1"}, {"y": 33, "x": 35, "direction": "N", "player": "Player 2"}, {"y": 15, "x": 14, "direction": "N", "player": "Player 1"}, {"y": 32, "x": 35, "direction": "N", "player": "Player 2"}, {"y": 15, "x": 13, "direction": "W", "player": "Player 1"}, {"y": 32, "x": 34, "direction": "W", "player": "Player 2"}, {"y": 16, "x": 13, "direction": "S", "player": "Player 1"}, {"y": 32, "x": 33, "direction": "W", "player": "Player 2"}, {"y": 17, "x": 13, "direction": "S", "player": "Player 1"}, {"y": 32, "x": 32, "direction": "W", "player": "Player 2"}, {"y": 18, "x": 13, "direction": "S", "player": "Player 1"}, {"y": 31, "x": 32, "direction": "N", "player": "Player 2"}, {"y": 19, "x": 13, "direction": "S", "player": "Player 1"}, {"y": 31, "x": 33, "direction": "E", "player": "Player 2"}, {"y": 19, "x": 12, "direction": "W", "player": "Player 1"}, {"y": 31, "x": 34, "direction": "E", "player": "Player 2"}, {"y": 19, "x": 11, "direction": "W", "player": "Player 1"}, {"y": 31, "x": 35, "direction": "E", "player": "Player 2"}, {"y": 18, "x": 11, "direction": "N", "player": "Player 1"}, {"y": 30, "x": 35, "direction": "N", "player": "Player 2"}, {"y": 18, "x": 10, "direction": "W", "player": "Player 1"}, {"y": 29, "x": 35, "direction": "N", "player": "Player 2"}, {"y": 18, "x": 9, "direction": "W", "player": "Player 1"}, {"y": 29, "x": 36, "direction": "E", "player": "Player 2"}, {"y": 17, "x": 9, "direction": "N", "player": "Player 1"}, {"y": 30, "x": 36, "direction": "S", "player": "Player 2"}, {"y": 17, "x": 8, "direction": "W", "player": "Player 1"}, {"y": 30, "x": 37, "direction": "E", "player": "Player 2"}, {"y": 16, "x": 8, "direction": "N", "player": "Player 1"}, {"y": 29, "x": 37, "direction": "N", "player": "Player 2"}, {"y": 15, "x": 8, "direction": "N", "player": "Player 1"}, {"y": 29, "x": 38, "direction": "E", "player": "Player 2"}, {"y": 14, "x": 8, "direction": "N", "player": "Player 1"}, {"y": 30, "x": 38, "direction": "S", "player": "Player 2"}, {"y": 14, "x": 7, "direction": "W", "player": "Player 1"}, {"y": 30, "x": 39, "direction": "E", "player": "Player 2"}, {"y": 13, "x": 7, "direction": "N", "player": "Player 1"}, {"y": 29, "x": 39, "direction": "N", "player": "Player 2"}, {"y": 12, "x": 7, "direction": "N", "player": "Player 1"}, {"y": 28, "x": 39, "direction": "N", "player": "Player 2"}, {"y": 12, "x": 8, "direction": "E", "player": "Player 1"}, {"y": 28, "x": 38, "direction": "W", "player": "Player 2"}, {"y": 13, "x": 8, "direction": "S", "player": "Player 1"}, {"y": 27, "x": 38, "direction": "N", "player": "Player 2"}, {"y": 13, "x": 9, "direction": "E", "player": "Player 1"}, {"y": 26, "x": 38, "direction": "N", "player": "Player 2"}, {"y": 14, "x": 9, "direction": "S", "player": "Player 1"}, {"y": 26, "x": 37, "direction": "W", "player": "Player 2"}, {"y": 15, "x": 9, "direction": "S", "player": "Player 1"}, {"y": 26, "x": 36, "direction": "W", "player": "Player 2"}, {"y": 16, "x": 9, "direction": "S", "player": "Player 1"}, {"y": 25, "x": 36, "direction": "N", "player": "Player 2"}, {"y": 16, "x": 10, "direction": "E", "player": "Player 1"}, {"y": 24, "x": 36, "direction": "N", "player": "Player 2"}, {"y": 16, "x": 11, "direction": "E", "player": "Player 1"}, {"y": 23, "x": 36, "direction": "N", "player": "Player 2"}, {"y": 15, "x": 11, "direction": "N", "player": "Player 1"}, {"y": 23, "x": 37, "direction": "E", "player": "Player 2"}, {"y": 14, "x": 11, "direction": "N", "player": "Player 1"}, {"y": 23, "x": 38, "direction": "E", "player": "Player 2"}, {"y": 14, "x": 12, "direction": "E", "player": "Player 1"}, {"y": 23, "x": 39, "direction": "E", "player": "Player 2"}, {"y": 13, "x": 12, "direction": "N", "player": "Player 1"}, {"y": 22, "x": 39, "direction": "N", "player": "Player 2"}, {"y": 12, "x": 12, "direction": "N", "player": "Player 1"}, {"y": 21, "x": 39, "direction": "N", "player": "Player 2"}, {"y": 11, "x": 12, "direction": "N", "player": "Player 1"}, {"y": 21, "x": 40, "direction": "E", "player": "Player 2"}, {"y": 11, "x": 13, "direction": "E", "player": "Player 1"}, {"y": 20, "x": 40, "direction": "N", "player": "Player 2"}, {"y": 12, "x": 13, "direction": "S", "player": "Player 1"}, {"y": 19, "x": 40, "direction": "N", "player": "Player 2"}, {"y": 13, "x": 13, "direction": "S", "player": "Player 1"}, {"y": 18, "x": 40, "direction": "N", "player": "Player 2"}, {"y": 14, "x": 13, "direction": "S", "player": "Player 1"}, {"y": 17, "x": 40, "direction": "N", "player": "Player 2"}, {"y": 14, "x": 14, "direction": "E", "player": "Player 1"}, {"y": 17, "x": 39, "direction": "W", "player": "Player 2"}, {"y": 14, "x": 15, "direction": "E", "player": "Player 1"}, {"y": 18, "x": 39, "direction": "S", "player": "Player 2"}, {"y": 14, "x": 16, "direction": "E", "player": "Player 1"}, {"y": 18, "x": 38, "direction": "W", "player": "Player 2"}, {"y": 14, "x": 17, "direction": "E", "player": "Player 1"}, {"y": 17, "x": 38, "direction": "N", "player": "Player 2"}, {"y": 14, "x": 18, "direction": "E", "player": "Player 1"}, {"y": 17, "x": 37, "direction": "W", "player": "Player 2"}, {"y": 15, "x": 18, "direction": "S", "player": "Player 1"}, {"y": 17, "x": 36, "direction": "W", "player": "Player 2"}, {"y": 16, "x": 18, "direction": "S", "player": "Player 1"}, {"y": 17, "x": 35, "direction": "W", "player": "Player 2"}, {"y": 16, "x": 19, "direction": "E", "player": "Player 1"}, {"y": 17, "x": 34, "direction": "W", "player": "Player 2"}, {"y": 16, "x": 20, "direction": "E", "player": "Player 1"}, {"y": 16, "x": 34, "direction": "N", "player": "Player 2"}, {"y": 17, "x": 20, "direction": "S", "player": "Player 1"}, {"y": 15, "x": 34, "direction": "N", "player": "Player 2"}, {"y": 18, "x": 20, "direction": "S", "player": "Player 1"}, {"y": 15, "x": 33, "direction": "W", "player": "Player 2"}, {"y": 19, "x": 20, "direction": "S", "player": "Player 1"}, {"y": 16, "x": 33, "direction": "S", "player": "Player 2"}, {"y": 19, "x": 21, "direction": "E", "player": "Player 1"}, {"y": 16, "x": 32, "direction": "W", "player": "Player 2"}, {"y": 19, "x": 22, "direction": "E", "player": "Player 1"}, {"y": 15, "x": 32, "direction": "N", "player": "Player 2"}, {"y": 20, "x": 22, "direction": "S", "player": "Player 1"}, {"y": 14, "x": 32, "direction": "N", "player": "Player 2"}, {"y": 20, "x": 21, "direction": "W", "player": "Player 1"}, {"y": 13, "x": 32, "direction": "N", "player": "Player 2"}, {"y": 21, "x": 21, "direction": "S", "player": "Player 1"}, {"y": 12, "x": 32, "direction": "N", "player": "Player 2"}, {"y": 21, "x": 22, "direction": "E", "player": "Player 1"}, {"y": 12, "x": 31, "direction": "W", "player": "Player 2"}, {"y": 21, "x": 23, "direction": "E", "player": "Player 1"}, {"y": 13, "x": 31, "direction": "S", "player": "Player 2"}, {"y": 21, "x": 24, "direction": "E", "player": "Player 1"}, {"y": 14, "x": 31, "direction": "S", "player": "Player 2"}, {"y": 21, "x": 25, "direction": "E", "player": "Player 1"}, {"y": 14, "x": 30, "direction": "W", "player": "Player 2"}, {"y": 21, "x": 26, "direction": "E", "player": "Player 1"}, {"y": 13, "x": 30, "direction": "N", "player": "Player 2"}, {"y": 22, "x": 26, "direction": "S", "player": "Player 1"}, {"y": 12, "x": 30, "direction": "N", "player": "Player 2"}, {"y": 22, "x": 27, "direction": "E", "player": "Player 1"}, {"y": 12, "x": 29, "direction": "W", "player": "Player 2"}, {"y": 21, "x": 27, "direction": "N", "player": "Player 1"}, {"y": 13, "x": 29, "direction": "S", "player": "Player 2"}, {"y": 20, "x": 27, "direction": "N", "player": "Player 1"}, {"y": 13, "x": 28, "direction": "W", "player": "Player 2"}, {"y": 19, "x": 27, "direction": "N", "player": "Player 1"}, {"y": 14, "x": 28, "direction": "S", "player": "Player 2"}, {"y": 19, "x": 26, "direction": "W", "player": "Player 1"}, {"y": 14, "x": 29, "direction": "E", "player": "Player 2"}, {"y": 20, "x": 26, "direction": "S", "player": "Player 1"}, {"y": 15, "x": 29, "direction": "S", "player": "Player 2"}, {"y": 20, "x": 25, "direction": "W", "player": "Player 1"}, {"y": 16, "x": 29, "direction": "S", "player": "Player 2"}, {"y": 20, "x": 24, "direction": "W", "player": "Player 1"}, {"y": 17, "x": 29, "direction": "S", "player": "Player 2"}, {"y": 19, "x": 24, "direction": "N", "player": "Player 1"}, {"y": 17, "x": 28, "direction": "W", "player": "Player 2"}, {"y": 18, "x": 24, "direction": "N", "player": "Player 1"}, {"y": 17, "x": 27, "direction": "W", "player": "Player 2"}, {"y": 18, "x": 23, "direction": "W", "player": "Player 1"}, {"y": 16, "x": 27, "direction": "N", "player": "Player 2"}, {"y": 19, "x": 23, "direction": "S", "player": "Player 1"}, {"y": 16, "x": 26, "direction": "W", "player": "Player 2"}, {"y": 20, "x": 23, "direction": "S", "player": "Player 1"}, {"y": 17, "x": 26, "direction": "S", "player": "Player 2"}, {"y": 18, "x": 26, "direction": "S", "player": "Player 2"}], "result": {"winner": "Player 2", "lost": [{"Player 1": "Crashed"}]}, "players": ["Player 1", "Player 2"]};
+
+    //INITIAL DATA
+    canvas = document.getElementById("the-game");
+    context = $('#the-game')[0].getContext("2d");
+    //colors
+    color_player1 = "orange";
+    color_player2 = "lightblue";
+    grid_line_color = "lightgrey"
+    //draw grid
+    
+    
+    
+    
+    game_start = function on() {
+    //set cancas size:
+    console.log(data.width);
+    console.log(data.height);
+    $('#the-game').attr('width', data.width*10);
+    $('#the-game').attr('height', data.height*10);
+    buildGrids(10,  grid_line_color , 0.2 );
+    game = true;
+    $('#p1_img').css("background", color_player1);
+    $('#p2_img').css("background", color_player2);
+
+    //players:
+    $('#player1').text(data.players[0]);
+    $('#player2').text(data.players[1]);
+    
+    player1 = {
+        name: data.players[0],
+        color: color_player1,
+        position: [ p1_x, p1_y]
+    };
+    player2 = {
+        name: data.players[1],
+        color: color_player2,
+        position: [ p2_x, p2_y]
+    };
+    
+    
+    var p1_x = data.moves[0].x *10;
+    var p1_y = data.moves[0].y *10;
+    var p2_x = data.moves[1].x *10;
+    var p2_y = data.moves[1].y *10;
+
+    //test icon cycle
+    /*var logoImage = new Image(); 
+    logoImage.src = './static/media/light2.gif';
+    context.drawImage(logoImage, p1_x, p1_y);*/
+    
+    function draw(player, x , y){
+        //console.log("darw: " + x + "-" + y);
+        x = x *10;
+        y = y *10;
+        context.beginPath();
+        context.moveTo( player.position[0], player.position[1] );
+        context.lineTo(x , y);
+        context.lineWidth = 1;
+        player.position = [x, y];
+        context.closePath();
+        // set line color
+        context.strokeStyle = player.color ;
+        context.stroke();
+        //context.fillStyle = 'green' ;
+        //context.fill();
+    }
+
+
+
+    var i = 2;
+    loop = function() {
+        //console.log(delay)
+        if (i >= data.moves.length - 1){
+        gameover();
+        return;
+        }
+        x = parseInt(data.moves[i].x);
+        y = parseInt(data.moves[i].y);
+        x2 = parseInt(data.moves[i+1].x);
+        y2 = parseInt(data.moves[i+1].y);
+        draw(player1, x,y);
+        draw(player2, x2,y2);
+        i += 2;
+    };
+
+    //speed of the game
+    Object.prototype.getKey = function(value){
+      for(var key in this){
+        if(this[key] instanceof Array && this[key].indexOf(value) >= 0){
+          return key;
+        }
+      }
+      return null;
+    };
+
+    keys = {
+      up: [38, 87, 107],
+      down: [40, 83, 109],
+      left: [37, 65],
+      right: [39, 68],
+      replay: [13, 32]
+    };
+
+
+    var delay = 10;
+    var maxD = 10000;
+    var minD = 0;
+
+    addEventListener("keydown", function (e) {
+        lastKey = keys.getKey(e.keyCode);
+        //console.log(e.keyCode);
+        if (['up'].indexOf(lastKey) >= 0  && delay > minD ) {
+           delay -= 100;
+           console.log(delay);
+        } 
+        else if (['down'].indexOf(lastKey) >= 0  && delay < maxD ) {
+           delay += 100;
+        } 
+        else if (['replay'].indexOf(lastKey) >= 0  && game == false ) {
+           replayMatch();
+           //console.log(delay);
+        } 
+    }, false);
+
+    $('#button_replay').click(function() {
+        replayMatch();
+    });
+
+    //game start
+    //setTimeout(function() { loop; },delay)();
+
+    setInterval(loop, delay); 
+
+
+    //replay the match
+    replayMatch = function() {
+        game = true;
+        $('#button_replay').hide();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        i = 0; j = 1; // reset the array conts
+        //set initial position
+        player1.position = [ p1_x, p1_y];
+        player2.position = [ p2_x, p2_y];
+        buildGrids(10, grid_line_color , 0.2 );
+    }
+
+    //end game
+    gameover = function() {
+    game = false;
+    $('#button_replay').show();
+    context.fillStyle = '#FFF';
+    context.font = (canvas.height / 15) + 'px FixedsysExcelsior301Regular';
+    context.textAlign = 'center';
+    winner = data.result.winner;
+    context.fillText('GAME OVER ', canvas.width/2, canvas.height/2);
+    //context.fillText('press spacebar to replay', canvas.width/2, canvas.height/2 + 50); 
+    };
+}
+</script>
+
+<script>
+$( document ).ready(function() {
+    data = {}
+    jQuery.ajax({
+          url: '/main-match',
+          dataType: 'json',
+          success: function(info, status){
+                data = info;
+                game_start();
+          },
+    });
+});
+</script>
+{% endblock %}
+
+{% block head %}
+
+{% endblock %}
 
 {% block content %}    
     <div class="container">
-     <p>Here goes some main screen</p>
+    
+        <div id="header">
+            <h1>Onapsis LightCycle Challenge</h1>
+        </div>
+        <div id="players_divs">
+            <div class="center">
+                <div class="float">
+                    <div id="player1"></div>
+                    <img id="p1_img" src="./static/media/lightcycle-start-transparent.png" />
+                </div>
+                <div id="vs_text" class="float"> vs </div> 
+                <div class="float">
+                    <div id="player2"></div>
+                    <img id="p2_img" src="./static/media/lightcycle-start-transparent.png" />
+                </div>
+            </div>
+        </div>
+        <div>
+        <canvas id="the-game" width="100" height="100" style="background-color:rgb(8, 14, 12);">
+            Your browser does not support HTML5 Canvas.
+        </canvas>
+        </div>
+        <div id="action_buttons">
+            <label for="speed_set">Set Speed:</label><input type="range" id="speed_set" min="100" max="1000" value="500">
+            <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none;"><span class="glyphicon glyphicon-play"></span>Replay</a>
+        </div>
+
+     
     </div> <!-- /container -->
 
 {% endblock %}

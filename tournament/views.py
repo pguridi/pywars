@@ -8,8 +8,12 @@ from django.core import serializers
 from django.contrib.auth.decorators import login_required
 import json
 
-from models import *
+from lightcycle.arena import LightCycleArena
+from lightcycle.basebot import LightCycleBaseBot, LightCycleRandomBot
+from lightcycle.player import Player
 
+
+from models import *
 
 def index(request):
     return render(request, 'home.html', {'tab' : 'arena'})
@@ -59,3 +63,12 @@ def update_bot(request):
         bot.code = json.loads(request.body)['code']
         bot.save()
     return HttpResponse('/about')
+
+@login_required
+def main_match(request):
+    player1 = Player('Player 1', LightCycleRandomBot)
+    player2 = Player('Player 2', LightCycleRandomBot)
+    width = 50
+    height = 50
+    match = LightCycleArena((player1, player2), width, height).start()
+    return HttpResponse( json.dumps(match) , mimetype='application/javascript')
