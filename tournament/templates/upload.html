@@ -7,11 +7,7 @@
 
     <h3>Write your bot here!</h3>
     
-    <div id="editor">function foo(items) {
-        var x = "All this is syntax highlighted";
-        return x;
-        }
-    </div>
+    <div id="editor">{{ bot.code }}</div>
 <script type="text/javascript">
     function postBot(data, url)
     {
@@ -37,8 +33,6 @@
     editor.setShowPrintMargin(true);
     editor.setHighlightActiveLine(true);
     editor.setShowInvisibles(true);
-    var htmlSTring = (function () {/*{{ bot.code }}*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
-    editor.setValue(htmlSTring)
     editor.clearSelection();
     editor.moveCursorTo(0, 0);
     editor.getSession().setUseSoftTabs(true);
