@@ -1,11 +1,19 @@
 from django.conf.urls import patterns, include, url
 
+from registration.backends.default.views import RegistrationView
+from registration.forms import RegistrationFormUniqueEmail
+
+class RegistrationViewUniqueEmail(RegistrationView):
+    form_class = RegistrationFormUniqueEmail
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
+    url(r'^accounts/register', RegistrationViewUniqueEmail.as_view(),
+                    name='registration_register'),
     url(r'^$', 'tournament.views.index', name='index'),
     url(r'^scoreboard', 'tournament.views.scoreboard', name='scoreboard'),
     url(r'^upload', 'tournament.views.upload', name='upload'),
