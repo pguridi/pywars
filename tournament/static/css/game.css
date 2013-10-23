@@ -11,18 +11,23 @@
     font-smooth:never;
 }
 
-body{
+body,body .container{
     font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
     background-color: black;
     font-size: 1em;
 }
 
-h1,h2,h3,p, span, div{
+.main h1,.main h2,.main h3,.main p,.main span,.main  div{
     color:white;
 }
 
 .table-striped tbody>tr:nth-child(odd)>td, .table-striped tbody>tr:nth-child(odd)>th {
 background-color: transparent;
+color:white;
+}
+
+#score_table td,#score_table th{
+color:white;
 }
 
 #the-game{
@@ -98,4 +103,12 @@ margin-bottom:30px;
 	margin-left: auto ;
 	margin-right: auto ;
 }
+
+/*login*/
+.form-signin .form-signin-heading, .form-signin .checkbox{
+    color:black;
+
+}
+.form-signin{}
+.form-signin{}
 

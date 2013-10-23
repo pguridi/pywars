@@ -125,21 +125,21 @@
       <form method="post" action="/accounts/login/" class="form-signin">
        {% csrf_token %}
         <h2 class="form-signin-heading">Login</h2>
-        <input type="text" id="id_username" name="username" class="input-block-level" placeholder="Username">
         {% if form.non_field_errors %}
-            <p>
-            {{ form.non_field_errors }}
+            <p style="color:red;">
+            {{ form.non_field_errors.as_text }}
             </p>
         {% endif %}
+        <input type="text" id="id_username" name="username" class="input-block-level" placeholder="Username">
         {% if form.username.errors %}
-            <p>{{ form.username.errors.as_text }}</p>
+            <p style="color:red;">{{ form.username.errors.as_text }}</p>
         {% endif %}
         <input type="password" id="id_password" name="password" class="input-block-level" placeholder="Password">
-        {% if form.id_password.errors %}
-            <p>{{ form.id_password.errors.as_text }}</p>
-        {% endif %}
         <input type="hidden" name="next" value="/" />
-        <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+        {% if form.id_password.errors %}
+            <p style="color:red;">{{ form.id_password.errors.as_text }}</p>
+        {% endif %}
+        <button class="btn btn-primary pull-right" type="submit">Sign in</button>
         <p></p>
         <p>{% trans "Not registered" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
       </form>
