@@ -21,31 +21,29 @@ def about(request):
 
 @login_required
 def scoreboard(request):
-    bots = Bot.objects.all().order_by('-points')
-    challenges = Challenge.objects.filter(requested_by=request.user, played=False)
-    if challenges.count() > 0:
-        pending_challenges = True
-    else:
-        pending_challenges = False
+    user_prof = UserProfile.objects.get(user=request.user)
+    #bots = Bot.objects.all().order_by('-points')
+    users = UserProfile.objects.filter(current_bot__isnull=False)
+    challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
+#    if challenges.count() > 0:
+#        pending_challenges = True
+#    else:
+#        pending_challenges = False
 
-    challenged_bots = [ c.challenged_bot for c in challenges ]
+    pending_challenged_bots = [ c.challenged_bot for c in challenges ]
+
+    played_challenges = Challenge.objects.filter(requested_by=user_prof, played=True)
+    challenged_bots = [ c.challenged_bot for c in played_challenges ]
 
     return render(request, 'scoreboard.html', { 'tab' : 'score',
-                'bots' : bots,
-                'pending_challenges' : pending_challenges,
-                'challenged_bots' : challenged_bots})
+                'users' : users,
+                'challenged_bots' : challenged_bots,
+                'pending_challenged_bots' : pending_challenged_bots})
 
 @login_required
 def mybots(request):
-#    try:
-    # get the profile for this guy
     user_prof = UserProfile.objects.get(user=request.user)
-#    except ObjectDoesNotExist:
-#        print "creating first bot for user"
-#        bot = Bot()
-#        bot.owner = UserProfile.objects.get(user=request.user)
-#        bot.code = open('tournament/base_bot.py', 'r').read()
-#        bot.save()
+
     return render(request, 'my_bots.html', 
         {'tab' : 'mybots',
          'my_buffer' : user_prof.my_buffer,
@@ -57,8 +55,6 @@ def mybots(request):
 def save_buffer(request):
     if request.is_ajax():
         code_content = json.loads(request.body)['msg']
-#        if len(code_content.strip('')) == 0:
-#            return HttpResponse("Can not save an empty bot")
 
         user_prof = UserProfile.objects.get(user=request.user)
         user_prof.my_buffer = code_content
@@ -112,13 +108,28 @@ def challenge(request):
             print "[CHEATING!] - wrong challenge bot!"
             return HttpResponse("Error")
 
-        print "Got a challenge for bot: ", challenge_bot        
+        # challenged bot must be the owners current bot        
+        if not challenge_bot.is_current_bot:
+            print "[CHEATING!] - wrong challenge bot!, must be the owners current bot!."
+            return HttpResponse("Error")
+
+        print "Got a challenge for bot: ", challenge_bot
+        
+        # Get pending challenges for this user
         challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
         if challenges.count() > 0:
             # has pending challenges, must wait.
             return HttpResponse("Can not challenge more than one bot at a time")
 
+        # Check if these bots haven't already played.
+        played_challs = Challenge.objects.filter(requested_by=user_prof, 
+            challenger_bot=user_prof.current_bot,challenged_bot=challenge_bot,
+            played=True)
         
+        if played_challs.count() > 0:
+            # has already played against this bot, must upload a new one
+            return HttpResponse("Already played against this bot!. Upload a new one.")
+
         new_chall = Challenge()
         new_chall.requested_by = user_prof
         new_chall.challenger_bot = user_prof.current_bot
