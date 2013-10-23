@@ -165,8 +165,15 @@
     context.fillStyle = '#FFF';
     context.font = (canvas.height / 15) + 'px FixedsysExcelsior301Regular';
     context.textAlign = 'center';
-    winner = data.result.winner;
+    
+    
     context.fillText('GAME OVER ', canvas.width/2, canvas.height/2);
-    context.fillText( winner + ' wins', canvas.width/2, canvas.height/2 + 50); 
+    
+    if (data.result.winner == undefined ){
+        msg = 'TIE!!';
+    } else{
+        msg = data.result.winner + ' WINS!';
+    }
+        context.fillText( msg , canvas.width/2, canvas.height/2 + 50); 
     };
 }
