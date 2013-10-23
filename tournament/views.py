@@ -7,7 +7,6 @@ from django.views.decorators.http import require_POST
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 import json
-import simplejson
 
 from models import *
 from tournament.tools import *
@@ -53,9 +52,9 @@ def mybots(request):
 def save_buffer(request):
     if request.is_ajax():
         user_prof = UserProfile.objects.get(user=request.user)
-        user_prof.my_buffer = simplejson.loads(request.body)['code']
+        user_prof.my_buffer = json.loads(request.body)['code']
         user_prof.save()
-    return HttpResponse(simplejson.dumps({'success' : True}), 
+    return HttpResponse(json.dumps({'success' : True}), 
         mimetype='application/json')
 
 
@@ -66,7 +65,7 @@ def save_buffer(request):
 def publish_bot(request):
     if request.is_ajax():
         user_prof = UserProfile.objects.get(user=request.user)
-        new_bot_code = simplejson.loads(request.body)['code']
+        new_bot_code = json.loads(request.body)['code']
 
         # Get the last bot, and check delta
         try:
@@ -84,5 +83,5 @@ def publish_bot(request):
         bot.code = new_bot_code
 
         bot.save()
-    return HttpResponse(simplejson.dumps({'success' : True}), 
+    return HttpResponse(json.dumps({'success' : True}), 
         mimetype='application/json')

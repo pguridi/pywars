@@ -4,16 +4,37 @@
 {% block content %}    
 
 <div class="container-fluid">
-
+<script type="text/javascript">
+    var my_buffer = null;
+    function showBot(data)
+    {
+        if (my_buffer==null) {
+            my_buffer = editor.getValue();
+        }
+        $('#publish_button_id').prop('disabled', 'disabled');
+        $('#save_button_id').prop('disabled', 'disabled');
+        editor.setValue(data);
+        editor.clearSelection();
+    }
+    function restoreBuffer()
+    {
+        $('#publish_button_id').prop('disabled', '');
+        $('#save_button_id').prop('disabled', '');
+        editor.setValue(my_buffer);
+        editor.clearSelection();
+        my_buffer = null;
+    }
+</script>
 
 <div class="row-fluid">
     <div class="span2">
       <!--Sidebar content-->
         <p>
 <h3>My Bots</h3>
-</p>
+    <p> <a href="#" onclick="showBot(my_buffer); restoreBuffer();">New Bot </a></p>
+    
         {% for bot in my_bots %}
-            <p> <a href="#">{{ bot.creation_date }} </a></p>
+            <p> <a href="#" onclick="showBot('{{ bot.js_code }}')">{{ bot.creation_date }} </a></p>
         {% endfor %}
     </div>
     <div class="span10">
@@ -58,8 +79,8 @@
         
     <p>
         <div class="btn-toolbar">
-        aa<button type="button" class="btn btn-primary btn-xs" onclick="postBot(editor.getValue(), '/save_buffer')">Save Buffer</button>
-        <button type="button" class="btn btn-success btn-xs" onclick="postBot(editor.getValue(), '/publish_bot')">Publish Bot</button>
+        <button id="save_button_id" type="button" class="btn btn-primary btn-xs" onclick="postBot(editor.getValue(), '/save_buffer')">Save Buffer</button>
+        <button id="publish_button_id" type="button" class="btn btn-success btn-xs" onclick="postBot(editor.getValue(), '/publish_bot')">Publish Bot</button>
         </div>
     </p>
 

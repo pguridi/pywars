@@ -2,11 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from django.db.models.signals import post_save
+
  
 class UserProfile(models.Model):
     user = models.ForeignKey(User, primary_key=True, related_name="profile")
     score = models.IntegerField('Tournament score', default=0)
-    my_buffer = models.TextField(default='')
+    my_buffer = models.TextField(default='', blank=True, null=True)
 
     def __str__(self):
         return '%s' % (self.user)
@@ -23,6 +24,11 @@ class Bot(models.Model):
 
     def __str__(self):
         return "%s - %s" % (self.owner, self.points)
+
+    def _js_code(self):
+        "Returns the person's full name."
+        return self.code.replace('\n', '\\n')
+    js_code = property(_js_code)
 
 class Challenge(models.Model):
     requested_by = models.ForeignKey(User)
