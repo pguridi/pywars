@@ -2,4 +2,5 @@
 *~
 .project
 .pydevproject
+*.swp
 *.db
