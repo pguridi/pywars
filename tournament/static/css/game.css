@@ -11,45 +11,29 @@
     font-smooth:never;
 }
 
-body, pre, input {
+body{
     font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
-    color: white;
     background-color: black;
     font-size: 1em;
+}
+
+h1,h2,h3,p, span, div{
+    color:white;
+}
+
+.table-striped tbody>tr:nth-child(odd)>td, .table-striped tbody>tr:nth-child(odd)>th {
+background-color: transparent;
 }
 
 #the-game{
     display: block;
     margin: 0 auto;
-    }
-
-a {
-    color:white;
+    height: 500px;
+    width: 500px;
 }
-
-input {
-    border: none;
+#p1_img,#p2_img{
+background: grey;
 }
-
-*:focus {
-    outline: 0; /* Prevent showing input borders in Chrome */
-}
-
-table {
-    border-spacing:0;
-    border-collapse:collapse;
-    margin:1em auto;
-}
-
-td, th {
-    padding: 0 1em;
-    text-align: left;
-}
-
-h1, h2, h3 {
-    margin:.5em;
-}
-
 .high_score {
     font-size:2em;
     text-shadow:0 0 .5em red;
