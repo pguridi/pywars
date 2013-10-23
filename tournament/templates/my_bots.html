@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}    
+
+<div class="container-fluid">
+
+
+<div class="row-fluid">
+    <div class="span2">
+      <!--Sidebar content-->
+        <p>
+<h3>My Bots</h3>
+</p>
+        {% for bot in my_bots %}
+            <p> <a href="#">{{ bot.creation_date }} </a></p>
+        {% endfor %}
+    </div>
+    <div class="span10">
+      <!--Body content-->
+<p>
+<h3>Write your bot here!</h3>
+</p>
+    <div id="editor">{{ my_buffer }}</div>
+    <script type="text/javascript">
+        function postBot(data, url)
+        {
+            $.ajax(
+            {
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ code: data}),
+                dataType: "json",
+                async: false,
+                contentType: "application/json"
+            }).fail(function() {
+                alert( "Can not publish this bot!. Looks like the last one." );
+              }).done(function() {
+                location.reload();
+              })
+        }
+    </script>
+
+    <script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.getSession().setMode("ace/mode/python");
+        editor.getSession().setTabSize(4);
+        editor.setShowPrintMargin(true);
+        editor.setHighlightActiveLine(true);
+        editor.setShowInvisibles(true);
+        editor.clearSelection();
+        editor.moveCursorTo(0, 0);
+        editor.getSession().setUseSoftTabs(true);
+    </script>
+    <p>Latest update: {{ bot.modification_date }}</p>
+        
+    <p>
+        <div class="btn-toolbar">
+        aa<button type="button" class="btn btn-primary btn-xs" onclick="postBot(editor.getValue(), '/save_buffer')">Save Buffer</button>
+        <button type="button" class="btn btn-success btn-xs" onclick="postBot(editor.getValue(), '/publish_bot')">Publish Bot</button>
+        </div>
+    </p>
+
+    </div>
+  </div>
+
+
+{% endblock %}

@@ -16,9 +16,10 @@ urlpatterns = patterns('',
                     name='registration_register'),
     url(r'^$', 'tournament.views.index', name='index'),
     url(r'^scoreboard', 'tournament.views.scoreboard', name='scoreboard'),
-    url(r'^upload', 'tournament.views.upload', name='upload'),
+    url(r'^mybots', 'tournament.views.mybots', name='mybots'),
     url(r'^about', 'tournament.views.about', name='about'),
-    url(r'^update_bot', 'tournament.views.update_bot', name='upload'),
+    url(r'^save_buffer', 'tournament.views.save_buffer', name='save_buffer'),
+    url(r'^publish_bot', 'tournament.views.publish_bot', name='publish_bot'),
     # url(r'^djlightcycle/', include('djlightcycle.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

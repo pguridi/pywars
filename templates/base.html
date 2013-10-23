@@ -12,7 +12,7 @@
         display: block;
         position: relative;
         height: 400px;
-        width: 700px;
+        width: 650px;
     }
 </style>
     <style type="text/css">
@@ -80,10 +80,10 @@
                 {% else %}
                     <li><a href="/scoreboard">Tournament</a></li>
                 {% endif %}
-              {% if tab == "upload" %}
-                    <li class="active"><a href="/upload">My bot</a></li>
+              {% if tab == "mybots" %}
+                    <li class="active"><a href="/mybots">My bots</a></li>
                 {% else %}
-                    <li><a href="/upload">My bot</a></li>
+                    <li><a href="/mybots">My bots</a></li>
                 {% endif %}
               {% if tab == "about" %}
                     <li class="active"><a href="/about">About the game</a></li>

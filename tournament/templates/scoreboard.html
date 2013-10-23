@@ -20,7 +20,7 @@
             <tr>  
             <td>{{forloop.counter}}</td>  
             <td>{{ bot.owner }} </td>  
-            <td>{{ bot.points }}</td>
+            <td>{{ bot.owner.score }}</td>
             <td>
             {% if bot.owner == user or pending_challengues %}
             <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
