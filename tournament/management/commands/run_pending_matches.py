@@ -30,6 +30,12 @@ class Command(BaseCommand):
                 arena = LightCycleArena(players, settings.get('ARENA_WIDTH'), settings.get('ARENA_HEIGHT'))
                 result = arena.start()
                 print result
+                challenge.played = True
+                challenge.elapsed_time = result['elapsed_time']
+                if 'winner' in result:
+                    challenge.winner_bot = [player.bot for player in players if player.name == result['winner']][0]
+                # TODO assign scores!
+
             except Exception as ex:
                 msg = 'Error running Challenge "%s" ("%s")' % (challenge, ex)
                 logger.error(msg)
