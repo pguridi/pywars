@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -8,9 +8,13 @@ from django.core import serializers
 from django.contrib.auth.decorators import login_required
 import json
 
-from models import *
 from tournament.tools import *
+from lightcycle.arena import LightCycleArena
+from lightcycle.basebot import LightCycleBaseBot, LightCycleRandomBot
+from lightcycle.player import Player
 
+
+from models import Challenge, Bot, UserProfile
 
 def index(request):
     return render(request, 'home.html', {'tab' : 'arena'})
@@ -44,7 +48,7 @@ def scoreboard(request):
 def mybots(request):
     user_prof = UserProfile.objects.get(user=request.user)
 
-    return render(request, 'my_bots.html', 
+    return render(request, 'my_bots.html',
         {'tab' : 'mybots',
          'my_buffer' : user_prof.my_buffer,
          'my_bots' : Bot.objects.filter(owner=user_prof)})
@@ -59,7 +63,7 @@ def save_buffer(request):
         user_prof = UserProfile.objects.get(user=request.user)
         user_prof.my_buffer = code_content
         user_prof.save()
-    return HttpResponse(json.dumps({'success' : True}), 
+    return HttpResponse(json.dumps({'success' : True}),
         mimetype='application/json')
 
 @login_required
@@ -69,10 +73,10 @@ def publish_bot(request):
     if request.is_ajax():
         user_prof = UserProfile.objects.get(user=request.user)
         new_bot_code = json.loads(request.body)['msg']
-        
+
         if len(new_bot_code.strip('')) == 0:
             return HttpResponse("Can not publish an empty bot")
-        
+
 
         # Get the last bot, and check delta
         try:
@@ -91,7 +95,7 @@ def publish_bot(request):
         bot.save()
         user_prof.current_bot = bot
         user_prof.save()
-    return HttpResponse(json.dumps({'success' : True}), 
+    return HttpResponse(json.dumps({'success' : True}),
         mimetype='application/json')
 
 @login_required
@@ -100,21 +104,21 @@ def publish_bot(request):
 def challenge(request):
     if request.is_ajax():
         challenge_bot_id = json.loads(request.body)['msg']
-        challenge_bot = Bot.objects.get(pk=challenge_bot_id)    
-        
+        challenge_bot = Bot.objects.get(pk=challenge_bot_id)
+
         # get the user current bot
         user_prof = UserProfile.objects.get(user=request.user)
         if challenge_bot.owner == user_prof:
             print "[CHEATING!] - wrong challenge bot!"
             return HttpResponse("Error")
 
-        # challenged bot must be the owners current bot        
+        # challenged bot must be the owners current bot
         if not challenge_bot.is_current_bot:
             print "[CHEATING!] - wrong challenge bot!, must be the owners current bot!."
             return HttpResponse("Error")
 
         print "Got a challenge for bot: ", challenge_bot
-        
+
         # Get pending challenges for this user
         challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
         if challenges.count() > 0:
@@ -122,10 +126,10 @@ def challenge(request):
             return HttpResponse("Can not challenge more than one bot at a time")
 
         # Check if these bots haven't already played.
-        played_challs = Challenge.objects.filter(requested_by=user_prof, 
+        played_challs = Challenge.objects.filter(requested_by=user_prof,
             challenger_bot=user_prof.current_bot,challenged_bot=challenge_bot,
             played=True)
-        
+
         if played_challs.count() > 0:
             # has already played against this bot, must upload a new one
             return HttpResponse("Already played against this bot!. Upload a new one.")
@@ -135,6 +139,14 @@ def challenge(request):
         new_chall.challenger_bot = user_prof.current_bot
         new_chall.challenged_bot = challenge_bot
         new_chall.save()
-        
-        return HttpResponse(json.dumps({'success' : True}), 
-        mimetype='application/json')
+
+        return HttpResponse(json.dumps({'success' : True}), mimetype='application/json')
+
+@login_required
+def main_match(request):
+    player1 = Player('Player 1', LightCycleRandomBot)
+    player2 = Player('Player 2', LightCycleRandomBot)
+    width = 50
+    height = 50
+    match = LightCycleArena((player1, player2), width, height).start()
+    return HttpResponse( json.dumps(match) , mimetype='application/javascript')

@@ -1,0 +1,101 @@
+@font-face {
+    font-family: 'FixedsysExcelsior301Regular';
+    src: url('fsex300-webfont.eot');
+    src: url('fsex300-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fsex300-webfont.woff') format('woff'),
+         url('fsex300-webfont.ttf') format('truetype'),
+         url('fsex300-webfont.svg#FixedsysExcelsior301Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    -webkit-font-smoothing:aliased;
+    font-smooth:never;
+}
+
+body{
+    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
+    background-color: black;
+    font-size: 1em;
+}
+
+h1,h2,h3,p, span, div{
+    color:white;
+}
+
+.table-striped tbody>tr:nth-child(odd)>td, .table-striped tbody>tr:nth-child(odd)>th {
+background-color: transparent;
+}
+
+#the-game{
+    display: block;
+    margin: 0 auto;
+    height: 500px;
+    width: 500px;
+}
+#p1_img,#p2_img{
+background: grey;
+}
+.high_score {
+    font-size:2em;
+    text-shadow:0 0 .5em red;
+}
+
+.high_score {
+    text-align:center;
+}
+
+.high_score td, .high_score th {
+    text-align:right;
+}
+
+@keyframes blink {  
+    0% { color: red; }
+    100% { color: black; }
+}
+@-webkit-keyframes blink {
+    0% { color: red; }
+    100% { color: black; }
+}
+.blink {
+    -webkit-animation: blink 0.5s linear infinite;
+    -moz-animation: blink 0.5s linear infinite;
+    animation: blink 0.5s linear infinite;
+}
+
+img#p1_img,img#p2_img{
+	height: 50px;
+	width: 160px;
+}
+.float{
+	float:left;
+}
+#player1,#player2,#vs_text{
+	font-size: 30px;
+}
+#player1,#player2{
+margin-left:22px;
+margin-bottom:30px;
+}
+#vs_text{
+	margin-left:50px;
+	margin-right:50px;
+}
+
+#players_divs{
+	height: 140px;
+	width: 470px ;
+	margin-left: auto ;
+	margin-right: auto ;
+}
+#action_buttons{
+    height: 40px;
+	width: 470px ;
+	margin-left: auto ;
+	margin-right: auto ;
+}
+#header{
+	height: 80px;
+	width: 600px ;
+	margin-left: auto ;
+	margin-right: auto ;
+}
+

@@ -25,5 +25,4 @@ admin.site.register(Bot, BotAdmin)
 admin.site.register(Challenge, ChallengeAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserWithProfileAdmin)
-
 admin.site.register(UserProfile, UserProfileAdmin)
