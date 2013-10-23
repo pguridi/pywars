@@ -23,11 +23,11 @@ class Command(BaseCommand):
         for count, challenge in enumerate(Challenge.objects.filter(played=False).order_by('creation_date')):
             try:
                 logger.info('Running Challenge "%s".' % challenge)
-                player1 = Player(challenge.challenger_bot.owner.username, challenge.challenger_bot.code)
-                player2 = Player(challenge.challenged_bot.owner.username, challenge.challenged_bot.code)
+                player1 = Player(challenge.challenger_bot.owner.user, challenge.challenger_bot.code)
+                player2 = Player(challenge.challenged_bot.owner.user, challenge.challenged_bot.code)
                 players = [player1, player2]
                 random.shuffle(players)
-                arena = LightCycleArena(players, settings.get('ARENA_WIDTH'), settings.get('ARENA_HEIGHT'))
+                arena = LightCycleArena(players, settings.ARENA_WIDTH, settings.ARENA_HEIGHT)
                 result = arena.start()
                 print result
                 challenge.played = True
