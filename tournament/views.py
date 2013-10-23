@@ -23,14 +23,14 @@ def about(request):
 @login_required
 def scoreboard(request):
     bots = Bot.objects.all().order_by('-points')
-    challengues = Challengue.objects.filter(requested_by=request.user, played=False)
-    if challengues.count() > 0:
-        pending_challengues = True
+    challenges = Challenge.objects.filter(requested_by=request.user, played=False)
+    if challenges.count() > 0:
+        pending_challenges = True
     else:
-        pending_challengues = False
+        pending_challenges = False
     return render(request, 'scoreboard.html', { 'tab' : 'score',
                 'bots' : bots,
-                'pending_challengues' : pending_challengues})
+                'pending_challenges' : pending_challenges})
 
 def mybots(request):
 #    try:

@@ -22,7 +22,7 @@
             <td>{{ bot.owner }} </td>  
             <td>{{ bot.owner.score }}</td>
             <td>
-            {% if bot.owner == user or pending_challengues %}
+            {% if bot.owner == user or pending_challenges %}
             <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
             {% else %}
                 <button type="button" class="btn btn-primary btn-xs">Challenge</button>
