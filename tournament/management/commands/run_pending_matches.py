@@ -1,3 +1,4 @@
+import random
 import logging
 
 from django.conf import settings
@@ -24,7 +25,9 @@ class Command(BaseCommand):
                 logger.info('Running Challenge "%s".' % challenge)
                 player1 = Player(challenge.challenger_bot.owner.username, challenge.challenger_bot.code)
                 player2 = Player(challenge.challenged_bot.owner.username, challenge.challenged_bot.code)
-                arena = LightCycleArena((player1, player2), settings.get('ARENA_WIDTH'), settings.get('ARENA_HEIGHT'))
+                players = [player1, player2]
+                random.shuffle(players)
+                arena = LightCycleArena(players, settings.get('ARENA_WIDTH'), settings.get('ARENA_HEIGHT'))
                 result = arena.start()
                 print result
             except Exception as ex:
