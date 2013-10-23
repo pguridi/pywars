@@ -6,6 +6,9 @@
 
       <h1>Tournament</h1>
       <p>This is the general scoreboard of lightcycle.</p>
+{% if pending_challenges %}
+* Pending challenges for {{ challenged_bots }}
+{% endif%}
 <table class="table table-striped">  
         <thead>  
           <tr>  
@@ -22,11 +25,14 @@
             <td>{{ bot.owner }} </td>  
             <td>{{ bot.owner.score }}</td>
             <td>
-            {% if bot.owner == user or pending_challenges %}
-            <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
-            {% else %}
-                <button type="button" class="btn btn-primary btn-xs">Challenge</button>
+            {% if bot.owner.user != user %}
+                {% if pending_challenges %}
+                <button type="button" class="btn btn-primary btn-xs" disabled="disabled">{% if bot in challenged_bots%}Pending{% else %}Challenge{% endif %}</button>
+                {% else %}
+                    <button type="button" class="btn btn-primary btn-xs" onclick="postBot({{bot.id}}, '/challenge')">Challenge</button>
+                {% endif %}
             {% endif %}
+            
             </td>
           </tr> 
                 

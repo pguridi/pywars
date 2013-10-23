@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^about', 'tournament.views.about', name='about'),
     url(r'^save_buffer', 'tournament.views.save_buffer', name='save_buffer'),
     url(r'^publish_bot', 'tournament.views.publish_bot', name='publish_bot'),
+    url(r'^challenge', 'tournament.views.challenge', name='challenge'),
     # url(r'^djlightcycle/', include('djlightcycle.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
