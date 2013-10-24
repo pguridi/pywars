@@ -6,8 +6,11 @@ from django.db.models.signals import post_save
 DEFAULT_BOT_CODE = """import random
 class MyLightCycleBot(LightCycleBaseBot):
 
-    def get_next_step(self, arena, x, y):
-        return random.choice(['n','w','e','s'])
+    def get_next_step(self, arena, x, y, direction):
+        # arena.shape[0] is the are width
+        # arena.shape[1] is the are height
+        # arena[x,y] is our current position
+        return random.choice(['N','W','E','S'])
     """
 
 class UserProfile(models.Model):
