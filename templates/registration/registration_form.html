@@ -22,14 +22,14 @@
     {% if form.email.errors %}
         <p>{{ form.email.errors.as_text }}</p>
     {% endif %}
-    
+
     <input type="password" id="id_password1" name="password1" class="input-block-level" placeholder="Password">
     <input type="password" id="id_password2" name="password2" class="input-block-level" placeholder="Password">
     {% if form.id_password.errors %}
         <p>{{ form.id_password.errors.as_text }}</p>
     {% endif %}
     <input type="hidden" name="next" value="/" />
-    <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+    <button class="btn btn-large btn-primary" type="submit">Sign up</button>
   </form>
 </div> <!-- /container -->
 {% endblock %}
