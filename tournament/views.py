@@ -95,6 +95,7 @@ def publish_bot(request):
         bot.code = new_bot_code
         bot.save()
         user_prof.current_bot = bot
+        user_prof.my_buffer = new_bot_code
         user_prof.save()
     return HttpResponse(json.dumps({'success' : True}),
         mimetype='application/json')
