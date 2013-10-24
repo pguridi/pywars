@@ -118,7 +118,7 @@
       replay: [13, 32]
     };
 
-    var delay = 10;
+    var delay = 100;
     var maxD = 10000;
     var minD = 0;
 

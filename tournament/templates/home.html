@@ -25,19 +25,29 @@
     }    
 $( document ).ready(function() {
     data = {}
-    jQuery.ajax({
-          url: '/main-match',
-          dataType: 'json',
-          success: function(data, status){
-               for (var key in data) {
-                    if (data.hasOwnProperty(key)) {
-                    //console.log(key + " -> " + data[key]);
-                    match_id = key;
-                    $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ')>' + data[key].player1 + ' vs ' + data[key].player2 + '</a></br>');
-                  }
-                }
-          },
-    });
+    function load_matches(){
+        $('#playlist_div').empty();
+        jQuery.ajax({
+              url: '/main-match',
+              dataType: 'json',
+              success: function(data, status){
+                   var first_match = false;
+                   for (var key in data) {
+                        if (data.hasOwnProperty(key)) {
+                        //console.log(key + " -> " + data[key]);
+                        match_id = key;
+                        $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ')>' + data[key].player1 + ' vs ' + data[key].player2 + '</a></br>');
+                      }
+                      if(!first_match){
+                        first_match = match_id;
+                        }
+                    }
+                    request_match(first_match); 
+              },
+        });
+    }
+    load_matches();
+    setInterval(load_matches, 10000)
     
     //[{"pk": 1, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 2, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 3, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 3, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 4, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 5, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 3, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}]
     
