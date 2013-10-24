@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 import json
 
 from tournament.tools import *
@@ -144,9 +145,27 @@ def challenge(request):
 
 @login_required
 def main_match(request):
+    list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:10];
+    players = {}
+    for match in list_match:
+        players[match.id] = [match.challenger_bot.owner.user.username, match.challenged_bot.owner.user.username] ;
+    data = json.dumps(players)
+    
+    return HttpResponse(data, mimetype='application/json')
+
+@login_required
+def get_match(request, match_id):
+    match = get_object_or_404(Challenge, id=match_id)
+    json_match = json.dumps(match.result);
+    return HttpResponse(json_match, mimetype='application/json')
+    
+
+@login_required
+def random_test_match(request):
     player1 = Player('Player 1', LightCycleRandomBot)
     player2 = Player('Player 2', LightCycleRandomBot)
     width = 50
     height = 50
     match = LightCycleArena((player1, player2), width, height).start()
     return HttpResponse( json.dumps(match) , mimetype='application/javascript')
+    

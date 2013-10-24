@@ -5,22 +5,42 @@
 
 {% block js %}
 <script src="{% static '/static/js/tron-render.js' %}"></script>
++
 
 <script>
+  function request_match(match_id){
+        jQuery.ajax({
+              url: '/get-match/' + match_id,
+              dataType: 'json',
+              success: function(data, status){
+                    data = $.parseJSON(data);
+                    $('#p1_img').css("background", color_player1);
+                    $('#p2_img').css("background", color_player2);
+                    //players:
+                    $('#player1').text(data.players[0]);
+                    $('#player2').text(data.players[1]);
+                    game_start(data,'the-game');
+              },
+        });
+    }    
 $( document ).ready(function() {
     data = {}
     jQuery.ajax({
           url: '/main-match',
           dataType: 'json',
           success: function(data, status){
-                $('#p1_img').css("background", color_player1);
-                $('#p2_img').css("background", color_player2);
-                //players:
-                $('#player1').text(data.players[0]);
-                $('#player2').text(data.players[1]);
-                game_start(data,'the-game');
+               for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                    //console.log(key + " -> " + data[key]);
+                    match_id = key;
+                    $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ')>' + data[key][0] + ' vs ' + data[key][1] + '</a></br>');
+                  }
+                }
           },
     });
+    
+    //[{"pk": 1, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 2, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 3, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 3, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 4, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 5, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 3, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}]
+    
     $('#speed_set_label').text($('#speed_set').val()/10);
     $('#speed_set').on('change', function () {
         $('#speed_set_label').text($(this).val()/10);
@@ -57,6 +77,11 @@ $( document ).ready(function() {
             Your browser does not support HTML5 Canvas.
         </canvas>
         </div>
+        
+         <div id="playlist_div" class="float" style="border: 1px solid red;">
+            
+         </div>
+         
         <div id="action_buttons">
             <label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500">
             <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none;"><span class="glyphicon glyphicon-play"></span>Replay</a>

@@ -23,8 +23,9 @@ urlpatterns = patterns('',
     url(r'^challenge', 'tournament.views.challenge', name='challenge'),
     #url(r'^update_bot', 'tournament.views.update_bot', name='upload'),
     url(r'^main-match', 'tournament.views.main_match', name='main_match'),
-    # url(r'^djlightcycle/', include('djlightcycle.foo.urls')),
-
+    url(r'^test-match', 'tournament.views.random_test_match', name='test_match'),
+    url(r'^get-match/(\d+)', 'tournament.views.get_match', name='get_match'),
+    
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
