@@ -36,6 +36,10 @@
                     {% endif %}
                     </button>
                 {% else %}
+                    {% if not user_profile.current_bot %}
+                        <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
+                    {% else %}
+                    
                     {% if user_prof.current_bot in challenged_bots %}
                         <button type="button" class="btn btn-success btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Played!</button>
                     {% else %}
@@ -45,6 +49,7 @@
                             <button type="button" class="btn btn-primary btn-xs" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Challenge
                         {% endif %}
                     {% endif %}
+{% endif %}
                 {% endif %}
             {% endif %}
             

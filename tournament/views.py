@@ -42,6 +42,7 @@ def scoreboard(request):
 
     return render(request, 'scoreboard.html', { 'tab' : 'score',
                 'users' : users,
+                'user_profile' : user_prof,
                 'challenged_bots' : challenged_bots,
                 'pending_challenged_bots' : pending_challenged_bots})
 
@@ -110,6 +111,9 @@ def challenge(request):
 
         # get the user current bot
         user_prof = UserProfile.objects.get(user=request.user)
+        if not user_prof.current_bot:
+            print "Can not challenge if does not have a bot!"
+            return HttpResponse("Error")
         if challenge_bot.owner == user_prof:
             print "[CHEATING!] - wrong challenge bot!"
             return HttpResponse("Error")
