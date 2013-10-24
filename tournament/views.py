@@ -158,15 +158,13 @@ def main_match(request):
                             'player2': match.challenged_bot.owner.user.username,
                         };
     data = json.dumps(res)
-    
+
     return HttpResponse(data, mimetype='application/json')
 
 @login_required
 def get_match(request, match_id):
     match = get_object_or_404(Challenge, id=match_id)
-    json_match = json.dumps(match.result);
-    return HttpResponse(json_match, mimetype='application/json')
-    
+    return HttpResponse(match.result, mimetype='application/json')
 
 @login_required
 def random_test_match(request):
