@@ -2,8 +2,10 @@
 import os
 PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+DEBUG = False
+SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 60 * 60 * 24 # 1 day
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -158,16 +160,47 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'rootFileHandler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'simpleFormatter',
+            'filename': os.path.join(PROJECT_PATH, '../logs/lightcycle.log'),
+            'maxBytes': 1024*1024*10,
+            'backupCount': 10,
+        },
     },
     'loggers': {
+        '': { # THE ROOT LOGGER
+                'handlers': ['rootFileHandler'],
+                'level': 'DEBUG',
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
+        'django.db.backends': {
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+    'formatters': {
+        'simpleFormatter': {
+                'format': '%(asctime)s %(name)s %(levelname)s: %(message)s'
+        }
     }
 }
 
 ARENA_WIDTH = 50
 ARENA_HEIGHT = 50
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
+TEMPLATE_DEBUG = DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
