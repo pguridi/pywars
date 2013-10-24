@@ -42,7 +42,7 @@ class Command(BaseCommand):
                 challenger_score, challenged_score = calc_score(
                                     challenge.challenger_bot.owner.user,
                                     challenge.challenged_bot.owner.user,
-                                    challenge.winner_bot.owner.user)
+                                     challenge.winner_bot and challenge.winner_bot.owner.user)
                 challenge.challenger_bot.owner.score += challenger_score
                 challenge.challenged_bot.owner.score += challenged_score
                 challenge.challenger_bot.owner.save()
