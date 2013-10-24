@@ -132,9 +132,8 @@ def challenge(request):
             return HttpResponse("Can not challenge more than one bot at a time")
 
         # Check if these bots haven't already played.
-        played_challs = Challenge.objects.filter(requested_by=user_prof,
-            challenger_bot=user_prof.current_bot,challenged_bot=challenge_bot,
-            played=True)
+        played_challs = Challenge.objects.filter(challenger_bot=user_prof.current_bot,
+            challenged_bot=challenge_bot, played=True)
 
         if played_challs.count() > 0:
             # has already played against this bot, must upload a new one
