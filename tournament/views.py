@@ -29,7 +29,8 @@ def scoreboard(request):
     user_prof = UserProfile.objects.get(user=request.user)
     #bots = Bot.objects.all().order_by('-points')
     users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
-    challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
+    challenges = Challenge.objects.filter(requested_by=user_prof, 
+    challenger_bot=user_prof.current_bot, played=False)
 #    if challenges.count() > 0:
 #        pending_challenges = True
 #    else:
