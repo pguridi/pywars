@@ -30,6 +30,7 @@ class Command(BaseCommand):
                 player2 = Player(name=challenge.challenged_bot.owner.user.username, bot=challenge.challenged_bot.code, bot_instance=challenge.challenged_bot)
                 players = [player1, player2]
                 random.shuffle(players)
+                logger.info('Challenge "%s": "%s" vs "%s"' % (challenge.pk, players[0].username, players[1].username))
                 arena = LightCycleArena(players, settings.ARENA_WIDTH, settings.ARENA_HEIGHT)
                 result = arena.start()
                 challenge.played = True
@@ -47,9 +48,11 @@ class Command(BaseCommand):
                 challenge.challenged_bot.owner.score += challenged_score
                 challenge.challenger_bot.owner.save()
                 challenge.challenged_bot.owner.save()
+                logger.info('Challenge "%s" winner: %s' % (challenge.pk, challenge.winner_bot))
 
             except Exception as ex:
                 msg = 'Error running Challenge "%s" ("%s")' % (challenge.pk, ex)
                 logger.error(msg)
                 raise CommandError(msg)
         print 'Finished running %d matches.' % count
+        logger.info('Finished running %d matches.' % count)
