@@ -2,7 +2,10 @@
 {% load i18n %}
 
 {% block content %}
-<div class="container main">
+<div class="container main scoreboard">
   <p>{% trans "You are now registered. Please Contact Onapsis Staff to activate your account." %}</p>
+  <p style="text-align:center;">{% trans "Welcome to PyTron" %}</p>
+
+  <a href="{% url 'index' %}"><p style="text-align:center; color: #08c;">Continue</p></a>
 </div>
 {% endblock %}
