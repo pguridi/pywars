@@ -13,7 +13,6 @@
               url: '/get-match/' + match_id,
               dataType: 'json',
               success: function(data, status){
-                    data = $.parseJSON(data);
                     $('#p1_img').css("background", color_player1);
                     $('#p2_img').css("background", color_player2);
                     //players:
