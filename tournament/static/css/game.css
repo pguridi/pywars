@@ -34,15 +34,7 @@ color:white;
 color:white;
 }
 
-#the-game{
-    display: block;
-    margin: 0 auto;
-    height: 500px;
-    width: 500px;
-}
-#p1_img,#p2_img{
-background: grey;
-}
+
 .high_score {
     font-size:2em;
     text-shadow:0 0 .5em red;
@@ -101,11 +93,34 @@ margin-bottom:30px;
 	margin-left: auto ;
 	margin-right: auto ;
 }
+
+#the-game{
+    display: block;
+    margin: 0 auto;
+    height: 500px;
+    width: 500px;
+    float: left;
+    margin-left: 24%
+    
+}
+#p1_img,#p2_img{
+background: grey;
+}
+
 #header{
-	height: 80px;
-	width: 600px ;
+	height: 140px;
+	width: 350px ;
+    float:none;
+    margin-top: 10px;
 	margin-left: auto ;
 	margin-right: auto ;
+}
+
+#list_div{
+/*border: 1px solid red; */
+width: 200px;
+margin-left: 7px;
+margin-right: 0;
 }
 
 /*login*/

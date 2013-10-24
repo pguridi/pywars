@@ -147,10 +147,13 @@ def challenge(request):
 @login_required
 def main_match(request):
     list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:10];
-    players = {}
+    res = {}
     for match in list_match:
-        players[match.id] = [match.challenger_bot.owner.user.username, match.challenged_bot.owner.user.username] ;
-    data = json.dumps(players)
+        res[match.id] = {   
+                            'player1': match.challenger_bot.owner.user.username, 
+                            'player2': match.challenged_bot.owner.user.username,
+                        };
+    data = json.dumps(res)
     
     return HttpResponse(data, mimetype='application/json')
 

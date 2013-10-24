@@ -33,7 +33,7 @@ $( document ).ready(function() {
                     if (data.hasOwnProperty(key)) {
                     //console.log(key + " -> " + data[key]);
                     match_id = key;
-                    $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ')>' + data[key][0] + ' vs ' + data[key][1] + '</a></br>');
+                    $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ')>' + data[key].player1 + ' vs ' + data[key].player2 + '</a></br>');
                   }
                 }
           },
@@ -41,10 +41,10 @@ $( document ).ready(function() {
     
     //[{"pk": 1, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 2, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 3, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 3, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 4, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 2, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}, {"pk": 5, "model": "tournament.challenge", "fields": {"played": true, "challenged_bot": 2, "winner_bot": 3, "creation_date": "2013-10-23T18:02:58.678Z", "requested_by": 1, "result": "", "challenger_bot": 3}}]
     
-    $('#speed_set_label').text($('#speed_set').val()/10);
-    $('#speed_set').on('change', function () {
-        $('#speed_set_label').text($(this).val()/10);
-    });
+    //$('#speed_set_label').text($('#speed_set').val()/10);
+    //$('#speed_set').on('change', function () {
+      //  $('#speed_set_label').text($(this).val()/10);
+    //});
 });
 </script>
 {% endblock %}
@@ -57,7 +57,7 @@ $( document ).ready(function() {
     <div class="container main">
     
         <div id="header">
-            <h1>Onapsis LightCycle Challenge</h1>
+            <img src="./static/img/pytron_logo.png"/><h1>Onapsis Challenge</h1>
         </div>
         <div id="players_divs">
             <div class="center">
@@ -78,12 +78,18 @@ $( document ).ready(function() {
         </canvas>
         </div>
         
-         <div id="playlist_div" class="float" style="border: 1px solid red;">
-            
-         </div>
+        <div id="list_div" class="float pull-left" style="">
+            <h3>Play List</h3>
+            <div id="playlist_div" >
+
+            </div>
+        </div>
          
         <div id="action_buttons">
+            
+<!--
             <label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500">
+-->
             <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none;"><span class="glyphicon glyphicon-play"></span>Replay</a>
         </div>
 
