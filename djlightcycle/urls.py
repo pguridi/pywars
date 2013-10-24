@@ -12,7 +12,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^accounts/register', RegistrationViewUniqueEmail.as_view(),
+    url(r'^accounts/register$', RegistrationViewUniqueEmail.as_view(),
                     name='registration_register'),
     url(r'^$', 'tournament.views.index', name='index'),
     url(r'^scoreboard', 'tournament.views.scoreboard', name='scoreboard'),
