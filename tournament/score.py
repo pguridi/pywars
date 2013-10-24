@@ -4,4 +4,4 @@ def calc_score(challenger, challenged, winner):
     elif challenged == winner:
         return -1, 1
     else:  # A tie!
-        return -1, 0
+        return 0, 0
