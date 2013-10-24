@@ -25,7 +25,8 @@ urlpatterns = patterns('',
     url(r'^main-match', 'tournament.views.main_match', name='main_match'),
     url(r'^test-match', 'tournament.views.random_test_match', name='test_match'),
     url(r'^get-match/(\d+)', 'tournament.views.get_match', name='get_match'),
-    
+    url(r'^bot_code/(\d+)', 'tournament.views.bot_code', name='bot_code'),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

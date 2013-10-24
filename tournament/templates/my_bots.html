@@ -24,6 +24,17 @@
             editor.clearSelection();
             my_buffer = null;
         }
+        $( document ).ready(function() {
+            $( ".select_bot" ).click(function() {
+              bot_pk = $(this).attr('id');
+              $.ajax({
+                url: "/bot_code/" + bot_pk,
+                complete: function (data, status) {
+                  showBot(data.responseText);
+                }
+              });
+            });
+        });
     </script>
 
     <div class="row-fluid">
@@ -31,9 +42,9 @@
           <!--Sidebar content-->
             <p>
             <h3>My Bots</h3>
-                <p> <a href="#" onclick="showBot(my_buffer); restoreBuffer();">New Bot </a></p>   
+                <p> <a href="#" onclick="showBot(my_buffer); restoreBuffer();">New Bot </a></p>
             {% for bot in my_bots %}
-                <p> <a href="#" onclick="showBot('{{ bot.js_code }}')">{{bot.creation_date}} {% if bot.is_current_bot %} [current] {% endif %}</a></p>
+                <p> <a id="{{bot.pk}}" class="select_bot" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [current] {% endif %}</a></p>
             {% endfor %}
         </div>
         <div class="span10">

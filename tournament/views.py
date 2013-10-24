@@ -168,4 +168,8 @@ def random_test_match(request):
     height = 50
     match = LightCycleArena((player1, player2), width, height).start()
     return HttpResponse( json.dumps(match) , mimetype='application/javascript')
-    
+
+@login_required
+def bot_code(request, bot_pk):
+    bot_code = Bot.objects.get(pk=bot_pk, owner=request.user).code
+    return HttpResponse(bot_code)
