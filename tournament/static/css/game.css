@@ -116,3 +116,9 @@ margin-bottom:30px;
 .form-signin{}
 .form-signin{}
 
+.scoreboard {
+  background-image:url('/static/img/pytron.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 600px;
+}
