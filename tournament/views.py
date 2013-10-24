@@ -150,7 +150,7 @@ def challenge(request):
 
 @login_required
 def main_match(request):
-    list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:10];
+    list_match = Challenge.objects.filter(played=True).order_by('creation_date')[:10];
     res = {}
     for match in list_match:
         res[match.id] = {   
