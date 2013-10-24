@@ -3,6 +3,7 @@ import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 
 from tournament.models import Challenge
 from lightcycle.arena import LightCycleArena
@@ -16,28 +17,39 @@ class Command(BaseCommand):
     help = "Run queued matches."
 
     def handle(self, *args, **options):
+
+      with transaction.commit_on_success():
         if len(args) > 0:
             raise CommandError('Too many arguments.')
 
         count = 0
-        for count, challenge in enumerate(Challenge.objects.filter(played=False).order_by('creation_date')):
+        for count, challenge in enumerate(Challenge.objects.filter(played=False).order_by('creation_date'), 1):
             try:
-                logger.info('Running Challenge "%s".' % challenge)
-                player1 = Player(challenge.challenger_bot.owner.user, challenge.challenger_bot.code)
-                player2 = Player(challenge.challenged_bot.owner.user, challenge.challenged_bot.code)
+                logger.info('Running Challenge "%s".' % challenge.pk)
+                player1 = Player(name=challenge.challenger_bot.owner.user.username, bot=challenge.challenger_bot.code, bot_instance=challenge.challenger_bot)
+                player2 = Player(name=challenge.challenged_bot.owner.user.username, bot=challenge.challenged_bot.code, bot_instance=challenge.challenged_bot)
                 players = [player1, player2]
                 random.shuffle(players)
                 arena = LightCycleArena(players, settings.ARENA_WIDTH, settings.ARENA_HEIGHT)
                 result = arena.start()
-                print result
                 challenge.played = True
-                challenge.elapsed_time = result['elapsed_time']
-                if 'winner' in result:
-                    challenge.winner_bot = [player.bot for player in players if player.name == result['winner']][0]
-                # TODO assign scores!
+                if 'winner' in result['result']:
+                    challenge.winner_bot = [player.bot_instance for player in players if player.username == result['result']['winner']][0]
+                challenge.save()
+
+                # Assign scores
+                from tournament.score import calc_score
+                challenger_score, challenged_score = calc_score(
+                                    challenge.challenger_bot.owner.user,
+                                    challenge.challenged_bot.owner.user,
+                                    challenge.winner_bot.owner.user)
+                challenge.challenger_bot.owner.score += challenger_score
+                challenge.challenged_bot.owner.score += challenged_score
+                challenge.challenger_bot.owner.save()
+                challenge.challenged_bot.owner.save()
 
             except Exception as ex:
-                msg = 'Error running Challenge "%s" ("%s")' % (challenge, ex)
+                msg = 'Error running Challenge "%s" ("%s")' % (challenge.pk, ex)
                 logger.error(msg)
                 raise CommandError(msg)
         print 'Finished running %d matches.' % count
