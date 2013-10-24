@@ -153,9 +153,10 @@ def main_match(request):
     list_match = Challenge.objects.filter(played=True).order_by('creation_date')[:10];
     res = {}
     for match in list_match:
-        res[match.id] = {   
-                            'player1': match.challenger_bot.owner.user.username, 
+        res[match.id] = {
+                            'player1': match.challenger_bot.owner.user.username,
                             'player2': match.challenged_bot.owner.user.username,
+                            'title': ' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()])
                         };
     data = json.dumps(res)
 

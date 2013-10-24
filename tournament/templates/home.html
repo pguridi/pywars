@@ -35,7 +35,7 @@ $( document ).ready(function() {
                         if (data.hasOwnProperty(key)) {
                         //console.log(key + " -> " + data[key]);
                         match_id = key;
-                        $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ')>' + data[key].player1 + ' vs ' + data[key].player2 + '</a></br>');
+                        $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ') title="' + data[key].title + '">' + data[key].player1 + ' vs ' + data[key].player2 + '</a></br>');
                       }
                       if(!first_match){
                         first_match = match_id;
