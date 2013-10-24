@@ -3,11 +3,17 @@ from django.contrib.auth.models import User
 
 from django.db.models.signals import post_save
 
+DEFAULT_BOT_CODE = """import random
+class MyLightCycleBot(LightCycleBaseBot):
+
+    def get_next_step(self, arena, x, y):
+        return random.choice(['n','w','e','s'])
+    """
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, primary_key=True, related_name="profile")
     score = models.IntegerField('Tournament score', default=0)
-    my_buffer = models.TextField(default='', blank=True, null=True)
+    my_buffer = models.TextField(default=DEFAULT_BOT_CODE, blank=True, null=True)
     current_bot = models.ForeignKey('Bot', related_name="current_profile", blank=True, null=True)
 
     def __str__(self):

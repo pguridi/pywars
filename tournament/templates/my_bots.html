@@ -11,8 +11,6 @@
             if (my_buffer==null) {
                 my_buffer = editor.getValue();
             }
-            $('#publish_button_id').prop('disabled', 'disabled');
-            $('#save_button_id').prop('disabled', 'disabled');
             editor.setValue(data);
             editor.clearSelection();
         }
@@ -42,7 +40,7 @@
           <!--Sidebar content-->
             <p>
             <h3>My Bots</h3>
-                <p> <a href="#" onclick="showBot(my_buffer); restoreBuffer();">New Bot </a></p>
+                <p> <a id="0" href="#" class="select_bot">New Bot </a></p>
             {% for bot in my_bots %}
                 <p> <a id="{{bot.pk}}" class="select_bot" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [current] {% endif %}</a></p>
             {% endfor %}

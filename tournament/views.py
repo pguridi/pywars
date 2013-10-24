@@ -175,5 +175,9 @@ def random_test_match(request):
 
 @login_required
 def bot_code(request, bot_pk):
+    if bot_pk == "0":
+        user_prof = UserProfile.objects.get(user=request.user)
+        return HttpResponse(user_prof.my_buffer)
+
     bot_code = Bot.objects.get(pk=bot_pk, owner=request.user).code
     return HttpResponse(bot_code)
