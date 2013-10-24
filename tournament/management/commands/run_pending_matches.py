@@ -34,6 +34,7 @@ class Command(BaseCommand):
                 arena = LightCycleArena(players, settings.ARENA_WIDTH, settings.ARENA_HEIGHT)
                 result = arena.start()
                 challenge.played = True
+                challenge.result = result
                 if 'winner' in result['result']:
                     challenge.winner_bot = [player.bot_instance for player in players if player.username == result['result']['winner']][0]
                 challenge.save()
