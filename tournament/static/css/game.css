@@ -26,14 +26,16 @@ body,body .container{
 }
 
 .about h4{
-    font-size: 25px;
+    font-size: 1.2em;
     text-decoration: underline;
+}
+.about p, .about pre {
+    font-size: 1em;
 }
 .about pre{
     background-color: transparent;
     color:white;
     font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
-    font-size: 20px;
 }
 
 .table-striped tbody>tr:nth-child(odd)>td, .table-striped tbody>tr:nth-child(odd)>th {
