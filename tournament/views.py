@@ -154,7 +154,8 @@ def main_match(request):
     res = [{'id': match.id,
             'player1': match.challenger_bot.owner.user.username,
             'player2': match.challenged_bot.owner.user.username,
-            'title': ' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()])
+            'title': ' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()]),
+            'duration': match.get_duration_match()
            } for match in list_match]
     data = json.dumps(res)
     return HttpResponse(data, mimetype='application/json')

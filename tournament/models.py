@@ -1,3 +1,4 @@
+import json
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -68,6 +69,10 @@ class Challenge(models.Model):
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
 
+    def get_duration_match(self):
+        res = "{0:.2f}".format(json.loads(self.result)['elapsed']) + 's'
+        return res
+        
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

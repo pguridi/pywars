@@ -31,7 +31,7 @@
                        //var first_match = false;
                        $(data).each(function(index, match) {
                             //console.log(key + " -> " + data[key]);
-                            $('#playlist_div').append('<a href="#" onclick=request_match(' + match.id + ') title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + '</a></br>');
+                            $('#playlist_div').append('<a href="#" onclick=request_match(' + match.id + ') title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration  + ')</a></br>');
                           /*if(!first_match){
                             first_match = match_id;
                           }*/
