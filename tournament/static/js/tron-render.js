@@ -1,43 +1,38 @@
-/*!
-* Bootstrap.js by @fat & @mdo
-* Copyright 2013 Twitter, Inc.
-* http://www.apache.org/licenses/LICENSE-2.0.txt
-*/
 //set cancas size:
-     function buildGrids(gridPixelSize, color, gap){
+function buildGrids(gridPixelSize, color, gap){
+    context.lineWidth = gap;
+    context.strokeStyle = color;
+    // horizontal grid lines
+    for(var i = 0; i <= canvas.height; i = i + gridPixelSize){
+        context.beginPath();
+        context.moveTo(0, i);
+        context.lineTo(canvas.width, i);
         context.lineWidth = gap;
-        context.strokeStyle = color;
-        // horizontal grid lines
-        for(var i = 0; i <= canvas.height; i = i + gridPixelSize){
-            context.beginPath();
-            context.moveTo(0, i);
-            context.lineTo(canvas.width, i);
-            context.lineWidth = gap;
-            context.closePath();
-            context.stroke();
-        }     
-        // vertical grid lines
-        for(var j = 0; j <= canvas.width; j = j + gridPixelSize){
-            context.beginPath();
-            context.moveTo(j, 0);
-            context.lineTo(j, canvas.height);
-            context.lineWidth = gap;
-            context.closePath();
-            context.stroke();
-        }
-    } 	
-   
+        context.closePath();
+        context.stroke();
+    }
+    // vertical grid lines
+    for(var j = 0; j <= canvas.width; j = j + gridPixelSize){
+        context.beginPath();
+        context.moveTo(j, 0);
+        context.lineTo(j, canvas.height);
+        context.lineWidth = gap;
+        context.closePath();
+        context.stroke();
+    }
+}
 
-    //INITIAL DATA
-    canvas = document.getElementById("the-game");
-    context = $('#the-game')[0].getContext("2d");
-    //colors
-    color_player1 = "orange";
-    color_player2 = "lightblue";
-    grid_line_color = "lightgrey"
-    //draw grid
-    
-    game_start = function on(data ,canvas_id) {
+
+//INITIAL DATA
+canvas = document.getElementById("the-game");
+context = $('#the-game')[0].getContext("2d");
+//colors
+color_player1 = "orange";
+color_player2 = "cyan";
+grid_line_color = "lightgrey";
+//draw grid
+
+game_start = function on(data ,canvas_id) {
     
     canvas_id = '#' + canvas_id;
     $(canvas_id).attr('width', (data.width - 1) * 10);
@@ -45,16 +40,19 @@
     buildGrids(10,  grid_line_color , 0.2 );
     game = true;
     
-    
     player1 = {
         name: data.players[0],
         color: color_player1,
-        position: [ p1_x, p1_y]
+        color_cycle: "white",
+        position: [ p1_x, p1_y],
+        prev_pos: [ undefined, undefined],
     };
     player2 = {
         name: data.players[1],
         color: color_player2,
-        position: [ p2_x, p2_y]
+        color_cycle: "white",
+        position: [ p2_x, p2_y],
+        prev_pos: [ undefined, undefined],
     };
     
     var p1_x = data.moves[0].x *10;
@@ -72,14 +70,24 @@
         x = x *10;
         y = y *10;
         context.beginPath();
-        context.moveTo( player.position[0], player.position[1] );
+        context.moveTo(player.position[0], player.position[1] );
         context.lineTo(x , y);
-        context.lineWidth = 1;
-        player.position = [x, y];
+        context.lineWidth = 3;
         context.closePath();
-        // set line color
-        context.strokeStyle = player.color ;
+        context.strokeStyle = player.color_cycle;
         context.stroke();
+
+        context.beginPath()
+        context.moveTo(player.prev_pos[0], player.prev_pos[1])
+        context.lineTo(player.position[0], player.position[1])
+        context.lineWidth = 3;
+        context.closePath();
+        context.strokeStyle = player.color;
+        context.stroke();
+
+        player.prev_pos = [player.position[0], player.position[1]]
+        player.position = [x, y];
+
         //context.fillStyle = 'green' ;
         //context.fill();
     }
