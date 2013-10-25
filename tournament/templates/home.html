@@ -5,7 +5,6 @@
 {% block js %}
 <script src="{% static '/static/js/tron-render.js' %}"></script>
 <script>
-    var sarasa;
     function request_match(match_id){
         jQuery.ajax({
               url: '/get-match/' + match_id,
@@ -27,7 +26,6 @@
                   url: '/main-match',
                   dataType: 'json',
                   success: function(data, status){
-                       sarasa = data;
                        //var first_match = false;
                        $(data).each(function(index, match) {
                             //console.log(key + " -> " + data[key]);
