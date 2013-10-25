@@ -134,3 +134,8 @@ margin-left: 1em;
   background-repeat: no-repeat;
   min-height: 600px;
 }
+
+/* My Bots */
+.select_bot {
+  font-size: .7em;
+}
