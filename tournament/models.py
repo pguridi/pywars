@@ -27,8 +27,8 @@ class UserProfile(models.Model):
     def last_match(self, other_prof):
         try:
             return Challenge.objects.filter(
-                (Q(challenger_bot=self.current_bot) | Q(challenged_bot=other_prof.current_bot)) |
-                (Q(challenged_bot=self.current_bot) | Q(challenger_bot=other_prof.current_bot))
+                (Q(challenger_bot=self.current_bot) & Q(challenged_bot=other_prof.current_bot)) |
+                (Q(challenged_bot=self.current_bot) & Q(challenger_bot=other_prof.current_bot))
             ).latest('creation_date')
         except ObjectDoesNotExist:
             return None
