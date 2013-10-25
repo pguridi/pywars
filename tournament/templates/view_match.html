@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block js %}
+<script src="{% static '/static/js/tron-render.js' %}"></script>
+<script>
+    var sarasa;
+    function request_match(match_id){
+        jQuery.ajax({
+              url: '/get-match/' + match_id,
+              dataType: 'json',
+              success: function(data, status){
+                    $('#p1_img').css("background", color_player1);
+                    $('#p2_img').css("background", color_player2);
+                    //players:
+                    $('#player1').text(data.players[0]);
+                    $('#player2').text(data.players[1]);
+                    game_start(data,'the-game');
+              },
+        });
+    }
+    $(document).ready(function() {
+      request_match({{match_id}});
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+    <div class="container main">
+        <div id="header">
+            <img src="/static/img/pytron_logo.png"/><h1>Onapsis Challenge</h1>
+        </div>
+        <div id="players_divs">
+                <img id="p1_img" src="/static/media/lightcycle-start-transparent.png" />
+                <span id="player1"></span>
+                <span id="vs_text"> vs</span>
+                <span id="player2"></span>
+                <img id="p2_img" src="/static/media/lightcycle-start-transparent-2.png" />
+        </div>
+        <div>
+            <canvas id="the-game" width="100" height="100" style="background-color:rgb(8, 14, 12);">
+                Your browser does not support HTML5 Canvas.
+            </canvas>
+        </div>
+
+        <div id="list_div" class="float pull-left" style="">
+            <h3>Play List</h3>
+            <div id="playlist_div"></div>
+        </div>
+
+        <!--div id="action_buttons">
+            <label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500">
+            <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none; margin-top:10px;"><span class="glyphicon glyphicon-play"></span>Replay</a>
+        </div-->
+    </div> <!-- /container -->
+{% endblock %}

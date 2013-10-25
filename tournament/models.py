@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
 DEFAULT_BOT_CODE = """import random
@@ -21,6 +22,16 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return '%s' % (self.user)
+
+    def last_match(self, other_prof):
+        try:
+            return Challenge.objects.filter(
+                (Q(challenger_bot=self.current_bot) | Q(challenged_bot=other_prof.current_bot)) |
+                (Q(challenged_bot=self.current_bot) | Q(challenger_bot=other_prof.current_bot))
+            ).latest('creation_date')
+        except ObjectDoesNotExist:
+            return None
+
 
 
 class Bot(models.Model):

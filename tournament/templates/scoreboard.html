@@ -10,20 +10,21 @@
 * Pending challenges
 {% endif%}
 
-<table id="score_table" class="table table-striped">  
-        <thead>  
-          <tr>  
-            <th>Position</th>  
-            <th>Username</th>  
+<table id="score_table" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Username</th>
             <th>Score</th>
             <th>Action</th>
-          </tr>  
-        </thead>  
+            <th>Last match</th>
+          </tr>
+        </thead>
         <tbody>
             {% for user_prof in users %}
-            <tr>  
-            <td>{{forloop.counter}}</td>  
-            <td>{{ user_prof }} </td>  
+            <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{ user_prof }} </td>
             <td>{{ user_prof.score }}</td>
             <td>
             {% if user_prof.user != user %}
@@ -39,7 +40,7 @@
                     {% if not user_profile.current_bot %}
                         <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
                     {% else %}
-                    
+
                     {% if user_prof.current_bot in challenged_bots %}
                         <button type="button" class="btn btn-success btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Played!</button>
                     {% else %}
@@ -52,12 +53,15 @@
 {% endif %}
                 {% endif %}
             {% endif %}
-            
+
             </td>
-          </tr> 
-                
+            <td>
+              <a class="btn btn-primary btn-xs" href="{% url 'view_match' other_profile_pk=user_prof.pk %}">View </a>
+            </td>
+          </tr>
+
             {% endfor %}
-        </tbody>  
+        </tbody>
       </table>
     </div> <!-- /container -->
 

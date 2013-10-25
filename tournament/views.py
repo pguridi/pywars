@@ -181,3 +181,11 @@ def bot_code(request, bot_pk):
 
     bot_code = Bot.objects.get(pk=bot_pk, owner=request.user).code
     return HttpResponse(bot_code)
+
+@login_required
+def view_match(request, other_profile_pk):
+    other_prof = UserProfile.objects.get(pk=other_profile_pk)
+    match_id = request.user.profile.all()[0].last_match(other_prof).pk
+    print match_id
+    return render(request, 'view_match.html',
+        {'match_id' : match_id})
