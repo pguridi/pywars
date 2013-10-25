@@ -15,9 +15,10 @@ body,body .container{
     font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
     background-color: black;
     font-size: 1em;
-    text-align: center;
 }
-
+.center {
+    text-align:center;
+}
 .main h1,.main h2,.main h3,.main p,.main span,.main  div, .main h4{
     color:white;
 }
