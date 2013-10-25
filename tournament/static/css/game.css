@@ -129,6 +129,10 @@ background: grey;
 margin-left: 1em;
 }
 
+#playlist_div {
+    min-height:20em;
+}
+
 /*login*/
 .form-signin .form-signin-heading, .form-signin .checkbox{
     color:black;

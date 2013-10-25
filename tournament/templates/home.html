@@ -21,12 +21,12 @@
     }    
     $(document).ready(function() {
         function load_matches(){
-            $('#playlist_div').empty();
             jQuery.ajax({
                   url: '/main-match',
                   dataType: 'json',
                   success: function(data, status){
                        //var first_match = false;
+                       $('#playlist_div').empty();
                        $(data).each(function(index, match) {
                             //console.log(key + " -> " + data[key]);
                             $('#playlist_div').append('<a href="#" onclick=request_match(' + match.id + ') title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration  + ')</a></br>');
