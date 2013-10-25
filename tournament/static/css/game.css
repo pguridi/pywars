@@ -17,12 +17,23 @@ body,body .container{
     font-size: 1em;
 }
 
-.main h1,.main h2,.main h3,.main p,.main span,.main  div{
+.main h1,.main h2,.main h3,.main p,.main span,.main  div, .main h4{
     color:white;
 }
 
 .main p {
   font-size: 24px;
+}
+
+.about h4{
+    font-size: 25px;
+    text-decoration: underline;
+}
+.about pre{
+    background-color: transparent;
+    color:white;
+    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
+    font-size: 20px;
 }
 
 .table-striped tbody>tr:nth-child(odd)>td, .table-striped tbody>tr:nth-child(odd)>th {
@@ -33,7 +44,6 @@ color:white;
 #score_table td,#score_table th{
 color:white;
 }
-
 
 .high_score {
     font-size:2em;
@@ -123,10 +133,7 @@ margin-left: 1em;
 /*login*/
 .form-signin .form-signin-heading, .form-signin .checkbox{
     color:black;
-
 }
-.form-signin{}
-.form-signin{}
 
 .scoreboard {
   background-image:url('/static/img/pytron.png');
