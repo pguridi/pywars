@@ -185,7 +185,9 @@ def bot_code(request, bot_pk):
 @login_required
 def view_match(request, other_profile_pk):
     other_prof = UserProfile.objects.get(pk=other_profile_pk)
-    match_id = request.user.profile.all()[0].last_match(other_prof).pk
-    print match_id
+    match = request.user.profile.all()[0].last_match(other_prof)
+    match_id = 0 #this is for JS if in the template
+    if match: 
+        match_id = match.pk
     return render(request, 'view_match.html',
         {'match_id' : match_id})
