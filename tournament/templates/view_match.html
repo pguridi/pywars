@@ -5,7 +5,11 @@
 {% block js %}
 <script src="{% static '/static/js/tron-render.js' %}"></script>
 <script>
-    var sarasa;
+    
+    if ( !({{match_id}}) ){
+        window.location = "/"
+    }
+    
     function request_match(match_id){
         jQuery.ajax({
               url: '/get-match/' + match_id,
@@ -49,9 +53,8 @@
             <div id="playlist_div"></div>
         </div>
 
-        <!--div id="action_buttons">
-            <label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500">
+        <div id="action_buttons">
             <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none; margin-top:10px;"><span class="glyphicon glyphicon-play"></span>Replay</a>
-        </div-->
+        </div>
     </div> <!-- /container -->
 {% endblock %}
