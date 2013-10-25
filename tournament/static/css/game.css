@@ -15,6 +15,7 @@ body,body .container{
     font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
     background-color: black;
     font-size: 1em;
+    text-align: center;
 }
 
 .main h1,.main h2,.main h3,.main p,.main span,.main  div, .main h4{
@@ -24,7 +25,6 @@ body,body .container{
 .main p {
   font-size: 24px;
 }
-
 .about h4{
     font-size: 1.2em;
     text-decoration: underline;
@@ -111,9 +111,6 @@ img#p1_img,img#p2_img{
     margin: 0 auto;
     height: 500px;
     width: 500px;
-    float: left;
-    margin-left: 24%
-    
 }
 #p1_img,#p2_img{
 background: grey;
