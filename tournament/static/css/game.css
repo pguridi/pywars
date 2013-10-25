@@ -63,8 +63,8 @@ color:white;
 }
 
 img#p1_img,img#p2_img{
-	height: 50px;
-	width: 160px;
+	height: 42px;
+	width: 120px;
 }
 .float{
 	float:left;
@@ -72,20 +72,20 @@ img#p1_img,img#p2_img{
 #player1,#player2,#vs_text{
 	font-size: 30px;
 }
-#player1,#player2{
-margin-left:22px;
-margin-bottom:30px;
+#player1{
+    text-align:left;
+}
+#player2{
+    text-align:right;
 }
 #vs_text{
-	margin-left:50px;
-	margin-right:50px;
+    text-align:center;
 }
-
 #players_divs{
-	height: 140px;
-	width: 470px ;
 	margin-left: auto ;
 	margin-right: auto ;
+    margin-bottom: 1em;
+    text-align:center;
 }
 #action_buttons{
     height: 40px;
@@ -108,19 +108,16 @@ background: grey;
 }
 
 #header{
-	height: 140px;
-	width: 350px ;
-    float:none;
-    margin-top: 10px;
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 1em; 
 	margin-left: auto ;
 	margin-right: auto ;
 }
 
 #list_div{
 /*border: 1px solid red; */
-width: 200px;
-margin-left: 7px;
-margin-right: 0;
+margin-left: 1em;
 }
 
 /*login*/
