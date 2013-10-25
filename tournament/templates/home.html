@@ -2,13 +2,11 @@
 {% load i18n %}
 {% load staticfiles %} 
 
-
 {% block js %}
 <script src="{% static '/static/js/tron-render.js' %}"></script>
-+
-
 <script>
-  function request_match(match_id){
+    var sarasa;
+    function request_match(match_id){
         jQuery.ajax({
               url: '/get-match/' + match_id,
               dataType: 'json',
@@ -22,48 +20,37 @@
               },
         });
     }    
-$( document ).ready(function() {
-    data = {}
-    function load_matches(){
-        $('#playlist_div').empty();
-        jQuery.ajax({
-              url: '/main-match',
-              dataType: 'json',
-              
-              success: function(data, status){
-                   var first_match = false;
-                   for (var key in data) {
-                        if (data.hasOwnProperty(key)) {
-                        //console.log(key + " -> " + data[key]);
-                        match_id = key;
-                        $('#playlist_div').append('<a href="#" onclick=request_match(' + match_id + ') title="' + data[key].title + '">[' + match_id + '] ' + data[key].player1 + ' vs ' + data[key].player2 + '</a></br>');
-                      }
-                      if(!first_match){
-                        first_match = match_id;
-                        }
-                    }
-              },
-        });
-    }
-    load_matches();
-    setInterval(load_matches, 10000)
-    
-    
-    //$('#speed_set_label').text($('#speed_set').val()/10);
-    //$('#speed_set').on('change', function () {
-      //  $('#speed_set_label').text($(this).val()/10);
-    //});
-});
+    $(document).ready(function() {
+        function load_matches(){
+            $('#playlist_div').empty();
+            jQuery.ajax({
+                  url: '/main-match',
+                  dataType: 'json',
+                  success: function(data, status){
+                       sarasa = data;
+                       //var first_match = false;
+                       $(data).each(function(index, match) {
+                            //console.log(key + " -> " + data[key]);
+                            $('#playlist_div').append('<a href="#" onclick=request_match(' + match.id + ') title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + '</a></br>');
+                          /*if(!first_match){
+                            first_match = match_id;
+                          }*/
+                        });
+                  },
+            });
+        }
+        load_matches();
+        setInterval(load_matches, 10000)
+        //$('#speed_set_label').text($('#speed_set').val()/10);
+        //$('#speed_set').on('change', function () {
+          //  $('#speed_set_label').text($(this).val()/10);
+        //});
+    });
 </script>
-{% endblock %}
-
-{% block head %}
-
 {% endblock %}
 
 {% block content %}    
     <div class="container main">
-    
         <div id="header">
             <img src="./static/img/pytron_logo.png"/><h1>Onapsis Challenge</h1>
         </div>
@@ -81,27 +68,19 @@ $( document ).ready(function() {
             </div>
         </div>
         <div>
-        <canvas id="the-game" width="100" height="100" style="background-color:rgb(8, 14, 12);">
-            Your browser does not support HTML5 Canvas.
-        </canvas>
+            <canvas id="the-game" width="100" height="100" style="background-color:rgb(8, 14, 12);">
+                Your browser does not support HTML5 Canvas.
+            </canvas>
         </div>
         
         <div id="list_div" class="float pull-left" style="">
             <h3>Play List</h3>
-            <div id="playlist_div" >
-
-            </div>
+            <div id="playlist_div"></div>
         </div>
          
         <div id="action_buttons">
-            
-<!--
-            <label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500">
--->
+            <!--label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500"-->
             <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none; margin-top:10px;"><span class="glyphicon glyphicon-play"></span>Replay</a>
         </div>
-
-     
     </div> <!-- /container -->
-
 {% endblock %}

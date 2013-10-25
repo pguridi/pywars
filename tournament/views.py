@@ -29,7 +29,7 @@ def scoreboard(request):
     user_prof = UserProfile.objects.get(user=request.user)
     #bots = Bot.objects.all().order_by('-points')
     users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
-    challenges = Challenge.objects.filter(requested_by=user_prof, 
+    challenges = Challenge.objects.filter(requested_by=user_prof,
     challenger_bot=user_prof.current_bot, played=False)
 #    if challenges.count() > 0:
 #        pending_challenges = True
@@ -151,15 +151,12 @@ def challenge(request):
 @login_required
 def main_match(request):
     list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:20]
-    res = {}
-    for match in list_match:
-        res[match.id] = {
-                            'player1': match.challenger_bot.owner.user.username,
-                            'player2': match.challenged_bot.owner.user.username,
-                            'title': ' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()])
-                        };
+    res = [{'id': match.id,
+            'player1': match.challenger_bot.owner.user.username,
+            'player2': match.challenged_bot.owner.user.username,
+            'title': ' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()])
+           } for match in list_match]
     data = json.dumps(res)
-
     return HttpResponse(data, mimetype='application/json')
 
 @login_required
