@@ -1,17 +1,17 @@
+import json
+
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.utils.html import escape
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-import json
 
-from tournament.tools import *
+from tournament.tools import compare_bots
 from lightcycle.arena import LightCycleArena
-from lightcycle.basebot import LightCycleBaseBot, LightCycleRandomBot
+from lightcycle.basebot import LightCycleRandomBot
 from lightcycle.player import Player
 
 
@@ -152,9 +152,9 @@ def challenge(request):
 def main_match(request):
     list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:20]
     res = [{'id': match.id,
-            'player1': match.challenger_bot.owner.user.username,
-            'player2': match.challenged_bot.owner.user.username,
-            'title': ' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()]),
+            'player1': escape(match.challenger_bot.owner.user.username),
+            'player2': escape(match.challenged_bot.owner.user.username),
+            'title': escape(' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()])),
             'duration': match.get_duration_match()
            } for match in list_match]
     data = json.dumps(res)
@@ -188,7 +188,7 @@ def view_match(request, other_profile_pk):
     other_prof = UserProfile.objects.get(pk=other_profile_pk)
     match = request.user.profile.all()[0].last_match(other_prof)
     match_id = 0 #this is for JS if in the template
-    if match: 
+    if match:
         match_id = match.pk
     return render(request, 'view_match.html',
         {'match_id' : match_id})
