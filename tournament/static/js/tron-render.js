@@ -112,18 +112,24 @@ function game_start(data ,canvas_id) {
 
     //end game
     function gameover() {
+        function shadowed_text(msg, offset) {
+            offset = typeof offset !== 'undefined' ? offset : 0;
+            context.fillStyle = 'black';
+            context.fillText(msg, canvas.width/2 + 4, canvas.height/2 + offset + 4);
+            context.fillStyle = 'white';
+            context.fillText(msg, canvas.width/2, canvas.height/2 + offset);
+        }
         clearInterval(refreshIntervalId);
         $('#button_replay').show();
-        context.fillStyle = '#FFF';
         context.font = (canvas.height / 10) + 'px FixedsysExcelsior301Regular';
         context.textAlign = 'center';
-        context.fillText('GAME OVER ', canvas.width/2, canvas.height/2);
+        shadowed_text('GAME OVER');
         if (data.result.winner == undefined ) {
             msg = 'TIE!!';
         } else {
             msg = data.result.winner + ' WINS!';
         }
-        context.fillText(msg, canvas.width/2, canvas.height/2 + 50); 
+        shadowed_text(msg, offset=50);
     };
 
     refreshIntervalId = setInterval(loop, delay);
