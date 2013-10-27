@@ -16,11 +16,11 @@
             <th>Username</th>
             <th>Score</th>
             <th>Action</th>
-            <th>Last match</th>
+            <th>Latest match</th>
           </tr>
         </thead>
         <tbody>
-            {% for user_prof in users %}
+            {% for user_prof, latest_match_id in users %}
             <tr>
             <td>{{forloop.counter}}</td>
             <td>{{ user_prof }} </td>
@@ -52,19 +52,17 @@
 {% endif %}
                 {% endif %}
             {% endif %}
-
             </td>
             <td>
-              <a class="btn btn-primary btn-warning" href="{% url 'view_match' other_profile_pk=user_prof.pk %}">View </a>
+            {% if latest_match_id %}
+              <a class="btn btn-primary btn-warning" href="{% url 'view_match' match_id=latest_match_id %}">View</a>
+            {% endif %}
             </td>
           </tr>
-
             {% endfor %}
         </tbody>
       </table>
     </div> <!-- /container -->
-
-
 {% endblock %}
 
 {% block js %}

@@ -24,15 +24,15 @@ class UserProfile(models.Model):
     def __str__(self):
         return '%s' % (self.user)
 
-    def last_match(self, other_prof):
+    def latest_match_id(self, other_prof):
         try:
-            return Challenge.objects.filter(
-                (Q(challenger_bot=self.current_bot) & Q(challenged_bot=other_prof.current_bot)) |
-                (Q(challenged_bot=self.current_bot) & Q(challenger_bot=other_prof.current_bot))
-            ).latest('creation_date')
+            if other_prof != self:
+                return Challenge.objects.filter(
+                    (Q(challenger_bot__owner=self) & Q(challenged_bot__owner=other_prof)) |
+                    (Q(challenged_bot__owner=self) & Q(challenger_bot__owner=other_prof))
+                ).latest('creation_date').pk
         except ObjectDoesNotExist:
             return None
-
 
 
 class Bot(models.Model):

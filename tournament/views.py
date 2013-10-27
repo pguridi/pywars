@@ -1,7 +1,7 @@
 import json
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.html import escape
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -17,8 +17,8 @@ from lightcycle.player import Player
 
 from models import Challenge, Bot, UserProfile
 
-def index(request):
-    return render(request, 'home.html', {'tab' : 'arena'})
+def index(request, match_id=None):
+    return render(request, 'home.html', {'tab' : 'arena', 'match_id': match_id})
 
 def about(request):
     return render(request, 'about.html', {'tab' : 'about'})
@@ -178,13 +178,3 @@ def bot_code(request, bot_pk):
 
     bot_code = Bot.objects.get(pk=bot_pk, owner=request.user).code
     return HttpResponse(bot_code)
-
-@login_required
-def view_match(request, other_profile_pk):
-    other_prof = UserProfile.objects.get(pk=other_profile_pk)
-    match = request.user.profile.all()[0].last_match(other_prof)
-    match_id = 0 #this is for JS if in the template
-    if match:
-        match_id = match.pk
-    return render(request, 'view_match.html',
-        {'match_id' : match_id})

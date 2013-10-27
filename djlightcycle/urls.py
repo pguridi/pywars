@@ -12,9 +12,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^accounts/register$', RegistrationViewUniqueEmail.as_view(),
-                    name='registration_register'),
+    url(r'^accounts/register$', RegistrationViewUniqueEmail.as_view(), name='registration_register'),
     url(r'^$', 'tournament.views.index', name='index'),
+    url(r'^(?P<match_id>\d+)$', 'tournament.views.index', name='view_match'),
     url(r'^scoreboard', 'tournament.views.scoreboard', name='scoreboard'),
     url(r'^mybots', 'tournament.views.mybots', name='mybots'),
     url(r'^about', 'tournament.views.about', name='about'),
@@ -26,7 +26,6 @@ urlpatterns = patterns('',
     url(r'^test-match', 'tournament.views.random_test_match', name='test_match'),
     url(r'^get-match/(\d+)', 'tournament.views.get_match', name='get_match'),
     url(r'^bot_code/(\d+)', 'tournament.views.bot_code', name='bot_code'),
-    url(r'^view_match/(?P<other_profile_pk>\d+)$', 'tournament.views.view_match', name='view_match'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

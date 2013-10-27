@@ -20,6 +20,9 @@
         }
         load_matches();
         setInterval(load_matches, 10000)
+        {% if match_id %}
+        request_match({{match_id}});
+        {% endif %}
         //$('#speed_set_label').text($('#speed_set').val()/10);
         //$('#speed_set').on('change', function () {
           //  $('#speed_set_label').text($(this).val()/10);
