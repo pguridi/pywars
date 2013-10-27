@@ -16,7 +16,7 @@ class MyLightCycleBot(LightCycleBaseBot):
     """
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, primary_key=True, related_name="profile")
+    user = models.OneToOneField(User, primary_key=True, related_name="profile")
     score = models.IntegerField('Tournament score', default=0)
     my_buffer = models.TextField(default=DEFAULT_BOT_CODE, blank=True, null=True)
     current_bot = models.ForeignKey('Bot', related_name="current_profile", blank=True, null=True)
@@ -72,7 +72,7 @@ class Challenge(models.Model):
     def get_duration_match(self):
         res = "{0:.2f}".format(json.loads(self.result)['elapsed']) + 's'
         return res
-        
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

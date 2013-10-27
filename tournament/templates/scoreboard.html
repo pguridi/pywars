@@ -36,7 +36,7 @@
                     {% endif %}
                     </button>
                 {% else %}
-                    {% if not user_profile.current_bot %}
+                    {% if not request.user.profile.current_bot %}
                         <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
                     {% else %}
 

@@ -26,11 +26,10 @@ def about(request):
 
 @login_required
 def scoreboard(request):
-    user_prof = UserProfile.objects.get(user=request.user)
     #bots = Bot.objects.all().order_by('-points')
     users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
-    challenges = Challenge.objects.filter(requested_by=user_prof,
-    challenger_bot=user_prof.current_bot, played=False)
+    users = ((user, request.user.profile.latest_match_id(user)) for user in users)
+    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False)
 #    if challenges.count() > 0:
 #        pending_challenges = True
 #    else:
@@ -38,12 +37,11 @@ def scoreboard(request):
 
     pending_challenged_bots = [ c.challenged_bot for c in challenges ]
 
-    played_challenges = Challenge.objects.filter(requested_by=user_prof, played=True)
+    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True)
     challenged_bots = [ c.challenged_bot for c in played_challenges ]
 
     return render(request, 'scoreboard.html', { 'tab' : 'score',
                 'users' : users,
-                'user_profile' : user_prof,
                 'challenged_bots' : challenged_bots,
                 'pending_challenged_bots' : pending_challenged_bots})
 
@@ -62,7 +60,6 @@ def mybots(request):
 def save_buffer(request):
     if request.is_ajax():
         code_content = json.loads(request.body)['msg']
-
         user_prof = UserProfile.objects.get(user=request.user)
         user_prof.my_buffer = code_content
         user_prof.save()
@@ -79,7 +76,6 @@ def publish_bot(request):
 
         if len(new_bot_code.strip('')) == 0:
             return HttpResponse("Can not publish an empty bot")
-
 
         # Get the last bot, and check delta
         try:
