@@ -5,34 +5,15 @@
 {% block js %}
 <script src="{% static '/static/js/tron-render.js' %}"></script>
 <script>
-    function request_match(match_id){
-        jQuery.ajax({
-              url: '/get-match/' + match_id,
-              dataType: 'json',
-              success: function(data, status){
-                    $('#p1_img').css("background", color_player1);
-                    $('#p2_img').css("background", color_player2);
-                    //players:
-                    $('#player1').text(data.players[0]);
-                    $('#player2').text(data.players[1]);
-                    game_start(data,'the-game');
-              },
-        });
-    }    
     $(document).ready(function() {
         function load_matches(){
             jQuery.ajax({
                   url: '/main-match',
                   dataType: 'json',
                   success: function(data, status){
-                       //var first_match = false;
                        $('#playlist_div').empty();
                        $(data).each(function(index, match) {
-                            //console.log(key + " -> " + data[key]);
-                            $('#playlist_div').append('<a href="#" onclick=request_match(' + match.id + ') title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration  + ')</a></br>');
-                          /*if(!first_match){
-                            first_match = match_id;
-                          }*/
+                            $('#playlist_div').append('<a href="#" onclick="request_match(' + match.id + ')" title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration  + ')</a></br>');
                         });
                   },
             });
@@ -59,17 +40,13 @@
                 <span id="player2"></span>
                 <img id="p2_img" src="/static/media/lightcycle-start-transparent-2.png" />
         </div>
-         <div class="row">
-            <canvas id="the-game" width="100" height="100" style="background-color:rgb(8, 14, 12);">
-                Your browser does not support HTML5 Canvas.
-            </canvas>
-           </div>
-
-           <div class="center">
+        <div class="row">
+            <canvas id="the-game">Your browser does not support HTML5 Canvas.</canvas>
+        </div>
+        <div class="center">
             <h3>Play List</h3>
             <div id="playlist_div"></div>
-            </div>
-         
+        </div>
         <!--div id="action_buttons">
             <label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500">
             <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none; margin-top:10px;"><span class="glyphicon glyphicon-play"></span>Replay</a>

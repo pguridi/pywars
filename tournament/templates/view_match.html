@@ -5,27 +5,11 @@
 {% block js %}
 <script src="{% static '/static/js/tron-render.js' %}"></script>
 <script>
-    
-    if ( !({{match_id}}) ){
-        window.location = "/"
-    }
-    
-    function request_match(match_id){
-        jQuery.ajax({
-              url: '/get-match/' + match_id,
-              dataType: 'json',
-              success: function(data, status){
-                    $('#p1_img').css("background", color_player1);
-                    $('#p2_img').css("background", color_player2);
-                    //players:
-                    $('#player1').text(data.players[0]);
-                    $('#player2').text(data.players[1]);
-                    game_start(data,'the-game');
-              },
-        });
+    if ( !({{match_id}}) ) {
+        window.location = "/";
     }
     $(document).ready(function() {
-      request_match({{match_id}});
+        request_match({{match_id}});
     });
 </script>
 {% endblock %}

@@ -112,6 +112,7 @@ img#p1_img,img#p2_img{
     margin: 0 auto;
     height: 500px;
     width: 500px;
+    background-color:#222;
 }
 #p1_img,#p2_img{
 background: grey;
