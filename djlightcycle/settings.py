@@ -2,6 +2,8 @@
 import os
 PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
+import django.conf.global_settings as DEFAULT_SETTINGS
+
 DEBUG = False
 SESSION_COOKIE_HTTPONLY = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -107,6 +109,10 @@ MIDDLEWARE_CLASSES = (
     # Uncomment the next line for simple clickjacking protection:
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+    'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'djlightcycle.urls'
