@@ -9,9 +9,9 @@ DEFAULT_BOT_CODE = """import random
 class MyLightCycleBot(LightCycleBaseBot):
 
     def get_next_step(self, arena, x, y, direction):
-        # arena.shape[0] is the are width
-        # arena.shape[1] is the are height
-        # arena[x,y] is our current position
+        # arena.shape[0] is the arena width
+        # arena.shape[1] is the arena height
+        # arena[x,y] is your current position
         return random.choice(['N','W','E','S'])
     """
 
