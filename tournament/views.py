@@ -146,7 +146,7 @@ def challenge(request):
 
 @login_required
 def main_match(request):
-    list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:20]
+    list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:50]
     res = [{'id': match.id,
             'player1': escape(match.challenger_bot.owner.user.username),
             'player2': escape(match.challenged_bot.owner.user.username),
