@@ -12,7 +12,7 @@ class UserProfileInline(admin.TabularInline):
 
 class UserWithProfileAdmin(UserAdmin):
     inlines = [UserProfileInline]
-    list_display = ( 'email', 'username')
+    list_display = ( 'email', 'username', 'is_active')
 
 class BotAdmin(admin.ModelAdmin):
     list_display = ('owner', 'creation_date', 'modification_date')
