@@ -1,13 +1,14 @@
 import json
 
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.utils.html import escape
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import cache_page
 
 from tournament.tools import compare_bots
 from lightcycle.arena import LightCycleArena
@@ -145,6 +146,7 @@ def challenge(request):
         return HttpResponse(json.dumps({'success' : True}), mimetype='application/json')
 
 @login_required
+@cache_page
 def main_match(request):
     list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:50]
     res = [{'id': match.id,
