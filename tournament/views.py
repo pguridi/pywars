@@ -146,7 +146,7 @@ def challenge(request):
         return HttpResponse(json.dumps({'success' : True}), mimetype='application/json')
 
 @login_required
-@cache_page
+@cache_page(60)
 def main_match(request):
     list_match = Challenge.objects.filter(played=True).order_by('-creation_date')[:50]
     res = [{'id': match.id,
