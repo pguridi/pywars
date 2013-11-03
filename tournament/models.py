@@ -66,19 +66,29 @@ class Challenge(models.Model):
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
 
+    @property
+    def _result(self):
+        if not hasattr(self, '_result_cache') or (not getattr(self, '_result_cache', None) and self.result):
+            self._result_cache = json.loads(self.result)
+        return self._result_cache
+
     def duration(self):
         if self.result:
-            return "{0:.2f}s".format(json.loads(self.result)['elapsed'])
+            return "{0:.2f}s".format(self._result['elapsed'])
         return '0s'
 
     def move_count(self):
         if self.result:
-            return len(json.loads(self.result)['moves'])
+            return len(self._result['moves'])
         return 0
 
     def score(self):
         if self.result:
             return calc_score(self.challenger_bot, self.challenged_bot, self.winner_bot)
+
+    def result_description(self):
+        return ' - '.join(['%s (%s)' % (k,v) for k,v in self._result['result']['lost'].items()])
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

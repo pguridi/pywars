@@ -153,7 +153,7 @@ def main_match(request):
     res = [{'id': match.id,
             'player1': escape(match.challenger_bot.owner.user.username),
             'player2': escape(match.challenged_bot.owner.user.username),
-            'title': escape(' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()])),
+            'title': escape(match.result_description()),
             'duration': match.duration(),
             'moves': match.move_count(),
            } for match in list_match]
