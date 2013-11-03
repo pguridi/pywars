@@ -19,7 +19,7 @@
             });
         }
         load_matches();
-        setInterval(load_matches, 10000)
+        setInterval(load_matches, 60000)
         {% if match_id %}
         request_match({{match_id}});
         {% endif %}
