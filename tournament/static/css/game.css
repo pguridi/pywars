@@ -101,6 +101,9 @@ img#p1_img,img#p2_img{
     margin-bottom: 1em;
     text-align:center;
 }
+#playlist{
+    white-space:nowrap;
+}
 #action_buttons{
     height: 40px;
 	width: 470px ;

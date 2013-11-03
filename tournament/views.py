@@ -153,7 +153,8 @@ def main_match(request):
             'player1': escape(match.challenger_bot.owner.user.username),
             'player2': escape(match.challenged_bot.owner.user.username),
             'title': escape(' - '.join(['%s (%s)' % (k,v) for k,v in json.loads(match.result)['result']['lost'].items()])),
-            'duration': match.get_duration_match()
+            'duration': match.duration(),
+            'moves': match.move_count(),
            } for match in list_match]
     data = json.dumps(res)
     return HttpResponse(data, mimetype='application/json')

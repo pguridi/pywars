@@ -11,9 +11,9 @@
                   url: '/main-match',
                   dataType: 'json',
                   success: function(data, status) {
-                       $('#playlist_div').empty();
+                       $('#playlist').empty();
                        $(data).each(function(index, match) {
-                            $('#playlist_div').append('<a href="#" onclick="request_match(' + match.id + ')" title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration  + ')</a></br>');
+                            $('#playlist').append('<a href="#" onclick="request_match(' + match.id + ')" title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration + '/' + match.moves + ' moves)</a></br>');
                         });
                   },
             });
@@ -34,10 +34,10 @@
 {% block content %}    
     <div class="container-fluid main">
         <div class="row-fluid">
-            <div class="span3">
+            <div class="span4">
                 <div>
                     <h3>Playlist</h3>
-                    <div id="playlist_div"></div>
+                    <div id="playlist"></div>
                 </div>
             </div>
             <div class="span8">

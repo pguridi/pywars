@@ -69,10 +69,15 @@ class Challenge(models.Model):
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
 
-    def get_duration_match(self):
-        res = "{0:.2f}".format(json.loads(self.result)['elapsed']) + 's'
-        return res
+    def duration(self):
+        if self.result:
+            return "{0:.2f}s".format(json.loads(self.result)['elapsed'])
+        return '0s'
 
+    def move_count(self):
+        if self.result:
+            return len(json.loads(self.result)['moves'])
+        return 0
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
