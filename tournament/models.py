@@ -87,7 +87,8 @@ class Challenge(models.Model):
             return calc_score(self.challenger_bot, self.challenged_bot, self.winner_bot)
 
     def result_description(self):
-        return ' - '.join(['%s (%s)' % (k,v) for k,v in self._result['result']['lost'].items()])
+        if self.result:
+            return ' - '.join(['%s (%s)' % (k,v) for k,v in self._result['result']['lost'].items()])
 
 
 def create_user_profile(sender, instance, created, **kwargs):
