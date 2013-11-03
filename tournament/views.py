@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
+from django.db.models import Q
 
 from tournament.tools import compare_bots
 from lightcycle.arena import LightCycleArena
@@ -158,6 +159,11 @@ def main_match(request):
            } for match in list_match]
     data = json.dumps(res)
     return HttpResponse(data, mimetype='application/json')
+
+@login_required
+def my_matches(request):
+    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
+    return render(request, 'mymatches.html', {'matches': matches})
 
 @login_required
 def get_match(request, match_id):

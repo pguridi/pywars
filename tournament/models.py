@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
+from tournament.score import calc_score
+
 DEFAULT_BOT_CODE = """import random
 class MyLightCycleBot(LightCycleBaseBot):
 
@@ -47,17 +49,12 @@ class Bot(models.Model):
     def __str__(self):
         return "%s - %s" % (self.owner, self.creation_date)
 
-    def _is_current_bot(self):
+    @property
+    def is_current_bot(self):
         if self.owner.current_bot == self:
             return True
         else:
             return False
-    is_current_bot = property(_is_current_bot)
-
-    def _js_code(self):
-        "Returns the person's full name."
-        return self.code.replace('\n', '\\n')
-    js_code = property(_js_code)
 
 
 class Challenge(models.Model):
@@ -78,6 +75,10 @@ class Challenge(models.Model):
         if self.result:
             return len(json.loads(self.result)['moves'])
         return 0
+
+    def score(self):
+        if self.result:
+            return calc_score(self.challenger_bot, self.challenged_bot, self.winner_bot)
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
