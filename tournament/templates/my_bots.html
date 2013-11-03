@@ -36,13 +36,13 @@
     </script>
 
     <div class="row-fluid">
-        <div class="span3">
+        <div class="span4">
           <!--Sidebar content-->
             <p>
             <h3>My Bots</h3>
-                <p> <a id="0" href="#" class="select_bot">New Bot </a></p>
+                <p><a id="0" href="#" class="select_bot">New Bot</a></p>
             {% for bot in my_bots %}
-                <p> <a id="{{bot.pk}}" class="select_bot" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [current] {% endif %}</a></p>
+                <p><a id="{{bot.pk}}" class="select_bot" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [current] {% endif %}</a></p>
             {% endfor %}
         </div>
         <div class="span8">

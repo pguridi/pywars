@@ -53,7 +53,7 @@ def mybots(request):
     return render(request, 'my_bots.html',
         {'tab' : 'mybots',
          'my_buffer' : user_prof.my_buffer,
-         'my_bots' : Bot.objects.filter(owner=user_prof)})
+         'my_bots' : reversed(Bot.objects.filter(owner=user_prof))})
 
 @login_required
 @csrf_exempt
