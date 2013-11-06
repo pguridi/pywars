@@ -1,9 +1,142 @@
-{% extends "base.html" %}
+{% extends "base_anon.html" %}
 {% load i18n %}
 
 {% block content %}    
-    <div class="container">
-     <p>Here goes something about the game</p>
-    </div> <!-- /container -->
+<div class="container main about">
+    
+    <div id="header">
+            <img src="./static/img/pytron_logo.png"/><h1>Onapsis Challenge</h1>
+            <h3>PyCon Argentina 2013</h3>
+    </div>
+    
+
+<h4>Mecánica de juego</h4>
+
+<p>A. Los jugadores deberán suscribirse a la competencia ingresando en el sitio
+publicado para tal fin.</p>
+
+<p>B. Una vez registrados, los jugadores podrán subir una estrategia, escrita en el 
+lenguaje de programación Python, mediante la cual controlarán los movimientos de
+la moto de luz, siendo una competencia entre estrategias autónomas (sin interacción 
+de un humano, planta o animal). La estrategia podrá ser actualizada en cualquier 
+momento mientras dure la competencia. El sistema determinará si el cambio a la 
+estrategia es significativo como para considerarla distinta a la existente.</p>
+
+<p>C. El juego consiste en 2 (dos) motos de luz representadas por un punto en una grilla, 
+siendo el objetivo del juego provocar que la moto de luz del adversario choque.</p>
+
+<p>D. Alternadamente, los jugadores reciben como input para calcular su estrategia, el 
+estado completo de la arena, la posición actual de su moto de luz y la última dirección tomada
+por la misma. En base a estos datos, la estrategia del jugador debe devolver un movimiento, 
+representado por la letra inicial de los puntos cardinales en inglés {N, S, E, W}. 
+Al moverse, la moto de luz del jugador deja una traza.</p>
+
+<p>E. El jugador que primero choca es el perdedor. Un jugador puede chocar contra:</p>
+    <pre>
+    i. Una pared límite de la "pista",
+   ii. Con la traza dejada por la moto del oponente,
+  iii. Con su propia traza,
+   iv. Se considera choque la no devolución de un movimiento luego de 20ms (choque por timeout)</pre>
+
+<p>F. La posición inicial de los jugadores es sorteada al azar con algunas restricciones:</p>
+    <pre>
+    i. Los jugadores se ubicarán dentro de la diagonal del tablero 
+       (de izquierda a derecha y de arriba hacia abajo)
+   ii. Las posiciones iniciales serán equidistantes entre ellas y equidistantes a 
+       los límites de la arena.
+    </pre>
+<p>G. Dado que los turnos son alternados, una partida se da por finalizada una vez que ambos 
+jugadores hicieron sus movidas y uno de los dos, o los dos, chocaron. Por ejemplo, algunas 
+partidas posibles son:</p>
+   <pre>
+   PARTIDA 1                               PARTIDA 2 
+    J1-> N                                  J1-> N
+    J2-> S                                  J2-> N
+    J1-> O                                  J1-> O
+    J2-> S                                  J2-> E
+    J1-> S                                  J1-> S
+    J2-> S                                  J2-> S
+    J1-> E => Choca con su traza            J1-> E => Choca con su traza
+    J2-> S                                  J2-> O => Choca con su traza
+    GANADOR J2                              EMPATE
+    </pre>
+
+<h4>Desafíos</h4>
+
+<p>H. Cada jugador podrá DESAFIAR a otros jugadores. Un desafío consiste en una partida de 
+motos de luz. Una vez hecho el desafío, éste queda encolado en la lista de desafíos.</p>
+
+<p>I. Un jugador podrá tener sólo un desafío activo a la vez. En caso de querer desafiar a
+más de un oponente, deberá esperar a que el desafío que tiene pendiente sea resuelto por 
+el sistema.</p>
+
+<p>J. Luego de un desafío entre los jugadores J1 y J2, el perdedor podrá volver a desafiar 
+al ganador en cualquier momento. No así el ganador, que sólo podrá desafiar al perdedor
+una vez que este último actualice su estrategia. Por ejemplo:</p>
+   <pre>
+   Caso A: Suponga que J1 desafía a J2 y como resultado J2 pierde. 
+   Entonces:
+        i. J1 no podrá volver a desafiar a J2 hasta que J2 actualice su estrategia.
+       ii. J2 podrá desafiar a J1 independientemente de si J1 actualizó o no su estrategia.
+
+   Caso B: Suponga que J1 desafía a J2 y como resultado J1 pierde. 
+   Entonces:        
+        i. J2 no podrá desafiar a J1 hasta que J1 actualice su estrategia.
+       ii. J1 podrá desafiar a J2 independientemente de si J1 actualizó o no su estrategia.
+    </pre> 
+<p>
+K. Una vez finalizado el desafío, los jugadores recibirán o no puntos de
+acuerdo al proceso descrito en la sección "Puntuación".
+</p>
+
+<h4>Puntuación</h4>
+
+<p>L. Luego de un desafío, en el que J1 desafía a J2, los resultados esperados
+con sus correspondientes puntuaciones son:</p>
+
+<pre>
+ Resultado | Puntos J1   | Puntos J2
+-----------+-------------+---------      
+Gana J1    |   +2pts     |    0pts   
+Gana J2    |   -1pts     |   +1pts
+Empate     |    0pts     |    0pts
+</pre>
+
+
+<h4>Ganador de la competencia</h4>
+
+<pre>
+M. Gana la competencia el jugador con mayor puntuación
+
+N. Los primeros 3 puestos serán ganadores de premios a designar por la organización
+de la competencia y serán informados al momento de iniciarse la misma.
+
+O. Si dos jugadores obtienen la misma cantidad de puntos, quedará primero en la tabla
+de posiciones aquel que lo haya logrado antes (según el tiempo del server que ejecuta
+las partidas).
+</pre>
+
+
+<h4>Consideraciones Generales</h4>
+
+<pre>
+1. La competencia comenzará el día Jueves 31/10 a las 18hs y finalizará el 
+día 4/11 a las 18hs hora de Argentina.
+
+2. El jurado se reserva el derecho a utilizar las herramientas que considere
+pertinentes para identificar violaciones a las reglas aquí descritas, reservándose
+el derecho a descalificar, sancionar con puntos o tomar cualquier otra medida que 
+considere pertinente, sin dar explicaciones a los participantes involucrados en
+la violación a las reglas que fuere detectada.
+
+3. Onapsis se comunicará por email con los ganadores para coordinar la entrega
+de los premios.
+
+4. Si las personas premiadas no respondieran dicha notificación, se guardará
+el premio durante 10 días corridos. Pasado este tiempo, el premio quedará 
+a disposición de Onapsis SRL.
+Que se diviertan!!
+</pre>
+</div> <!-- /container -->
 
 {% endblock %}

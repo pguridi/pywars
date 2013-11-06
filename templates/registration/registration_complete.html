@@ -1,6 +1,10 @@
-{% extends "base.html" %}
-{% load i18n %}
+{% extends "base_anon.html" %}
 
 {% block content %}
-<p>{% trans "You are now registered. Activation email sent." %}</p>
+<div class="container main scoreboard center">
+  <p>You are now registered. Please send an email with subject "Activation" and your username to <a href="mailto:pytron@onapsis.com">pytron@onapsis.com</a> in order to activate your account.</p>
+  <p style="text-align:center;">Welcome to PyTron!</p>
+
+  <a href="{% url 'index' %}"><p style="text-align:center; color: #08c;">Continue</p></a>
+</div>
 {% endblock %}

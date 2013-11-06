@@ -11,29 +11,44 @@
     font-smooth:never;
 }
 
-body{
+body,body .container{
     font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
     background-color: black;
     font-size: 1em;
 }
-
-h1,h2,h3,p, span, div{
+.center {
+    text-align:center;
+}
+.main h1,.main h2,.main h3,.main p,.main span,.main  div, .main h4{
     color:white;
+}
+
+.main p {
+  font-size: 24px;
+  margin: 0;
+}
+.about h4{
+    font-size: 1.2em;
+    text-decoration: underline;
+}
+.about p, .about pre {
+    font-size: 1em;
+}
+.about pre{
+    background-color: transparent;
+    color:white;
+    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
 }
 
 .table-striped tbody>tr:nth-child(odd)>td, .table-striped tbody>tr:nth-child(odd)>th {
 background-color: transparent;
+color:white;
 }
 
-#the-game{
-    display: block;
-    margin: 0 auto;
-    height: 500px;
-    width: 500px;
+#score_table td,#score_table th{
+color:white;
 }
-#p1_img,#p2_img{
-background: grey;
-}
+
 .high_score {
     font-size:2em;
     text-shadow:0 0 .5em red;
@@ -47,7 +62,7 @@ background: grey;
     text-align:right;
 }
 
-@keyframes blink {  
+@keyframes blink {
     0% { color: red; }
     100% { color: black; }
 }
@@ -62,8 +77,8 @@ background: grey;
 }
 
 img#p1_img,img#p2_img{
-	height: 50px;
-	width: 160px;
+	height: 42px;
+	width: 120px;
 }
 .float{
 	float:left;
@@ -71,20 +86,23 @@ img#p1_img,img#p2_img{
 #player1,#player2,#vs_text{
 	font-size: 30px;
 }
-#player1,#player2{
-margin-left:22px;
-margin-bottom:30px;
+#player1{
+    text-align:left;
+}
+#player2{
+    text-align:right;
 }
 #vs_text{
-	margin-left:50px;
-	margin-right:50px;
+    text-align:center;
 }
-
 #players_divs{
-	height: 140px;
-	width: 470px ;
 	margin-left: auto ;
 	margin-right: auto ;
+    margin-bottom: 1em;
+    text-align:center;
+}
+#playlist{
+    white-space:nowrap;
 }
 #action_buttons{
     height: 40px;
@@ -92,10 +110,44 @@ margin-bottom:30px;
 	margin-left: auto ;
 	margin-right: auto ;
 }
+
+#the-game{
+    display: block;
+    margin: 0 auto;
+    height: 500px;
+    width: 500px;
+    background-color:#222;
+}
+#p1_img,#p2_img{
+background: grey;
+}
+
 #header{
-	height: 80px;
-	width: 600px ;
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 1em; 
 	margin-left: auto ;
 	margin-right: auto ;
 }
 
+#list_div{
+/*border: 1px solid red; */
+margin-left: 1em;
+}
+
+/*login*/
+.form-signin .form-signin-heading, .form-signin .checkbox{
+    color:black;
+}
+
+.scoreboard {
+  background-image:url('/static/img/pytron.png');
+  background-position: 50% 10em;
+  background-repeat: no-repeat;
+  min-height: 600px;
+}
+
+/* My Bots */
+.select_bot {
+  font-size: .7em;
+}

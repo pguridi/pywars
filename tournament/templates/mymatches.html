@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+
+<div class="container main scoreboard">
+    <h1>My Challenges</h1>
+    <table id="score_table" class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Challenger</th>
+            <th>Challenged</th>
+            <th>Winner</th>
+            <th>Duration</th>
+            <th>Moves</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for match in matches %}
+            <tr>
+                <td>{{ forloop.revcounter }}</td>
+                <td>{{ match.challenger_bot.owner }}{% if match.result %} ({{ match.score.0 }}){% endif %}</td>
+                <td>{{ match.challenged_bot.owner }}{% if match.result %} ({{ match.score.1 }}){% endif %}</td>
+                <td>{{ match.winner_bot.owner|default:"-" }}</td>
+                <td>{{ match.duration }}</td>
+                <td>{{ match.move_count }}</td>
+                <td>{{ match.creation_date }}</td>
+                <td><a class="btn btn-primary btn-warning" href="{% url 'view_match' match_id=match.id %}" {% if not match.result %}disabled="disabled"{% endif %} title="{{ match.result_description|escape }}">View</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        setTimeout(function(){
+            window.location.reload(1);
+        }, 60000);
+    </script>
+{% endblock %}

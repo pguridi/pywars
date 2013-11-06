@@ -3,17 +3,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Lightcycle</title>
+    <title>PyTron Onapsis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
-    <link rel="stylesheet" href="{% static 'css/game.css' %}">
+     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/static/js/jquery-1.10.2.min.js"></script>
+   <link rel="stylesheet" href="{% static 'css/game.css' %}">
     <style type="text/css" media="screen">
     #editor {
         display: block;
         position: relative;
         height: 400px;
-        width: 700px;
+        width: 650px;
     }
 </style>
     <style type="text/css">
@@ -55,7 +57,26 @@
       <script src="/static/js/html5shiv.js"></script>
       <script src="/static/js/respond.min.js"></script>
     <![endif]-->
-  </head>
+<script type="text/javascript">
+        function postBot(data, url)
+        {
+            $.ajax(
+            {
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ msg: data}),
+                dataType: "json",
+                async: false,
+                contentType: "application/json"
+            }).fail(function(xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+              }).done(function() {
+                location.reload();
+              })
+        }
+    </script>  
+
+</head>
   <body>
   {% if user.is_authenticated %}
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -72,29 +93,11 @@
               Logged in as {{ user }}, <a href="/accounts/logout">logout</a>
             </p>
             <ul class="nav">
-                {% if tab == "arena" %}
-                    <li class="active"><a href="/">Arena</a></li>
-                {% else %}
-                    <li><a href="/">Arena</a></li>
-                {% endif %}
-              {% if tab == "score" %}
-                    <li class="active"><a href="/scoreboard">Tournament</a></li>
-                {% else %}
-                    <li><a href="/scoreboard">Tournament</a></li>
-                {% endif %}
-              {% if tab == "upload" %}
-                    <li class="active"><a href="/upload">My bot</a></li>
-                {% else %}
-                    <li><a href="/upload">My bot</a></li>
-                {% endif %}
-              {% if tab == "about" %}
-                    <li class="active"><a href="/about">About the game</a></li>
-                {% else %}
-                    <li><a href="/about">About the game</a></li>
-                {% endif %}
-
-
-
+              <li {% if tab == "arena" %}class="active"{% endif %}><a href="/">Arena</a></li>
+              <li {% if tab == "score" %}class="active"{% endif %}><a href="/scoreboard">Tournament</a></li>
+              <li {% if tab == "mymatches" %}class="active"{% endif %}><a href="/my-matches">My Challenges</a></li>
+              <li {% if tab == "mybots" %}class="active"{% endif %}><a href="/mybots">My bots</a></li>
+              <li {% if tab == "about" %}class="active"{% endif %}><a href="/about">About the game</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -106,29 +109,27 @@
       <form method="post" action="/accounts/login/" class="form-signin">
        {% csrf_token %}
         <h2 class="form-signin-heading">Login</h2>
-        <input type="text" id="id_username" name="username" class="input-block-level" placeholder="Username">
         {% if form.non_field_errors %}
-            <p>
-            {{ form.non_field_errors }}
+            <p style="color:red;">
+            {{ form.non_field_errors.as_text }}
             </p>
         {% endif %}
+        <input type="text" id="id_username" name="username" class="input-block-level" placeholder="Username">
         {% if form.username.errors %}
-            <p>{{ form.username.errors.as_text }}</p>
+            <p style="color:red;">{{ form.username.errors.as_text }}</p>
         {% endif %}
         <input type="password" id="id_password" name="password" class="input-block-level" placeholder="Password">
-        {% if form.id_password.errors %}
-            <p>{{ form.id_password.errors.as_text }}</p>
-        {% endif %}
         <input type="hidden" name="next" value="/" />
-        <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+        {% if form.id_password.errors %}
+            <p style="color:red;">{{ form.id_password.errors.as_text }}</p>
+        {% endif %}
+        <button class="btn btn-primary pull-right" type="submit">Sign in</button>
         <p></p>
         <p>{% trans "Not registered" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
       </form>
 
     </div> <!-- /container -->
 {% endif %}
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="//code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static '/static/js/bootstrap.min.js' %}"></script>
     {% block js %}{% endblock %}

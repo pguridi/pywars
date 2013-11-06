@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}    
+
+<div class="container-fluid main">
+    <script type="text/javascript">
+        var my_buffer = null;
+        function showBot(data)
+        {
+            if (my_buffer==null) {
+                my_buffer = editor.getValue();
+            }
+            editor.setValue(data);
+            editor.clearSelection();
+        }
+        function restoreBuffer()
+        {
+            $('#publish_button_id').prop('disabled', '');
+            $('#save_button_id').prop('disabled', '');
+            editor.setValue(my_buffer);
+            editor.clearSelection();
+            my_buffer = null;
+        }
+        $( document ).ready(function() {
+            $( ".select_bot" ).click(function() {
+              bot_pk = $(this).attr('id');
+              $.ajax({
+                url: "/bot_code/" + bot_pk,
+                complete: function (data, status) {
+                  showBot(data.responseText);
+                }
+              });
+            });
+        });
+    </script>
+
+    <div class="row-fluid">
+        <div class="span4">
+          <!--Sidebar content-->
+            <p>
+            <h3>My Bots</h3>
+                <p><a id="0" href="#" class="select_bot">New Bot</a></p>
+            {% for bot in my_bots %}
+                <p><a id="{{bot.pk}}" class="select_bot" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [current] {% endif %}</a></p>
+            {% endfor %}
+        </div>
+        <div class="span8">
+          <!--Body content-->
+    <p><h3>Write your bot here!</h3></p>
+    <div id="editor">{{ my_buffer }}</div>
+    <script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.getSession().setMode("ace/mode/python");
+        editor.getSession().setTabSize(4);
+        editor.setShowPrintMargin(true);
+        editor.setHighlightActiveLine(true);
+        editor.setShowInvisibles(true);
+        editor.clearSelection();
+        editor.moveCursorTo(0, 0);
+        editor.getSession().setUseSoftTabs(true);
+    </script>
+    <!--<p>Latest update: {{ bot.modification_date }}</p>-->
+    <p>
+        <div class="btn-toolbar">
+        <button id="save_button_id" type="button" class="btn btn-primary btn-xs" onclick="postBot(editor.getValue(), '/save_buffer')">Save Buffer</button>
+        <button id="publish_button_id" type="button" class="btn btn-success btn-xs" onclick="postBot(editor.getValue(), '/publish_bot')">Publish Bot</button>
+        </div>
+    </p>
+    </div>
+  </div>
+
+{% endblock %}

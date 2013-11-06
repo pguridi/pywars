@@ -2,3 +2,4 @@ Django==1.5.4
 django-registration==1.0
 wsgiref==0.1.2
 git+https://github.com/maxiberta/lightcycle.git
+MySQL-python==1.2.4

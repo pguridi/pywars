@@ -1,6 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_anon.html" %}
 {% load i18n %}
 
 {% block content %}
-<p>{% trans "Your account is now activated." %}</p>
+<div class="container main scoreboard center">
+    <p>{% trans "Your account is now activated." %}</p>
+    <a href="{% url 'index' %}"><p style="text-align:center; color: #08c;">Continue</p></a>
+</div>
 {% endblock %}

@@ -2,38 +2,73 @@
 {% load i18n %}
 {% block content %}
 
-    <div class="container">
+    <div class="container main scoreboard">
 
-      <h1>Tournament</h1>
-      <p>This is the general scoreboard of lightcycle.</p>
-<table class="table table-striped">  
-        <thead>  
-          <tr>  
-            <th>Position</th>  
-            <th>Username</th>  
-            <th>Points</th>
+      <h1>Tournament Rank</h1>
+{% if pending_challenged_bots|length > 0 %}
+* Pending challenges
+{% endif%}
+
+<table id="score_table" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Username</th>
+            <th>Score</th>
             <th>Action</th>
-          </tr>  
-        </thead>  
+            <th>Latest match</th>
+          </tr>
+        </thead>
         <tbody>
-            {% for bot in bots %}
-            <tr>  
-            <td>{{forloop.counter}}</td>  
-            <td>{{ bot.owner }} </td>  
-            <td>{{ bot.points }}</td>
+            {% for user_prof, latest_match_id in users %}
+            <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{ user_prof }} </td>
+            <td>{{ user_prof.score }}</td>
             <td>
-            {% if bot.owner == user or pending_challengues %}
-            <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
-            {% else %}
-                <button type="button" class="btn btn-primary btn-xs">Challenge</button>
+            {% if user_prof.user != user %}
+                {% if pending_challenges %}
+                    <button type="button" class="btn btn-primary btn-xs" disabled="disabled">
+                    {% if user_prof.current_bot in pending_challenged_bots%}
+                        Pending
+                    {% else %}
+                        Challenge
+                    {% endif %}
+                    </button>
+                {% else %}
+                    {% if not request.user.profile.current_bot %}
+                        <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
+                    {% else %}
+
+                    {% if user_prof.current_bot in challenged_bots %}
+                        <a href="#" class="btn btn-success btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Played!</a>
+                    {% else %}
+                        {% if user_prof.current_bot in pending_challenged_bots%}
+                            <a href="#" type="button" class="btn btn-primary btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Pending</a>
+                        {% else %}
+                            <a href="#" type="button" class="btn btn-primary btn-xs" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Challenge</a>
+                        {% endif %}
+                    {% endif %}
+{% endif %}
+                {% endif %}
             {% endif %}
             </td>
-          </tr> 
-                
+            <td>
+            {% if latest_match_id %}
+              <a class="btn btn-primary btn-warning" href="{% url 'view_match' match_id=latest_match_id %}">View</a>
+            {% endif %}
+            </td>
+          </tr>
             {% endfor %}
-        </tbody>  
+        </tbody>
       </table>
     </div> <!-- /container -->
+{% endblock %}
 
-
+{% block js %}
+    <script>
+        setTimeout(function(){
+            window.location.reload(1);
+        }, 60000);
+    </script>
 {% endblock %}
