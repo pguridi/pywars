@@ -19,7 +19,8 @@ class MyTankBot(BattlegroundBaseBot):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name="profile")
     score = models.IntegerField('Tournament score', default=0)
-    my_buffer = models.TextField(default=DEFAULT_BOT_CODE, blank=True, null=True)
+    code = models.TextField(default=DEFAULT_BOT_CODE, blank=True, null=True)
+    code_update_date = models.DateTimeField(auto_now=True, null=True)
     current_bot = models.ForeignKey('Bot', related_name="current_profile", blank=True, null=True)
 
     def __str__(self):

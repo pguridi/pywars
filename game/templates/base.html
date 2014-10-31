@@ -61,25 +61,8 @@
       <script src="/static/js/html5shiv.js"></script>
       <script src="/static/js/respond.min.js"></script>
     <![endif]-->
-<script type="text/javascript">
-        function postBot(data, url)
-        {
-            $.ajax(
-            {
-                url: url,
-                type: "POST",
-                data: JSON.stringify({ msg: data}),
-                dataType: "json",
-                async: false,
-                contentType: "application/json"
-            }).fail(function(xhr, textStatus, errorThrown) {
-                alert(xhr.responseText);
-              }).done(function() {
-                location.reload();
-              })
-        }
-    </script>  
 
+{% block js %}{% endblock %}
 </head>
   <body>
   {% if user.is_authenticated %}
@@ -136,6 +119,5 @@
 {% endif %}
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static '/static/js/bootstrap.min.js' %}"></script>
-    {% block js %}{% endblock %}
   </body>
 </html>

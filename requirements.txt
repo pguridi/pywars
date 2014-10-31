@@ -1,4 +1,5 @@
 Django==1.7.1
 argparse==1.2.1
+django-ace==1.0.1
 django-registration-redux==1.1
 wsgiref==0.1.2
