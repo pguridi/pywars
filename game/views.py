@@ -65,6 +65,8 @@ def mybots(request):
             bot.owner = user_prof
             bot.code = new_code
             bot.save()
+            user_prof.current_bot = bot
+            user_prof.save()
         return redirect('/mybots')
     else:
         form = BotBufferForm(instance=user_prof)
