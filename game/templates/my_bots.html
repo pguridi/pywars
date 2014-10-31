@@ -5,33 +5,15 @@
 
 <div class="container-fluid main">
     <script type="text/javascript">
-        var my_buffer = null;
-        function showBot(data)
-        {
-            if (my_buffer==null) {
-                my_buffer = editor.getValue();
-            }
-            editor.setValue(data);
-            editor.clearSelection();
-        }
-        function restoreBuffer()
-        {
-            $('#publish_button_id').prop('disabled', '');
-            $('#save_button_id').prop('disabled', '');
-            editor.setValue(my_buffer);
-            editor.clearSelection();
-            my_buffer = null;
-        }
-        $( document ).ready(function() {
-            $( ".select_bot" ).click(function() {
-              bot_pk = $(this).attr('id');
-              $.ajax({
-                url: "/bot_code/" + bot_pk,
-                complete: function (data, status) {
-                  showBot(data.responseText);
-                }
-              });
-            });
+        $(document).on("click", ".select_bot", function () {
+             var botId = $(this).data('id');
+             var botContent = $(this).attr('content');
+             $(".modal-content pre").html(botContent);
+             $(".modal-title").html($(this).html());
+
+             // As pointed out in comments,
+             // it is superfluous to have to manually call the modal.
+             // $('#addBookDialog').modal('show');
         });
     </script>
 
@@ -39,10 +21,11 @@
         <div class="span4">
           <!--Sidebar content-->
             <p>
-            <h3>My Bots</h3>
-                <p><a id="0" href="#" class="select_bot">New Bot</a></p>
+            <h3>Bot history</h3>
             {% for bot in my_bots %}
-                <p><a id="{{bot.pk}}" class="select_bot" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [current] {% endif %}</a></p>
+                <p>
+                <a id="{{bot.pk}}" class="select_bot" content="{{bot.code}}" data-toggle="modal" data-target=".bs-example-modal-lg" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
+                </p>
             {% endfor %}
         </div>
         <div class="span8">
@@ -71,5 +54,25 @@
     </p>
     </div>
   </div>
+
+
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+        <h4 class="modal-title" id="myModalLabel"></h4>
+    </div>
+
+      <div class="modal-content">
+        <pre>
+
+        </pre>
+    </div>
+  </div>
+</div>
+
+
+</div>
 
 {% endblock %}
