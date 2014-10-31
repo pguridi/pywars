@@ -1,4 +1,4 @@
 djlightcycle
 ============
 
-Django frontend for [Lightcycle](https://github.com/maxiberta/lightcycle) game
+A turn based tank game for Python bots
