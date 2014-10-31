@@ -4,8 +4,6 @@ import time
 import numpy
 import logging
 
-from .basebot import DIRECTIONS, LightCycleBaseBot
-from .worker import RemoteInstance
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +43,6 @@ class LightCycleArena(object):
         occupied = not self.arena[x, y]
         self.arena[player.x, player.y] = player.color
         self.match.log(player, player.x, player.y, direction)
-        #print self.arena.T
-        #print
         assert(occupied)
 
     def start(self):
@@ -86,8 +82,6 @@ class LightCycleArena(object):
                         self.match.lost(player, u'Crashed')
         finally:
             self.match.end()
-            #import json
-            #print json.dumps(self.match.__json__())
             for player in self.players:
                 player._botproxy.terminate()
             return self.match.__json__()
