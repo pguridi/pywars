@@ -29,7 +29,24 @@ def about(request):
 
 @login_required
 def scoreboard(request):
-    return HttpResponse(None)
+    #bots = Bot.objects.all().order_by('-points')
+    users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
+    users = ((user, request.user.profile.latest_match_id(user)) for user in users)
+    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False)
+#    if challenges.count() > 0:
+#        pending_challenges = True
+#    else:
+#        pending_challenges = False
+
+    pending_challenged_bots = [ c.challenged_bot for c in challenges ]
+
+    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True)
+    challenged_bots = [ c.challenged_bot for c in played_challenges ]
+
+    return render(request, 'scoreboard.html', { 'tab' : 'score',
+                'users' : users,
+                'challenged_bots' : challenged_bots,
+                'pending_challenged_bots' : pending_challenged_bots})
 
 @login_required
 def mybots(request):
@@ -49,13 +66,27 @@ def save_buffer(request):
         user_prof = UserProfile.objects.get(user=request.user)
         user_prof.my_buffer = code_content
         user_prof.save()
-    return JsonResponse({'success' : True})
+    return JsonResponse({'success': True})
 
 @login_required
 @csrf_exempt
 @require_POST
 def publish_bot(request):
-    return HttpResponse(None)
+    if request.is_ajax():
+        user_prof = UserProfile.objects.get(user=request.user)
+        new_bot_code = json.loads(request.body)['msg']
+
+        if len(new_bot_code.strip('')) == 0:
+            return HttpResponse("Can not publish an empty bot")
+
+        bot = Bot()
+        bot.owner = user_prof
+        bot.code = new_bot_code
+        bot.save()
+        user_prof.current_bot = bot
+        user_prof.my_buffer = new_bot_code
+        user_prof.save()
+    return JsonResponse({'success': True})
 
 @login_required
 @csrf_exempt
@@ -83,4 +114,9 @@ def random_test_match(request):
 
 @login_required
 def bot_code(request, bot_pk):
-    return HttpResponse(None)
+    if bot_pk == "0":
+        user_prof = UserProfile.objects.get(user=request.user)
+        return HttpResponse(user_prof.my_buffer)
+
+    bot_code = Bot.objects.get(pk=bot_pk, owner=request.user).code
+    return HttpResponse(bot_code)
