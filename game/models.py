@@ -5,10 +5,9 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
-from tournament.score import calc_score
 
 DEFAULT_BOT_CODE = """import random
-class MyLightCycleBot(LightCycleBaseBot):
+class MyTankBot(BattlegroundBaseBot):
 
     def get_next_step(self, arena, x, y, direction):
         # arena.shape[0] is the arena width
@@ -83,8 +82,9 @@ class Challenge(models.Model):
         return 0
 
     def score(self):
-        if self.result:
-            return calc_score(self.challenger_bot, self.challenged_bot, self.winner_bot)
+        return
+        #if self.result:
+        #    return calc_score(self.challenger_bot, self.challenged_bot, self.winner_bot)
 
     def result_description(self):
         if self.result:
@@ -94,4 +94,5 @@ class Challenge(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
 post_save.connect(create_user_profile, sender=User)
