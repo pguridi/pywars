@@ -1,7 +1,7 @@
 import json
 
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.html import escape
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.db.models import Q
 
+from .forms import BotBufferForm
 #from tournament.tools import compare_bots
 #from game_engine.arena import LightCycleArena
 #from game_engine.basebot import LightCycleRandomBot
@@ -51,42 +52,30 @@ def scoreboard(request):
 @login_required
 def mybots(request):
     user_prof = UserProfile.objects.get(user=request.user)
-
-    return render(request, 'my_bots.html',
-        {'tab' : 'mybots',
-         'my_buffer' : user_prof.my_buffer,
-         'my_bots' : reversed(Bot.objects.filter(owner=user_prof))})
-
-@login_required
-@csrf_exempt
-@require_POST
-def save_buffer(request):
-    if request.is_ajax():
-        code_content = json.loads(request.body)['msg']
-        user_prof = UserProfile.objects.get(user=request.user)
-        user_prof.my_buffer = code_content
+    if request.method == 'POST':
+        form = BotBufferForm(request.POST)
+        if not form.is_valid():
+            print "ERROR in form!"
+        new_code = form.cleaned_data['code']
+        user_prof.code = new_code
         user_prof.save()
-    return JsonResponse({'success': True})
 
-@login_required
-@csrf_exempt
-@require_POST
-def publish_bot(request):
-    if request.is_ajax():
-        user_prof = UserProfile.objects.get(user=request.user)
-        new_bot_code = json.loads(request.body)['msg']
+        if 'publish_buffer' in request.POST:
+            bot = Bot()
+            bot.owner = user_prof
+            bot.code = new_code
+            bot.save()
+        return redirect('/mybots')
+    else:
+        form = BotBufferForm(instance=user_prof)
 
-        if len(new_bot_code.strip('')) == 0:
-            return HttpResponse("Can not publish an empty bot")
+    return render(request, "my_bots.html", {
+        'form': form,
+        'user_prof': user_prof,
+        'tab': 'mybots',
+        'my_bots': reversed(Bot.objects.filter(owner=user_prof))
+    })
 
-        bot = Bot()
-        bot.owner = user_prof
-        bot.code = new_bot_code
-        bot.save()
-        user_prof.current_bot = bot
-        user_prof.my_buffer = new_bot_code
-        user_prof.save()
-    return JsonResponse({'success': True})
 
 @login_required
 @csrf_exempt
