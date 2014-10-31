@@ -1,8 +1,8 @@
-from celery import Celery
+from __future__ import absolute_import
 
-app = Celery(broker='amqp://')
+from celery import shared_task
 
-@app.task
+@shared_task
 def run_match(player_bots):
     # create the match temp dir
 
@@ -11,4 +11,4 @@ def run_match(player_bots):
     # call the engine_match cli script
 
     # parse match results and update Django DB
-    pass
+    return
