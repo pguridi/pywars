@@ -12,9 +12,9 @@ from django.views.decorators.cache import cache_page
 from django.db.models import Q
 
 #from tournament.tools import compare_bots
-#from lightcycle.arena import LightCycleArena
-#from lightcycle.basebot import LightCycleRandomBot
-#from lightcycle.player import Player
+#from game_engine.arena import LightCycleArena
+#from game_engine.basebot import LightCycleRandomBot
+#from game_engine.player import Player
 
 
 from models import Challenge, Bot, UserProfile
