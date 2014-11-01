@@ -49,9 +49,11 @@
   <body>
     {% block content %}{% endblock %}
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="//code.jquery.com/jquery.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/static/js/bootstrap.min.js"></script>
+    {% compress js %}
+      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <script src="//code.jquery.com/jquery.js"></script>
+      <!-- Include all compiled plugins (below), or include individual files as needed -->
+      <script src="/static/js/bootstrap.min.js"></script>
+    {% endcompress %}
   </body>
 </html>
