@@ -96,3 +96,5 @@ STATICFILES_FINDERS = (
 # Default:  the opposite of DEBUG
 # Disable this for testing the compressor
 #COMPRESS_ENABLED = True
+
+ACCOUNT_ACTIVATION_DAYS=5

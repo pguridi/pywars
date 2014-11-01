@@ -1,4 +1,4 @@
-{% load i18n staticfiles %}
+{% load i18n staticfiles compress %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -51,7 +51,7 @@
 
     {% compress js %}
       <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-      <script src="//code.jquery.com/jquery.js"></script>
+      <script src="/static/js/jquery-1.10.2.min.js"></script>
       <!-- Include all compiled plugins (below), or include individual files as needed -->
       <script src="/static/js/bootstrap.min.js"></script>
     {% endcompress %}
