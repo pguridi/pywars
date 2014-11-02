@@ -6,29 +6,31 @@ from collections import namedtuple
 
 Point = namedtuple('Point', 'x y')
 
-DIRECTIONS = {
-    'N': Point(0, -1),
-    'E': Point(1, 0),
-    'S': Point(0, 1),
-    'W': Point(-1, 0),
+BACK = -1
+FORWARD = 1
+FIRE = 0
+
+ACTIONS = {
+  BACK: 'back',
+  FORWARD : 'forward',
+  FIRE : 'fire',
 }
 
-
-class LightCycleBaseBot(object):
-
-    def get_next_step(self, arena, x, y, direction):
-        raise NotImplementedError('Should return one Direction.')
+HIT = 1
+GROUND = 0
 
 
-class LightCycleRandomBot(LightCycleBaseBot):
+class BattleGroundBot(object):
 
-    def get_next_step(self, arena, x, y, direction):
-        possible_movements = [key for key, value in DIRECTIONS.items()
-                               if 0 <= x + value.x < arena.shape[0]
-                               and 0 <= y + value.y < arena.shape[1]
-                               and not arena[x + value.x, y + value.y]]
-        #print possible_directions
-        if direction in possible_movements:
-            return direction
-        else:
-            return random.choice(possible_movements or DIRECTIONS.keys())
+    def get_next_step(self, arena, feedback, damage):
+        """arena: A copy of the battlefield
+        feedback: The result of my last action: HIT | GROUND
+        damage (:int:): Indicates if other player attacked me or 0 if not.
+        """
+        raise NotImplementedError('Should return one valid action.')
+
+
+class LightCycleRandomBot(BattleGroundBot):
+
+    def get_next_step(self, arena, feedback, damage):
+        return random.choice([ACTIONS.keys()])
