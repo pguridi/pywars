@@ -8,7 +8,7 @@ Point = namedtuple('Point', 'x y')
 
 BACK = -1
 FORWARD = 1
-FIRE = 0
+FIRE = 0  # FIXME: should be a string with the params
 
 ACTIONS = {
   BACK: 'back',

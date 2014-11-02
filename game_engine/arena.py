@@ -1,7 +1,6 @@
 # encoding=utf-8
 
 import time
-#import numpy
 import logging
 
 from .basebot import (
@@ -9,10 +8,36 @@ from .basebot import (
     HIT,
     GROUND,
     ACTIONS,
+    BACK,
+    FORWARD,
+    FIRE,
 )
-#from .worker import RemoteInstance
+from .worker import RemoteInstance
+
+FREE = 0
 
 logger = logging.getLogger(__name__)
+
+
+class Engine(object):  # FIXME: rename
+
+    def resolve_action(self, arena, player, action, feedbacks, damages):
+        """Given an <action> performed by <player>, determine its result in
+        the context of the game."""
+        if action in (BACK, FORWARD):
+            new_x = player.x + (player.x_factor * action)
+            if 0 <= new_x <= arena.width:
+                arena[player.x][player.y] = FREE
+                player.x = new_x
+                arena[player.x][player.y] = player.color
+                arena.match.trace_action(dict(action="make_move",
+                                              player=player.username,
+                                              position=[player.x, player.y], ))
+        elif action == FIRE:
+            pass
+        else:
+            assert 0, "Invalid action"  # TODO: raise exception
+        return
 
 
 class BattleGroundArena(object):
@@ -22,15 +47,16 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=100, height=100):
+    def __init__(self, players, width=100, height=50):
         self.width = width
         self.height = height
         self.players = players
         self.match = BattleGroundMatch(width, height, players)
+        self.engine = Engine()
         self.setup()
 
     def setup(self):
-        self.arena = [0 for _ in self.width for __ in self.height]
+        self.arena = [FREE for _ in self.width for __ in self.height]
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
@@ -44,16 +70,18 @@ class BattleGroundArena(object):
                     )
             x = self.width * i / (len(self.players) + 1)
             y = self.height * i / (len(self.players) + 1)
-            self.setup_new_player(player, x, y)
+            self.setup_new_player(player, x, y, width)
         return
 
-    def setup_new_player(player, x, y):
+    def setup_new_player(player, x, y, width):
         """Register the new player at the (x, y) position on the arena."""
         assert(player in self.players)
         assert(0 <= x < self.width)
         assert(0 <= y < self.height)
         player.x, player.y = x, y
         self.arena[x][y] = player.color
+        x_factor = 1 if x <= width // 2 else -1
+        player.assign_team(x_factor)
         self.match.trace_action(dict(action="new_player",
                                      name=player.username,
                                      position=[x, y],
@@ -82,30 +110,29 @@ class BattleGroundArena(object):
             for step in xrange(self.width * self.height):
                 playing = [player for player in self.players
                                     if player.status == self.PLAYING]
-                """
                 # Check if there's just one player playing. That's the winner!
                 if len(playing) == 0:
                     break  # A tie... Everybody loses :-(
                 if len(playing) == 1:
                     self.match.winner(playing[0])
                     break  # There's one winner!! :-D
-                """
                 for player in self.players:
                     arena_snapshot = self.arena.copy()
                     try:
                         action = player._botproxy.get_next_step(arena_snapshot,
                                                                 feedback=feedbacks[player],
                                                                 damage=damages[player], )
-                        # TODO: Here the engine calculates the new status
+                        # Here the engine calculates the new status
                         # according to the response and updates all tables
+                        self.engine.resolve_action(arena_snapshot,
+                                                   player,
+                                                   action,
+                                                   feedbacks,
+                                                   damages, )
                         if isinstance(action, Exception):
                             logger.exception(action)
                             self.match.lost(player, 'Exception (%s)' % action)
                             continue
-                        if movement not in ACTIONS:
-                            raise RemoteInstance.InvalidOutput()
-                        # TODO: update the context
-                        #self.move(player, x, y, movement)
                     except RemoteInstance.InvalidOutput:
                         logger.info('Invalid output! %s %s', player.username, movement)
                         self.match.lost(player, u'Invalid output')

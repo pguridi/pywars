@@ -11,3 +11,11 @@ class Player(object):
                 setattr(self, attr, value)
         self.username = name
         self.bot = bot  # LightCycleBaseBot subclass or source code string
+        self.x_factor = None
+
+    def assign_team(self, x_factor):
+        """Depending on which part of the field, the player is assigned, it
+        requires a factor to modify the <x> coordinates.
+        x_factor -> 1 | -1"""
+        self.x_factor = x_factor
+        return
