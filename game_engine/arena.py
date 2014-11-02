@@ -60,7 +60,7 @@ class BattleGroundArena(object):
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
-        for i, player in enumerate(self.players, 1):
+        for i, player in enumerate(self.players, start=1):
             player.color = i
             player.status = self.PLAYING
             # TODO: review
@@ -68,8 +68,8 @@ class BattleGroundArena(object):
                     namespace={'LightCycleBaseBot':LightCycleBaseBot},
                     validator=lambda x: issubclass(x, LightCycleBaseBot) and x is not LightCycleBaseBot,
                     )
-            x = self.width * i / (len(self.players) + 1)
-            y = self.height * i / (len(self.players) + 1)
+            x = i if i % 2 != 0 else self.width - i
+            y = 0
             self.setup_new_player(player, x, y, width)
         return
 
