@@ -1,18 +1,11 @@
 # encoding=utf-8
 
+import sys
+import os
 import time
 import logging
-
-from .basebot import (
-    BattleGroundBot,
-    HIT,
-    GROUND,
-    ACTIONS,
-    BACK,
-    FORWARD,
-    FIRE,
-)
-from .worker import RemoteInstance
+import subprocess
+import shutil
 
 FREE = 0
 
@@ -192,3 +185,61 @@ class BattleGroundMatch(object):
                 elapsed=self.end_time - self.start_time,
                 )
         return data
+
+
+PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
+
+
+class BotPlayer(object):
+
+    def __init__(self, bot_filename):
+        self.bot_filename = bot_filename
+        self._process = None
+        self.run()
+
+    def run(self):
+        sandboxdir = os.path.join("/tmp", 'pyval_sandbox')
+        if not os.path.exists(sandboxdir):
+            os.mkdir(sandboxdir)
+
+        shutil.copy2(os.path.abspath('bot_wrapper.py'), os.path.join(sandboxdir, "bot_wrapper.py"))
+        shutil.copy2(os.path.abspath(self.bot_filename), os.path.join(sandboxdir, self.bot_filename))
+
+        cmdargs = [PYPYSANDBOX_EXE,
+                       '--tmp={}'.format(sandboxdir),
+                       'bot_wrapper.py',
+                       self.bot_filename]
+
+        self._process = subprocess.Popen(cmdargs,
+                                    cwd=sandboxdir,
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE)
+
+    def execute(self, cmd):
+        print "<< sending cmd: %s >>>" % cmd
+        self._process.stdin.write(cmd)
+        "reading.."
+        return self._process.stdout.readline()
+
+
+def main(argv):
+    player1_file = argv[0]
+    #player2_file = argv[1]
+
+    bot1 = BotPlayer(player1_file)
+    #bot2 = BotWrapper(player2_file)
+
+    for i in xrange(0, 3):
+        ret = bot1.execute("SHOOT %s,y" % str(i))
+        print "[ENGINE] bot1: ", ret
+
+    bot1.execute("END")
+    #bot2.execute("END")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Please specify a bot file")
+        sys.exit(1)
+
+    main(sys.argv[1:])
