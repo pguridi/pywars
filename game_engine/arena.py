@@ -4,18 +4,39 @@ import sys
 import time
 import logging
 import importlib
-
-from exceptions import InvalidTurnOutput, BotTimeoutException
-
-FREE = 0
+import math
+from exceptions import InvalidBotOutput, BotTimeoutException
 
 logger = logging.getLogger(__name__)
 
-ACTION_MOVE = 0
 
+FREE = 0
 
-def resolve_move_action(player, action, arena):
-    new_x = player.x + (player.x_factor * action)
+def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
+    '''
+    returns a list of (x, y) projectile motion data points
+    where:
+    x axis is distance (or range) in meters
+    y axis is height in meters
+    '''
+    data_xy = []
+    t = 0.0
+    while True:
+        # now calculate the height y
+        y = starting_height + (t * speed * math.sin(angle)) - (gravity * t * t)/2
+        # projectile has hit ground level
+        if y < 0:
+            break
+        # calculate the distance x
+        x = speed * math.cos(angle) * t
+        # append the (x, y) tuple to the list
+        data_xy.append((x, y))
+        # use the time in increments of 0.1 seconds
+        t += 0.1
+    return data_xy
+
+def resolve_move_action(arena, player, where):
+    new_x = player.x + (player.x_factor * where)
     if 0 <= new_x <= arena.width:
         arena[player.x][player.y] = FREE
         player.x = new_x
@@ -24,36 +45,33 @@ def resolve_move_action(player, action, arena):
                                       player=player.username,
                                       position=[player.x, player.y], ))
 
-def resolve_shoot_action(context):
-    pass
-
-ACTION_HANDLERS = {ACTION_MOVE: resolve_move_action}
+def resolve_shoot_action(arena, player, speed, angle):
+    trajectory = shoot_projectile(speed, angle)
 
 
-
-class Engine(object):  # FIXME: rename
-
-    def resolve_action(self, arena, player, action, feedbacks, damages):
-        """Given an <action> performed by <player>, determine its result in
-        the context of the game."""
-        if action in (BACK, FORWARD):
-            new_x = player.x + (player.x_factor * action)
-            if 0 <= new_x <= arena.width:
-                arena[player.x][player.y] = FREE
-                player.x = new_x
-                arena[player.x][player.y] = player.color
-                arena.match.trace_action(dict(action="make_move",
-                                              player=player.username,
-                                              position=[player.x, player.y], ))
-        elif action == FIRE:
-            pass
-        else:
-            assert 0, "Invalid action"  # TODO: raise exception
-        return
+# class Engine(object):  # FIXME: rename
+#
+#     def resolve_action(self, arena, player, action, feedbacks, damages):
+#         """Given an <action> performed by <player>, determine its result in
+#         the context of the game."""
+#         if action in (BACK, FORWARD):
+#             new_x = player.x + (player.x_factor * action)
+#             if 0 <= new_x <= arena.width:
+#                 arena[player.x][player.y] = FREE
+#                 player.x = new_x
+#                 arena[player.x][player.y] = player.color
+#                 arena.match.trace_action(dict(action="make_move",
+#                                               player=player.username,
+#                                               position=[player.x, player.y], ))
+#         elif action == FIRE:
+#             pass
+#         else:
+#             assert 0, "Invalid action"  # TODO: raise exception
+#         return
 
 
 class BattleGroundArena(object):
-    """The game being preformed."""
+    """The game arena."""
 
     PLAYING = 0
     LOST = 1
@@ -63,8 +81,7 @@ class BattleGroundArena(object):
         self.width = width
         self.height = height
         self.players = players
-        self.match = BattleGroundMatch(width, height, players)
-        self.engine = Engine()
+        self.match = BattleGroundMatchLog(width, height, players)
         self.setup()
 
     def setup(self):
@@ -78,10 +95,9 @@ class BattleGroundArena(object):
 
             x = i if i % 2 != 0 else self.width - i
             y = 0
-            self.setup_new_player(player, x, y, width)
-        return
+            self.setup_new_player(player, x, y, self.width)
 
-    def setup_new_player(player, x, y, width):
+    def setup_new_player(self, player, x, y, width):
         """Register the new player at the (x, y) position on the arena."""
         player.x, player.y = x, y
         self.arena[x][y] = player.color
@@ -92,12 +108,30 @@ class BattleGroundArena(object):
                                      position=[x, y],
                                      tank=player.bot.__class__.__name__,
                                      ))
-        return
 
     def move(self, player, x, y, direction=None):
         player.x, player.y, player.direction = x, y, direction
         self.arena[player.x][player.y] = player.color
         self.match.log(player, player.x, player.y, direction)
+
+    def _validate_bot_output(self, bot_output):
+        try:
+            if bot_output == None:
+                # None is a valid command, do nothing
+                return
+            if bot_output['ACTION'] == 'MOVE':
+                if int(bot_output['WHERE']) not in [-1, 1]:
+                    # for moving, valid integers are: -1 or 1
+                    raise InvalidBotOutput()
+            elif bot_output['ACTION'] == 'SHOOT':
+                if int(bot_output['VEL']) not in range(1, 151):
+                    # velocity must be an integer between 1 and 150
+                    raise InvalidBotOutput()
+                if int(bot_output['ANGLE']) not in range(10, 90):
+                    # angle must be an integer between 10 and 89
+                    raise InvalidBotOutput()
+        except:
+            raise InvalidBotOutput()
 
     def start(self):
         try:
@@ -106,15 +140,15 @@ class BattleGroundArena(object):
             for player in self.players:
                 arena_snapshot = self.arena.copy()
                 try:
-                    action = player.evaluate_turn(arena_snapshot, context_info)
+                    bot_response = player.evaluate_turn(arena_snapshot, context_info)
+                    self._validate_bot_output(bot_response)
                     # Here the engine calculates the new status
                     # according to the response and updates all tables
-                    #self.engine.resolve_action(arena_snapshot, player, action)
-                    if action in (BACK, FORWARD):
-                        ACTION_HANDLERS[ACTION_MOVE](arena_snapshot, player, action)
-                    else:
-                        ACTION_HANDLERS[action](arena_snapshot, player, action)
-                except InvalidTurnOutput:
+                    if bot_response['ACTION'] == 'MOVE':
+                        resolve_move_action(arena_snapshot, player, bot_response['WHERE'])
+                    elif bot_response['ACTION'] == 'SHOOT':
+                        resolve_shoot_action(arena_snapshot, player, bot_response['VEL'], bot_response['ANGLE'])
+                except InvalidBotOutput:
                     logger.info('Invalid output! %s', player.username)
                     self.match.lost(player, u'Invalid output')
                 except BotTimeoutException:
@@ -129,8 +163,8 @@ class BattleGroundArena(object):
             return self.match.__json__()
 
 
-class BattleGroundMatch(object):
-    """Represents the match among players, the entire game."""
+class BattleGroundMatchLog(object):
+    """Represents the match log among players, the entire game."""
 
     def __init__(self, width, height, players):
         self.width = width
