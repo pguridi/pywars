@@ -17,9 +17,13 @@
 
 class Bot(object):
 
-    def __init__(self):
-        self.name = "pepe bot"
-
-    def evaluate_turn(self, context_info):
-        my_action = {"action": "move"}
-        return "Executed: ", context_info
+    def evaluate_turn(self, arena_array, feedback, life):
+        '''
+        :param arena_array:  a Python array with players location. Ie:
+        arena_array = [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0] # (where the number is the player location)
+        :param feedback: the result of the previous turn, ie: for the move action 'SUCCESS' is returned when the enemy
+            received a hit, or 'FAILED' when missed the shot.
+        :param life: Current life level, An integer between between 0-100.
+        :return: see the comments above
+        '''
+        return None

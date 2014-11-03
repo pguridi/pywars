@@ -6,14 +6,35 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
 
-DEFAULT_BOT_CODE = """import random
-class MyTankBot(BattlegroundBaseBot):
+DEFAULT_BOT_CODE = """# Example responses:
+#
+# Move to the right:
+#   return {'ACTION': 'MOVE', 'WHERE': 1}
+#
+# Move to the left:
+#   return {'ACTION': 'MOVE', 'WHERE': -1}
+#
+# Shooting projectile:
+#   return {'ACTION': 'SHOOT', 'VEL': 100, 'ANGLE': 35}
+#   # 'VEL' should be an integer > 0 and < 100
+#   # 'ANGLE' should be an integer > 0 and < 90
+#
+#
+# Do nothing:
+#   return None
 
-    def get_next_step(self, arena, x, y, direction):
-        # arena.shape[0] is the arena width
-        # arena.shape[1] is the arena height
-        # arena[x,y] is your current position
-        return random.choice(['N','W','E','S'])
+class Bot(object):
+
+    def evaluate_turn(self, arena_array, feedback, life):
+        '''
+        :param arena_array:  a Python array with players location. Ie:
+        arena_array = [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0] # (where the number is the player location)
+        :param feedback: the result of the previous turn, ie: for the move action 'SUCCESS' is returned when the enemy
+            received a hit, or 'FAILED' when missed the shot.
+        :param life: Current life level, An integer between between 0-100.
+        :return: see the comments above
+        '''
+        return None
     """
 
 class UserProfile(models.Model):

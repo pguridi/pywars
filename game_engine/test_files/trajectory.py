@@ -40,10 +40,10 @@ def projectile_xy(speed, angle, starting_height=0.0, gravity=9.8):
     return data_xy
 
 # use a firing angle of 45 degrees
-d = 60
+d = 80
 a = math.radians(d)  # radians
 # muzzle velocity of the projectile (meters/second)
-v = 150
+v = 200
 data_45 = projectile_xy(v, a)
 print "\nDATA: ", data_45, "\n"
 
