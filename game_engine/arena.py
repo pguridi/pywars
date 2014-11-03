@@ -1,15 +1,34 @@
 # encoding=utf-8
 
 import sys
-import os
 import time
 import logging
-import subprocess
-import shutil
+import importlib
+
+from exceptions import InvalidTurnOutput, BotTimeoutException
 
 FREE = 0
 
 logger = logging.getLogger(__name__)
+
+ACTION_MOVE = 0
+
+
+def resolve_move_action(player, action, arena):
+    new_x = player.x + (player.x_factor * action)
+    if 0 <= new_x <= arena.width:
+        arena[player.x][player.y] = FREE
+        player.x = new_x
+        arena[player.x][player.y] = player.color
+        arena.match.trace_action(dict(action="make_move",
+                                      player=player.username,
+                                      position=[player.x, player.y], ))
+
+def resolve_shoot_action(context):
+    pass
+
+ACTION_HANDLERS = {ACTION_MOVE: resolve_move_action}
+
 
 
 class Engine(object):  # FIXME: rename
@@ -56,11 +75,7 @@ class BattleGroundArena(object):
         for i, player in enumerate(self.players, start=1):
             player.color = i
             player.status = self.PLAYING
-            # TODO: review
-            player._botproxy = RemoteInstance(player.bot, timeout=.02,
-                    namespace={'LightCycleBaseBot':LightCycleBaseBot},
-                    validator=lambda x: issubclass(x, LightCycleBaseBot) and x is not LightCycleBaseBot,
-                    )
+
             x = i if i % 2 != 0 else self.width - i
             y = 0
             self.setup_new_player(player, x, y, width)
@@ -68,9 +83,6 @@ class BattleGroundArena(object):
 
     def setup_new_player(player, x, y, width):
         """Register the new player at the (x, y) position on the arena."""
-        assert(player in self.players)
-        assert(0 <= x < self.width)
-        assert(0 <= y < self.height)
         player.x, player.y = x, y
         self.arena[x][y] = player.color
         x_factor = 1 if x <= width // 2 else -1
@@ -83,64 +95,37 @@ class BattleGroundArena(object):
         return
 
     def move(self, player, x, y, direction=None):
-        #print player.username, '==>', x, y
-        assert(player in self.players)
-        assert(0 <= x < self.width)
-        assert(0 <= y < self.height)
         player.x, player.y, player.direction = x, y, direction
-        occupied = not self.arena[x][y]
         self.arena[player.x][player.y] = player.color
         self.match.log(player, player.x, player.y, direction)
-        assert(occupied)
 
     def start(self):
         try:
             logging.info('Starting match "%s"' % (' vs '.join([player.username for player in self.players])))
-            context = {}
-            # Track the feedback we need to provide to every player
-            feedbacks = {p: None for p in self.players if p.status == self.PLAYING}
-            damages = {p: GROUND for p in self.players if p.status == self.PLAYING}
-            for step in xrange(self.width * self.height):
-                playing = [player for player in self.players
-                                    if player.status == self.PLAYING]
-                # Check if there's just one player playing. That's the winner!
-                if len(playing) == 0:
-                    break  # A tie... Everybody loses :-(
-                if len(playing) == 1:
-                    self.match.winner(playing[0])
-                    break  # There's one winner!! :-D
-                for player in self.players:
-                    arena_snapshot = self.arena.copy()
-                    try:
-                        action = player._botproxy.get_next_step(arena_snapshot,
-                                                                feedback=feedbacks[player],
-                                                                damage=damages[player], )
-                        # Here the engine calculates the new status
-                        # according to the response and updates all tables
-                        self.engine.resolve_action(arena_snapshot,
-                                                   player,
-                                                   action,
-                                                   feedbacks,
-                                                   damages, )
-                        if isinstance(action, Exception):
-                            logger.exception(action)
-                            self.match.lost(player, 'Exception (%s)' % action)
-                            continue
-                    except RemoteInstance.InvalidOutput:
-                        logger.info('Invalid output! %s %s', player.username, movement)
-                        self.match.lost(player, u'Invalid output')
-                    except RemoteInstance.Timeout:
-                        logger.info('TIME UP! %s', player.username)
-                        self.match.lost(player, u'Timeout')
-                    # TODO: catch the event of Tank killed
-                    except:
-                        logger.info('CRASHED! %s %s %s', player.username, player.x, player.y)
-                        self.match.lost(player, u'Crashed')
+            context_info = {}
+            for player in self.players:
+                arena_snapshot = self.arena.copy()
+                try:
+                    action = player.evaluate_turn(arena_snapshot, context_info)
+                    # Here the engine calculates the new status
+                    # according to the response and updates all tables
+                    #self.engine.resolve_action(arena_snapshot, player, action)
+                    if action in (BACK, FORWARD):
+                        ACTION_HANDLERS[ACTION_MOVE](arena_snapshot, player, action)
+                    else:
+                        ACTION_HANDLERS[action](arena_snapshot, player, action)
+                except InvalidTurnOutput:
+                    logger.info('Invalid output! %s', player.username)
+                    self.match.lost(player, u'Invalid output')
+                except BotTimeoutException:
+                    logger.info('TIME UP! %s', player.username)
+                    self.match.lost(player, u'Timeout')
+                except Exception as e:
+                    logger.info('CRASHED! %s %s %s', player.username, player.x, player.y)
+                    self.match.lost(player, u'Crashed')
         finally:
             self.match.end()
             # TODO: self.match.trace_action(GAME OVER)
-            for player in self.players:
-                player._botproxy.terminate()
             return self.match.__json__()
 
 
@@ -160,7 +145,6 @@ class BattleGroundMatch(object):
         the match."""
         # TODO: review
         self.trace.append(arena_action)
-        return
 
     def winner(self, player):
         player.status = BattleGroundArena.WINNER
@@ -187,59 +171,34 @@ class BattleGroundMatch(object):
         return data
 
 
-PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
-
-
 class BotPlayer(object):
 
     def __init__(self, bot_filename):
-        self.bot_filename = bot_filename
-        self._process = None
-        self.run()
+        bot_file = bot_filename.replace(".py", "")
+        i = importlib.import_module(bot_file)
+        self._bot = i.Bot()
 
-    def run(self):
-        sandboxdir = os.path.join("/tmp", 'pyval_sandbox')
-        if not os.path.exists(sandboxdir):
-            os.mkdir(sandboxdir)
-
-        shutil.copy2(os.path.abspath('bot_wrapper.py'), os.path.join(sandboxdir, "bot_wrapper.py"))
-        shutil.copy2(os.path.abspath(self.bot_filename), os.path.join(sandboxdir, self.bot_filename))
-
-        cmdargs = [PYPYSANDBOX_EXE,
-                       '--tmp={}'.format(sandboxdir),
-                       'bot_wrapper.py',
-                       self.bot_filename]
-
-        self._process = subprocess.Popen(cmdargs,
-                                    cwd=sandboxdir,
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE)
-
-    def execute(self, cmd):
-        print "<< sending cmd: %s >>>" % cmd
-        self._process.stdin.write(cmd)
-        "reading.."
-        return self._process.stdout.readline()
+    def evaluate_turn(self, context_info):
+        # Ask bot what to do this turn
+        return self._bot.evaluate_turn(context_info)
 
 
 def main(argv):
     player1_file = argv[0]
-    #player2_file = argv[1]
+    player2_file = argv[1]
 
     bot1 = BotPlayer(player1_file)
-    #bot2 = BotWrapper(player2_file)
+    bot2 = BotPlayer(player2_file)
 
-    for i in xrange(0, 3):
-        ret = bot1.execute("SHOOT %s,y" % str(i))
-        print "[ENGINE] bot1: ", ret
-
-    bot1.execute("END")
-    #bot2.execute("END")
+    engine = BattleGroundArena(players=[bot1, bot2])
+    game_result = engine.start()
+    print game_result
+    sys.exit(0)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Please specify a bot file")
+    if len(sys.argv) < 3:
+        print("Please specify 2 bot files")
         sys.exit(1)
 
     main(sys.argv[1:])
