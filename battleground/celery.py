@@ -15,9 +15,4 @@ app = Celery('battleground')
 # pickle the object when using Windows.
 app.config_from_object('django.conf:settings')
 
-app.conf.update(
-    CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
-)
-
-
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)

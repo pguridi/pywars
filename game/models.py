@@ -39,6 +39,7 @@ class Bot(object):
         return None
     """
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name="profile")
     score = models.IntegerField('Tournament score', default=0)
@@ -88,31 +89,11 @@ class Challenge(models.Model):
     played = models.BooleanField(default=False)
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
-
-    @property
-    def _result(self):
-        if not hasattr(self, '_result_cache') or (not getattr(self, '_result_cache', None) and self.result):
-            self._result_cache = json.loads(self.result)
-        return self._result_cache
-
-    def duration(self):
-        if self.result:
-            return "{0:.2f}s".format(self._result['elapsed'])
-        return '0s'
-
-    def move_count(self):
-        if self.result:
-            return len(self._result['moves'])
-        return 0
-
-    def score(self):
-        return
-        #if self.result:
-        #    return calc_score(self.challenger_bot, self.challenged_bot, self.winner_bot)
+    elapsed_time = models.TextField(null=True)
 
     def result_description(self):
         if self.result:
-            return ' - '.join(['%s (%s)' % (k,v) for k,v in self._result['result']['lost'].items()])
+            return 'Result description..'
 
 
 def create_user_profile(sender, instance, created, **kwargs):

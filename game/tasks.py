@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from celery import shared_task
+import time
 import subprocess
 import tempfile
 import os
@@ -34,6 +35,7 @@ def run_match(challengue_id, players):
         with open(os.path.join(bots_dir, player + '.py'), 'w') as f:
             f.write(players[player])
 
+    start_time = time.time()
     # call the engine_match cli script
     cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), 'arena.py']
     cmdargs.extend(['bots/' + p + '.py' for p in players.keys()])
@@ -41,6 +43,7 @@ def run_match(challengue_id, players):
     proc = subprocess.Popen(cmdargs, cwd=match_dir, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     stdo, stde = proc.communicate()
     print stdo, stde
+    challng.elapsed_time = time.time() - start_time
 
     challng.played = True
     challng.result = stdo
