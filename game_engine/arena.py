@@ -35,17 +35,21 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
         t += 0.1
     return data_xy
 
-def resolve_move_action(arena, player, where):
+
+def resolve_move_action(match, arena, player, where):
     new_x = player.x + (player.x_factor * where)
     if 0 <= new_x <= arena.width:
-        arena[player.x][player.y] = FREE
+        arena[player.x, player.y] = FREE
         player.x = new_x
-        arena[player.x][player.y] = player.color
-        arena.match.trace_action(dict(action="make_move",
-                                      player=player.username,
-                                      position=[player.x, player.y], ))
+        arena[player.x, player.y] = player.color
+        # Trace what just happened in the match
+        match.trace_action(dict(action="make_move",
+                                player=player.username,
+                                position=[player.x, player.y], ))
+    return
 
-def resolve_shoot_action(arena, player, speed, angle):
+
+def resolve_shoot_action(match, arena, player, speed, angle):
     trajectory = shoot_projectile(speed, angle)
 
 
@@ -69,6 +73,26 @@ def resolve_shoot_action(arena, player, speed, angle):
 #             assert 0, "Invalid action"  # TODO: raise exception
 #         return
 
+class ArenaGrid(object):
+    """The grid that represents the arena over which the players are playing.
+    """
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        # TODO: we only need the X axis, not the whole matrix
+        self.arena = [[FREE for _ in xrange(self.height)] for __ in xrange(self.width)]
+
+    def copy_for_player(self):
+        """Return just a copy of the portion we provide to the player."""
+        return [self.arena[i][0] for i in xrange(self.width)]
+
+    def __getitem__(self, (x, y)):
+        return self.arena[x][y]
+
+    def __setitem__(self, (x, y), value):
+        self.arena[x][y] = value
+        return
+
 
 class BattleGroundArena(object):
     """The game arena."""
@@ -82,10 +106,10 @@ class BattleGroundArena(object):
         self.height = height
         self.players = players
         self.match = BattleGroundMatchLog(width, height, players)
+        self.arena = ArenaGrid(self.width, self.height)
         self.setup()
 
     def setup(self):
-        self.arena = [FREE for _ in self.width for __ in self.height]
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
@@ -96,40 +120,37 @@ class BattleGroundArena(object):
             x = i if i % 2 != 0 else self.width - i
             y = 0
             self.setup_new_player(player, x, y, self.width)
+        return
 
     def setup_new_player(self, player, x, y, width):
         """Register the new player at the (x, y) position on the arena."""
         player.x, player.y = x, y
-        self.arena[x][y] = player.color
-        x_factor = 1 if x <= width // 2 else -1
+        self.arena[x, y] = player.color
+        x_factor = 1 if x <= (width // 2) else -1
         player.assign_team(x_factor)
         self.match.trace_action(dict(action="new_player",
                                      name=player.username,
                                      position=[x, y],
                                      tank=player.bot.__class__.__name__,
                                      ))
-
-    def move(self, player, x, y, direction=None):
-        player.x, player.y, player.direction = x, y, direction
-        self.arena[player.x][player.y] = player.color
-        self.match.log(player, player.x, player.y, direction)
+        return
 
     def _validate_bot_output(self, bot_output):
         try:
-            if bot_output == None:
+            if bot_output is None:
                 # None is a valid command, do nothing
                 return
             if bot_output['ACTION'] == 'MOVE':
-                if int(bot_output['WHERE']) not in [-1, 1]:
+                if int(bot_output['WHERE']) not in (-1, 1):
                     # for moving, valid integers are: -1 or 1
-                    raise InvalidBotOutput()
+                    raise InvalidBotOutput("Moving must be -1 or 1.")
             elif bot_output['ACTION'] == 'SHOOT':
                 if int(bot_output['VEL']) not in range(1, 151):
                     # velocity must be an integer between 1 and 150
-                    raise InvalidBotOutput()
+                    raise InvalidBotOutput("Velocity not in range [1, 150].")
                 if int(bot_output['ANGLE']) not in range(10, 90):
                     # angle must be an integer between 10 and 89
-                    raise InvalidBotOutput()
+                    raise InvalidBotOutput("Angle must be between 10 and 89")
         except:
             raise InvalidBotOutput()
 
@@ -138,16 +159,16 @@ class BattleGroundArena(object):
             logging.info('Starting match "%s"' % (' vs '.join([player.username for player in self.players])))
             context_info = {}
             for player in self.players:
-                arena_snapshot = self.arena.copy()
+                arena_snapshot = self.arena.copy_for_player()
                 try:
                     bot_response = player.evaluate_turn(arena_snapshot, context_info)
                     self._validate_bot_output(bot_response)
                     # Here the engine calculates the new status
                     # according to the response and updates all tables
                     if bot_response['ACTION'] == 'MOVE':
-                        resolve_move_action(arena_snapshot, player, bot_response['WHERE'])
+                        resolve_move_action(match, arena_snapshot, player, bot_response['WHERE'])
                     elif bot_response['ACTION'] == 'SHOOT':
-                        resolve_shoot_action(arena_snapshot, player, bot_response['VEL'], bot_response['ANGLE'])
+                        resolve_shoot_action(match, arena_snapshot, player, bot_response['VEL'], bot_response['ANGLE'])
                 except InvalidBotOutput:
                     logger.info('Invalid output! %s', player.username)
                     self.match.lost(player, u'Invalid output')
@@ -180,11 +201,11 @@ class BattleGroundMatchLog(object):
         # TODO: review
         self.trace.append(arena_action)
 
-    def winner(self, player):
+    def winner(self, player):  # FIXME
         player.status = BattleGroundArena.WINNER
         self.result['winner'] = player.username
 
-    def lost(self, player, cause):
+    def lost(self, player, cause): # FIXME
         player.status = BattleGroundArena.LOST
         if 'lost' not in self.result:
             self.result['lost'] = {}
