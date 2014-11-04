@@ -5,7 +5,7 @@ import time
 import logging
 import importlib
 import math
-from exceptions import InvalidBotOutput, BotTimeoutException
+from exc import InvalidBotOutput, BotTimeoutException
 
 logger = logging.getLogger(__name__)
 
