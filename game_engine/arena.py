@@ -13,6 +13,11 @@ from exc import (
 
 logger = logging.getLogger(__name__)
 
+#Exit error codes
+EXIT_ERROR_NUMBER_OF_PARAMS  = 1
+EXIT_ERROR_MODULE = 2
+EXIT_ERROR_BOT_INSTANCE = 3
+
 
 FREE = 0
 DAMAGE_DELTA = 5
@@ -265,12 +270,10 @@ class BattleGroundMatchLog(object):
 
 class BotPlayer(object):
 
-    def __init__(self, bot_filename):
-        bot_file = bot_filename.replace(".py", "")
-        i = importlib.import_module(bot_file)
-        self._bot = i.Bot()
+    def __init__(self, bot_name, bot):
+        self._bot = bot
         self.x_factor = None
-        self.username = bot_file
+        self.username = bot_name
 
     @property
     def bot(self):
@@ -286,23 +289,39 @@ class BotPlayer(object):
         self.x_factor = x_factor
         return
 
+def usage():
+    print "Usage: python %s player1.py player2.py. Make sure both files are valid Python scripts, importable, and implement a Bot class." % sys.argv[0]
 
 def main(argv):
-    player1_file = argv[0]
-    player2_file = argv[1]
 
-    bot1 = BotPlayer(player1_file)
-    bot2 = BotPlayer(player2_file)
+    bot_file1 = argv[0].replace(".py", "")
+    bot_file2 = argv[1].replace(".py", "")
+    try:
+        bot_module1 = importlib.import_module(bot_file1)
+        bot_module2 = importlib.import_module(bot_file2)
+        bot1 = bot_module1.Bot()
+        bot2 = bot_module2.Bot()
+    except ImportError, e:
+        print "Error importing bot scripts: %s." % str(e)
+        usage()
+        sys.exit(EXIT_ERROR_MODULE)
+    except AttributeError, e:
+        print "Error instancing Bot : %s." % str(e)
+        usage()
+        sys.exit(EXIT_ERROR_BOT_INSTANCE)
+
+    bot1 = BotPlayer(bot_file1, bot1)
+    bot2 = BotPlayer(bot_file2, bot2)
 
     engine = BattleGroundArena(players=[bot1, bot2])
     game_result = engine.start()
     print game_result
     sys.exit(0)
 
-
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Please specify 2 bot files")
-        sys.exit(1)
+        usage()
+        sys.exit(EXIT_ERROR_NUMBER_OF_PARAMS)
 
     main(sys.argv[1:])
