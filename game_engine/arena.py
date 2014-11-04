@@ -82,10 +82,6 @@ class Context(object):
         self.info[player][self.FEEDBACK] = feedback
         return
 
-    def update_life(self, player, life):
-        self.info[player][self.LIFE] = life
-        return
-
     def decrease_life(self, player, amount):
         self.info[player][self.LIFE] -= amount
         return
@@ -201,6 +197,11 @@ class BattleGroundArena(object):
 
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle)
+        # Log the shoot made by the player
+        self.match.trace_action(dict(action="make_shoot",
+                                     player=player.username,
+                                     angle=angle,
+                                     trajectory=trajectory))
         # Get the impact coordinates
         x_imp, y_imp = trajectory[-1]
         try:
@@ -214,6 +215,9 @@ class BattleGroundArena(object):
             self.context.provide_feedback(player, TARGET_HIT)
             for p in affected_players:
                 self.context.decrease_life(p, DAMAGE_DELTA)
+                self.match.trace_action(dict(action="health_status",
+                                             player=p.username,
+                                             health=self.context.life(p)))
         return
 
 
