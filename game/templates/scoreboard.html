@@ -1,5 +1,32 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% block js %}
+<script type="text/javascript">
+        function postBot(data, url)
+        {
+            $.ajax(
+            {
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ msg: data}),
+                dataType: "json",
+                async: false,
+                contentType: "application/json"
+            }).fail(function(xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+              }).done(function() {
+                location.reload();
+              })
+        }
+    </script>
+
+    <script>
+        setTimeout(function(){
+            window.location.reload(1);
+        }, 60000);
+    </script>
+{% endblock %}
+
 {% block content %}
 
     <div class="container main scoreboard">
@@ -36,7 +63,7 @@
                     {% endif %}
                     </button>
                 {% else %}
-                    {% if not request.user.profile.current_bot %}
+                    {% if not user_prof.current_bot %}
                         <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
                     {% else %}
 
@@ -63,12 +90,4 @@
         </tbody>
       </table>
     </div> <!-- /container -->
-{% endblock %}
-
-{% block js %}
-    <script>
-        setTimeout(function(){
-            window.location.reload(1);
-        }, 60000);
-    </script>
 {% endblock %}

@@ -1,8 +1,6 @@
 # encoding=utf-8
 
 import sys
-import time
-import logging
 import importlib
 import math
 from exc import (
@@ -10,8 +8,6 @@ from exc import (
     BotTimeoutException,
     MissedTargetException,
 )
-
-logger = logging.getLogger(__name__)
 
 #Exit error codes
 EXIT_ERROR_NUMBER_OF_PARAMS  = 1
@@ -176,16 +172,15 @@ class BattleGroundArena(object):
                                                   bot_response['VEL'],
                                                   bot_response['ANGLE'])
                 except InvalidBotOutput:
-                    logger.info('Invalid output! %s', player.username)
+                    #logger.info('Invalid output! %s', player.username)
                     self.match.lost(player, u'Invalid output')
                 except BotTimeoutException:
-                    logger.info('TIME UP! %s', player.username)
+                    #logger.info('TIME UP! %s', player.username)
                     self.match.lost(player, u'Timeout')
                 except Exception as e:
-                    logger.info('CRASHED! %s %s %s', player.username, player.x, player.y)
+                    #logger.info('CRASHED! %s %s %s', player.username, player.x, player.y)
                     self.match.lost(player, u'Crashed')
         finally:
-            self.match.end()
             # TODO: self.match.trace_action(GAME OVER)
             return self.match.__json__()
 
@@ -236,7 +231,6 @@ class BattleGroundMatchLog(object):
         self.players = players
         self.trace = []   # All actions performed during the match
         self.result = {}
-        self.start_time = time.time()
 
     def trace_action(self, arena_action):
         """Receive an action performed on the arena, and log it as a part of
@@ -254,9 +248,6 @@ class BattleGroundMatchLog(object):
             self.result['lost'] = {}
         self.result['lost'][player.username] = cause
 
-    def end(self):
-        self.end_time = time.time()
-
     def __json__(self):
         data = dict(
                 width=self.width,
@@ -264,7 +255,6 @@ class BattleGroundMatchLog(object):
                 players=[player.username for player in self.players],
                 actions=self.trace,
                 result=self.result,
-                elapsed=self.end_time - self.start_time,
                 )
         return data
 
@@ -294,12 +284,16 @@ def usage():
     print "Usage: python %s player1.py player2.py. Make sure both files are valid Python scripts, importable, and implement a Bot class." % sys.argv[0]
 
 def main(argv):
+    bot_mod1 = argv[0].replace(".py", "")
+    bot1_username = bot_mod1.split("/")[-1]
+    bot_mod1 = bot_mod1.replace('/', '.')
 
-    bot_file1 = argv[0].replace(".py", "")
-    bot_file2 = argv[1].replace(".py", "")
+    bot_mod2 = argv[1].replace(".py", "")
+    bot2_username = bot_mod1.split("/")[-1]
+    bot_mod2 = bot_mod2.replace('/', '.')
     try:
-        bot_module1 = importlib.import_module(bot_file1)
-        bot_module2 = importlib.import_module(bot_file2)
+        bot_module1 = importlib.import_module(bot_mod1, package='bots')
+        bot_module2 = importlib.import_module(bot_mod2, package='bots')
         bot1 = bot_module1.Bot()
         bot2 = bot_module2.Bot()
     except ImportError, e:
@@ -311,8 +305,8 @@ def main(argv):
         usage()
         sys.exit(EXIT_ERROR_BOT_INSTANCE)
 
-    bot1 = BotPlayer(bot_file1, bot1)
-    bot2 = BotPlayer(bot_file2, bot2)
+    bot1 = BotPlayer(bot1_username, bot1)
+    bot2 = BotPlayer(bot2_username, bot2)
 
     engine = BattleGroundArena(players=[bot1, bot2])
     game_result = engine.start()

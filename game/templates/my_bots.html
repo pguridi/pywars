@@ -2,24 +2,25 @@
 {% load i18n %}
 
 {% block js %}
+<script type="text/javascript">
+$(document).on("click", ".select_bot", function () {
+     var botId = $(this).data('id');
+     var botContent = $(this).attr('content');
+     $(".modal-content pre").html(botContent);
+     $(".modal-title").html($(this).html());
+
+     // As pointed out in comments,
+     // it is superfluous to have to manually call the modal.
+     // $('#addBookDialog').modal('show');
+});
+</script>
 {{ form.media }}
 {% endblock %}
 
 {% block content %}
 
 <div class="container-fluid main">
-    <script type="text/javascript">
-        $(document).on("click", ".select_bot", function () {
-             var botId = $(this).data('id');
-             var botContent = $(this).attr('content');
-             $(".modal-content pre").html(botContent);
-             $(".modal-title").html($(this).html());
 
-             // As pointed out in comments,
-             // it is superfluous to have to manually call the modal.
-             // $('#addBookDialog').modal('show');
-        });
-    </script>
 
     <div class="row-fluid">
         <div class="span4">

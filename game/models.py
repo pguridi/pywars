@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
+from game.tasks import run_match
+
 
 DEFAULT_BOT_CODE = """# Example responses:
 #
@@ -117,4 +119,12 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
 
+def dispatch_challengue(sender, instance, created, **kwargs):
+    if created:
+        players = {instance.challenger_bot.owner.user.username: instance.challenger_bot.code,
+                   instance.challenged_bot.owner.user.username: instance.challenged_bot.code}
+        run_match.delay(instance.id, players)
+
+
 post_save.connect(create_user_profile, sender=User)
+post_save.connect(dispatch_challengue, sender=Challenge)
