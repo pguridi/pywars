@@ -35,6 +35,7 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
     '''
     data_xy = []
     t = 0.0
+    angle = math.radians(angle)
     while True:
         # now calculate the height y
         y = starting_height + (t * speed * math.sin(angle)) - (gravity * t * t)/2
