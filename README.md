@@ -43,4 +43,4 @@ The method then should return a dictionary indicating what the tank will do in i
   * **Stay**: The player decides not doing anything so it returns an empty dictionary.
 
 ## IMPORTANT ##
-The code used to implement `evaluate_turn` must be **PYPY COMPLIANT**, and that mean, among other things, that you can't use `import random` or `import time`. Several modules are not present in PyPy, and you must figure out how to live with that :P
+The code used to implement `evaluate_turn` must run in **PyPy**. For security reasons, the code runs in a PyPy Sandbox, so keep in mind that modules like `random` or `time` are not available, so you must figure out how to live with that :P
