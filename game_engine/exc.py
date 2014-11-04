@@ -4,3 +4,7 @@ class InvalidBotOutput(Exception):
 
 class BotTimeoutException(Exception):
     pass
+
+
+class MissedTargetException(Exception):
+    pass

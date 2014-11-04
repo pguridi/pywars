@@ -5,12 +5,21 @@ import time
 import logging
 import importlib
 import math
-from exc import InvalidBotOutput, BotTimeoutException
+from exc import (
+    InvalidBotOutput,
+    BotTimeoutException,
+    MissedTargetException,
+)
 
 logger = logging.getLogger(__name__)
 
 
 FREE = 0
+DAMAGE_DELTA = 5
+INITIAL_HEALTH = 100
+MISSED_TARGED = 'FAILED'
+TARGET_HIT = 'SUCCESS'
+
 
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
     '''
@@ -33,45 +42,9 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
         data_xy.append((x, y))
         # use the time in increments of 0.1 seconds
         t += 0.1
+    # TODO: match every (x, y) (or at least the last one), with our grid.
     return data_xy
 
-
-def resolve_move_action(match, arena, player, where):
-    new_x = player.x + (player.x_factor * where)
-    if 0 <= new_x <= arena.width:
-        arena[player.x, player.y] = FREE
-        player.x = new_x
-        arena[player.x, player.y] = player.color
-        # Trace what just happened in the match
-        match.trace_action(dict(action="make_move",
-                                player=player.username,
-                                position=[player.x, player.y], ))
-    return
-
-
-def resolve_shoot_action(match, arena, player, speed, angle):
-    trajectory = shoot_projectile(speed, angle)
-
-
-# class Engine(object):  # FIXME: rename
-#
-#     def resolve_action(self, arena, player, action, feedbacks, damages):
-#         """Given an <action> performed by <player>, determine its result in
-#         the context of the game."""
-#         if action in (BACK, FORWARD):
-#             new_x = player.x + (player.x_factor * action)
-#             if 0 <= new_x <= arena.width:
-#                 arena[player.x][player.y] = FREE
-#                 player.x = new_x
-#                 arena[player.x][player.y] = player.color
-#                 arena.match.trace_action(dict(action="make_move",
-#                                               player=player.username,
-#                                               position=[player.x, player.y], ))
-#         elif action == FIRE:
-#             pass
-#         else:
-#             assert 0, "Invalid action"  # TODO: raise exception
-#         return
 
 class ArenaGrid(object):
     """The grid that represents the arena over which the players are playing.
@@ -94,6 +67,33 @@ class ArenaGrid(object):
         return
 
 
+class Context(object):
+    FEEDBACK = 1
+    LIFE = 2
+
+    def __init__(self, players):
+        self.info = {player: {self.FEEDBACK: None,
+                              self.LIFE: INITIAL_HEALTH} for player in players}
+
+    def feedback(self, player):
+        return self.info[player][self.FEEDBACK]
+
+    def provide_feedback(self, player, feedback):
+        self.info[player][self.FEEDBACK] = feedback
+        return
+
+    def update_life(self, player, life):
+        self.info[player][self.LIFE] = life
+        return
+
+    def decrease_life(self, player, amount):
+        self.info[player][self.LIFE] -= amount
+        return
+
+    def life(self, player):
+        return self.info[player][self.LIFE]
+
+
 class BattleGroundArena(object):
     """The game arena."""
 
@@ -107,6 +107,7 @@ class BattleGroundArena(object):
         self.players = players
         self.match = BattleGroundMatchLog(width, height, players)
         self.arena = ArenaGrid(self.width, self.height)
+        self.context = Context(players)
         self.setup()
 
     def setup(self):
@@ -157,18 +158,21 @@ class BattleGroundArena(object):
     def start(self):
         try:
             logging.info('Starting match "%s"' % (' vs '.join([player.username for player in self.players])))
-            context_info = {}
             for player in self.players:
                 arena_snapshot = self.arena.copy_for_player()
                 try:
-                    bot_response = player.evaluate_turn(arena_snapshot, context_info)
+                    bot_response = player.evaluate_turn(arena_snapshot,
+                                                        self.context.feedback(player),
+                                                        self.context.life(player))
                     self._validate_bot_output(bot_response)
                     # Here the engine calculates the new status
                     # according to the response and updates all tables
                     if bot_response['ACTION'] == 'MOVE':
-                        resolve_move_action(match, arena_snapshot, player, bot_response['WHERE'])
+                        self.resolve_move_action(player, bot_response['WHERE'])
                     elif bot_response['ACTION'] == 'SHOOT':
-                        resolve_shoot_action(match, arena_snapshot, player, bot_response['VEL'], bot_response['ANGLE'])
+                        self.resolve_shoot_action(player,
+                                                  bot_response['VEL'],
+                                                  bot_response['ANGLE'])
                 except InvalidBotOutput:
                     logger.info('Invalid output! %s', player.username)
                     self.match.lost(player, u'Invalid output')
@@ -182,6 +186,35 @@ class BattleGroundArena(object):
             self.match.end()
             # TODO: self.match.trace_action(GAME OVER)
             return self.match.__json__()
+
+    def resolve_move_action(self, player, where):
+        new_x = player.x + (player.x_factor * where)
+        if 0 <= new_x <= self.arena.width:
+            self.arena[player.x, player.y] = FREE
+            player.x = new_x
+            self.arena[player.x, player.y] = player.color
+            # Trace what just happened in the match
+            self.match.trace_action(dict(action="make_move",
+                                         player=player.username,
+                                         position=[player.x, player.y], ))
+        return
+
+    def resolve_shoot_action(self, player, speed, angle):
+        trajectory = shoot_projectile(speed, angle)
+        # Get the impact coordinates
+        x_imp, y_imp = trajectory[-1]
+        try:
+            affected_players = [p for p in self.players
+                                if p.x == x_imp and p.y == y_imp]
+            if not affected_players:
+                raise MissedTargetException
+        except MissedTargetException:
+            self.context.provide_feedback(player, MISSED_TARGED)
+        else:
+            self.context.provide_feedback(player, TARGET_HIT)
+            for p in affected_players:
+                self.context.decrease_life(p, DAMAGE_DELTA)
+        return
 
 
 class BattleGroundMatchLog(object):
@@ -232,10 +265,22 @@ class BotPlayer(object):
         bot_file = bot_filename.replace(".py", "")
         i = importlib.import_module(bot_file)
         self._bot = i.Bot()
+        self.x_factor = None
+        self.username = bot_file
 
-    def evaluate_turn(self, context_info):
+    @property
+    def bot(self):
+        return self._bot
+
+    def evaluate_turn(self, arena_array, feedback, life):
         # Ask bot what to do this turn
-        return self._bot.evaluate_turn(context_info)
+        return self._bot.evaluate_turn(arena_array, feedback, life)
+
+    def assign_team(self, x_factor):
+        """Assign team depending on which side is allocated
+        x_factor -> -1 | 1"""
+        self.x_factor = x_factor
+        return
 
 
 def main(argv):
