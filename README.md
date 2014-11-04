@@ -4,8 +4,8 @@ Battleground
 ## Table of contents ##
 - [Introduction](#introduction)
 - [System configuration](#system-configurations)
-    - [Programming the tank bot](#programming-the-tank-bot)
 - [Game rules](#game-rules)
+    - [Programming the tank bot](#programming-the-tank-bot)
 
 ## Introduction ##
 
@@ -20,6 +20,7 @@ This is the configuration for development. Make sure you have a virtualenv. You 
 * Run the development server `python manage.py runserver`
 * Open the browser at `http://127.0.0.1:8000/`
 
+
 ## Game rules ##
 The game is simple, you will program a tank-bot that should destroy the oponent's tank. The game is by turns, and in each turn the tank has three possible actions to make:
   * **Shoot**: The tank can fire a projectile against its enemy target. That will cause two possible results:
@@ -27,6 +28,8 @@ The game is simple, you will program a tank-bot that should destroy the oponent'
     - The projectile miss and nothing happens.
   * **Move**: The tank can move forward or move back, but only one step per turn.
   * **Do Nothing**: Pretty self explanatory. Nothing happens here.
+
+The game ends with one of the tanks is destroyed, i.e: his live reachs 0 points, or when 250 turns are played, in which case the tank who wins is the tank who has more live when the turns went off.
 
 ### Programming the tank bot ###
 The user must define a class called `Bot` that implements the method `evaluate_turn` wich receives the following parameters:
