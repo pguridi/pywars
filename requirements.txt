@@ -9,3 +9,5 @@ django-registration-redux==1.1
 kombu==3.0.23
 pytz==2014.7
 wsgiref==0.1.2
+django-compressor==1.4
+django-bower==5.0.1

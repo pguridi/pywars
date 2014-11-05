@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load staticfiles %} 
+{% load staticfiles %}
 
 {% block js %}
-<script src="{% static '/static/js/tron-render.js' %}"></script>
-<script>
-    $(document).ready(function() {
+  <script src="{% static '/static/js/tron-render.js' %}"></script>
+  <script src="{% static '/static/js/custom.js' %}"></script>
+  <script type="text/javascript">
+
+$(document).ready(function() {
         function load_matches() {
             jQuery.ajax({
                   url: '/main-match',
@@ -28,10 +30,10 @@
           //  $('#speed_set_label').text($(this).val()/10);
         //});
     });
-</script>
+  </script>
 {% endblock %}
 
-{% block content %}    
+{% block content %}
     <div class="container-fluid main">
         <div class="row-fluid">
             <div class="span4">
@@ -42,7 +44,7 @@
             </div>
             <div class="span8">
                 <div id="header">
-                    <h1>Onapsis <img src="/static/img/pytron_logo.png"/> Challenge</h1>
+                  <h1>Onapsis <img src="{% static '/static/img/pytron_logo.png' %}"/> Challenge</h1>
                 </div>
                 <div id="players_divs">
                         <img id="p1_img" src="/static/media/lightcycle-start-transparent.png" />
@@ -56,9 +58,5 @@
                 </div>
             </div>
         </div>
-        <!--div id="action_buttons">
-            <label for="speed_set">Set Speed: <span id="speed_set_label"></span></label><input type="range" id="speed_set" min="100" max="1000" value="500">
-            <a href="#" id="button_replay" class="btn btn-warning pull-right" style="display:none; margin-top:10px;"><span class="glyphicon glyphicon-play"></span>Replay</a>
-        </div-->
     </div> <!-- /container -->
 {% endblock %}
