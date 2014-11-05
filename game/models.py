@@ -5,16 +5,40 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
+from game.tasks import run_match
 
-DEFAULT_BOT_CODE = """import random
-class MyTankBot(BattlegroundBaseBot):
 
-    def get_next_step(self, arena, x, y, direction):
-        # arena.shape[0] is the arena width
-        # arena.shape[1] is the arena height
-        # arena[x,y] is your current position
-        return random.choice(['N','W','E','S'])
+DEFAULT_BOT_CODE = """# Example responses:
+#
+# Move to the right:
+#   return {'ACTION': 'MOVE', 'WHERE': 1}
+#
+# Move to the left:
+#   return {'ACTION': 'MOVE', 'WHERE': -1}
+#
+# Shooting projectile:
+#   return {'ACTION': 'SHOOT', 'VEL': 100, 'ANGLE': 35}
+#   # 'VEL' should be an integer > 0 and < 100
+#   # 'ANGLE' should be an integer > 0 and < 90
+#
+#
+# Do nothing:
+#   return None
+
+class Bot(object):
+
+    def evaluate_turn(self, arena_array, feedback, life):
+        '''
+        :param arena_array:  a Python array with players location. Ie:
+        arena_array = [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0] # (where the number is the player location)
+        :param feedback: the result of the previous turn, ie: for the move action 'SUCCESS' is returned when the enemy
+            received a hit, or 'FAILED' when missed the shot.
+        :param life: Current life level, An integer between between 0-100.
+        :return: see the comments above
+        '''
+        return None
     """
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name="profile")
@@ -65,35 +89,23 @@ class Challenge(models.Model):
     played = models.BooleanField(default=False)
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
-
-    @property
-    def _result(self):
-        if not hasattr(self, '_result_cache') or (not getattr(self, '_result_cache', None) and self.result):
-            self._result_cache = json.loads(self.result)
-        return self._result_cache
-
-    def duration(self):
-        if self.result:
-            return "{0:.2f}s".format(self._result['elapsed'])
-        return '0s'
-
-    def move_count(self):
-        if self.result:
-            return len(self._result['moves'])
-        return 0
-
-    def score(self):
-        return
-        #if self.result:
-        #    return calc_score(self.challenger_bot, self.challenged_bot, self.winner_bot)
+    elapsed_time = models.TextField(null=True)
 
     def result_description(self):
         if self.result:
-            return ' - '.join(['%s (%s)' % (k,v) for k,v in self._result['result']['lost'].items()])
+            return 'Result description..'
 
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
 
+def dispatch_challengue(sender, instance, created, **kwargs):
+    if created:
+        players = {instance.challenger_bot.owner.user.username: instance.challenger_bot.code,
+                   instance.challenged_bot.owner.user.username: instance.challenged_bot.code}
+        run_match.delay(instance.id, players)
+
+
 post_save.connect(create_user_profile, sender=User)
+post_save.connect(dispatch_challengue, sender=Challenge)

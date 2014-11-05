@@ -21,3 +21,6 @@ python manage.py createsuperuser
 python manage.py runserver
 
 Then open the browser at http://127.0.0.1:8000/
+
+# Running the Celery worker for running matches:
+celery -A battleground worker -l info
