@@ -66,7 +66,6 @@ class ArenaGrid(object):
 
     def __setitem__(self, (x, y), value):
         self.arena[x][y] = value
-        return
 
 
 class Context(object):
@@ -82,11 +81,9 @@ class Context(object):
 
     def provide_feedback(self, player, feedback):
         self.info[player][self.FEEDBACK] = feedback
-        return
 
     def decrease_life(self, player, amount):
         self.info[player][self.LIFE] -= amount
-        return
 
     def life(self, player):
         return self.info[player][self.LIFE]
@@ -119,7 +116,6 @@ class BattleGroundArena(object):
             x = i if i % 2 != 0 else self.width - i
             y = 0
             self.setup_new_player(player, x, y, self.width)
-        return
 
     def setup_new_player(self, player, x, y, width):
         """Register the new player at the (x, y) position on the arena."""
@@ -132,7 +128,6 @@ class BattleGroundArena(object):
                                      position=[x, y],
                                      tank=player.bot.__class__.__name__,
                                      ))
-        return
 
     def _validate_bot_output(self, bot_output):
         try:
@@ -155,7 +150,6 @@ class BattleGroundArena(object):
 
     def start(self):
         try:
-            logging.info('Starting match "%s"' % (' vs '.join([player.username for player in self.players])))
             for player in self.players:
                 arena_snapshot = self.arena.copy_for_player()
                 try:
@@ -172,13 +166,10 @@ class BattleGroundArena(object):
                                                   bot_response['VEL'],
                                                   bot_response['ANGLE'])
                 except InvalidBotOutput:
-                    #logger.info('Invalid output! %s', player.username)
                     self.match.lost(player, u'Invalid output')
                 except BotTimeoutException:
-                    #logger.info('TIME UP! %s', player.username)
                     self.match.lost(player, u'Timeout')
                 except Exception as e:
-                    #logger.info('CRASHED! %s %s %s', player.username, player.x, player.y)
                     self.match.lost(player, u'Crashed')
         finally:
             # TODO: self.match.trace_action(GAME OVER)
@@ -194,7 +185,6 @@ class BattleGroundArena(object):
             self.match.trace_action(dict(action="make_move",
                                          player=player.username,
                                          position=[player.x, player.y], ))
-        return
 
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle)
@@ -219,7 +209,6 @@ class BattleGroundArena(object):
                 self.match.trace_action(dict(action="health_status",
                                              player=p.username,
                                              health=self.context.life(p)))
-        return
 
 
 class BattleGroundMatchLog(object):
@@ -278,10 +267,11 @@ class BotPlayer(object):
         """Assign team depending on which side is allocated
         x_factor -> -1 | 1"""
         self.x_factor = x_factor
-        return
+
 
 def usage():
     print "Usage: python %s player1.py player2.py. Make sure both files are valid Python scripts, importable, and implement a Bot class." % sys.argv[0]
+
 
 def main(argv):
     bot_mod1 = argv[0].replace(".py", "")
