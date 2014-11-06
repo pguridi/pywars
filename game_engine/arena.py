@@ -18,8 +18,8 @@ EXIT_ERROR_BOT_INSTANCE = 3
 FREE = 0
 DAMAGE_DELTA = 5
 INITIAL_HEALTH = 100
-MISSED_TARGED = 'FAILED'
-TARGET_HIT = 'SUCCESS'
+FAILED = 'FAILED'
+SUCCESS = 'SUCCESS'
 
 
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
@@ -183,6 +183,7 @@ class BattleGroundArena(object):
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
         if 0 <= new_x <= self.arena.width:
+            # TODO: check boundaries for player
             self.arena[player.x, player.y] = FREE
             player.x = new_x
             self.arena[player.x, player.y] = player.color
@@ -190,6 +191,10 @@ class BattleGroundArena(object):
             self.match.trace_action(dict(action="make_move",
                                          player=player.username,
                                          position=[player.x, player.y], ))
+            # Tell the user it moved successfully
+            self.context.provide_feedback(player, SUCCESS)
+        else:
+            self.context.provide_feedback(player, FAILED)
 
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle)
@@ -199,6 +204,7 @@ class BattleGroundArena(object):
                                      angle=angle,
                                      trajectory=trajectory))
         # Get the impact coordinates
+        # TODO: translate coordinates
         x_imp, y_imp = trajectory[-1]
         try:
             affected_players = [p for p in self.players
@@ -206,9 +212,9 @@ class BattleGroundArena(object):
             if not affected_players:
                 raise MissedTargetException
         except MissedTargetException:
-            self.context.provide_feedback(player, MISSED_TARGED)
+            self.context.provide_feedback(player, FAILED)
         else:
-            self.context.provide_feedback(player, TARGET_HIT)
+            self.context.provide_feedback(player, SUCCESS)
             for p in affected_players:
                 self.context.decrease_life(p, DAMAGE_DELTA)
                 self.match.trace_action(dict(action="health_status",
