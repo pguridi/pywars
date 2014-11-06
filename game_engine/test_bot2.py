@@ -4,4 +4,4 @@ class Bot(object):
         self.name = "pepe bot"
 
     def evaluate_turn(self, distance, feedback, life):
-        return "Executed: ", cmd
+        return {'ACTION': 'MOVE', 'WHERE': 1}

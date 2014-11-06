@@ -104,6 +104,7 @@ class BattleGroundArena(object):
     def __init__(self, players, width=100, height=50):
         self.width = width
         self.height = height
+        self.rounds = xrange(100)  # TODO: change for width*height
         self.players = players
         self.match = BattleGroundMatchLog(width, height, players)
         self.arena = ArenaGrid(self.width, self.height)
@@ -155,29 +156,34 @@ class BattleGroundArena(object):
 
     def start(self):
         try:
-            for player in self.players:
-                try:
-                    bot_response = player.evaluate_turn(self.arena.players_distance(),
-                                                        self.context.feedback(player),
-                                                        self.context.life(player))
-                    self._validate_bot_output(bot_response)
-                    # Here the engine calculates the new status
-                    # according to the response and updates all tables
-                    if bot_response['ACTION'] == 'MOVE':
-                        self.resolve_move_action(player, bot_response['WHERE'])
-                    elif bot_response['ACTION'] == 'SHOOT':
-                        self.resolve_shoot_action(player,
-                                                  bot_response['VEL'],
-                                                  bot_response['ANGLE'])
-                except InvalidBotOutput:
-                    self.match.lost(player, u'Invalid output')
-                except BotTimeoutException:
-                    self.match.lost(player, u'Timeout')
-                except Exception as e:
-                    self.match.lost(player, u'Crashed')
+            for _ in self.rounds:
+                for player in self.players:
+                    try:
+                        bot_response = player.evaluate_turn(self.arena.players_distance(),
+                                                            self.context.feedback(player),
+                                                            self.context.life(player))
+                        self._validate_bot_output(bot_response)
+                        # Here the engine calculates the new status
+                        # according to the response and updates all tables
+                        if bot_response['ACTION'] == 'MOVE':
+                            self.resolve_move_action(player, bot_response['WHERE'])
+                        elif bot_response['ACTION'] == 'SHOOT':
+                            self.resolve_shoot_action(player,
+                                                    bot_response['VEL'],
+                                                    bot_response['ANGLE'])
+                    except InvalidBotOutput:
+                        self.match.lost(player, u'Invalid output')
+                    except BotTimeoutException:
+                        self.match.lost(player, u'Timeout')
+                    except Exception as e:
+                        self.match.lost(player, u'Crashed')
+        except Exception as e:  # TODO: remove at last
+            print(str(e))
         finally:
             # TODO: self.match.trace_action(GAME OVER)
-            return self.match.__json__()
+            self.match.print_trace()
+            return ''
+            #return self.match.__json__()
 
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
@@ -246,6 +252,10 @@ class BattleGroundMatchLog(object):
         if 'lost' not in self.result:
             self.result['lost'] = {}
         self.result['lost'][player.username] = cause
+
+    def print_trace(self):
+        for i, log in enumerate(self.trace, start=1):
+            print("{} - {}".format(i, log))
 
     def __json__(self):
         data = dict(
