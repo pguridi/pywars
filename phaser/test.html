@@ -13,7 +13,6 @@
 <body>
 
 <script type="text/javascript">
-
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update});
 
 function preload() {
@@ -26,16 +25,8 @@ function preload() {
 var cursors;
 
 var players = ["player1", "player2"]
-var match_inst = [ {"action":"move", "player": "player1", "direction": "right"}, 
-            {"action":"move", "player": "player2", "direction": "left"},
-            {"action":"move", "player": "player2", "direction": "left"},
-            {"action":"move", "player": "player2", "direction": "left"},
-            {"action":"move", "player": "player1", "direction": "right"},
-            {"action":"move", "player": "player1", "direction": "right"},
-            {"action":"move", "player": "player1", "direction": "right"},
-            {"action":"move", "player": "player2", "direction": "left"},
-            {"action":"move", "player": "player2", "direction": "left"},
-            {"action":"move", "player": "player2", "direction": "left"}];
+var match_inst = [ {"action":"move", "player": "player1", "direction": "right", "destination": 250}, 
+            {"action":"move", "player": "player2", "direction": "left", "destination": 400}];
 
 var player_objs = {}
 
@@ -47,9 +38,10 @@ var scoreText;
 var bulletPool;
 var fpsText;
 
-var myVar = setInterval(function () {myTimer()}, 1000);
+var myVar = setInterval(function () {myTimer()}, 2000);
 
 function myTimer() {
+    current_action = "";
     if (match_inst.length > 0) {
         var obj = match_inst.pop();
         console.log(obj['action']);
@@ -57,7 +49,6 @@ function myTimer() {
             current_action = obj;
         }
     } else {
-        current_action = "";
         clearInterval(myVar);
     }
 }
@@ -155,21 +146,28 @@ function shootBullet(player) {
     bullet.body.velocity.y = Math.sin(bullet.rotation) * 800;
 };
 
+
 function update() {
     //  Reset the players velocity (movement)
     if (game.time.fps !== 0) {
         fpsText.setText(game.time.fps + ' FPS');
     }
     
-    for (player in player_objs) {
+    /*for (player in player_objs) {
         player_objs[player].body.velocity.x = 0;
-    }
+        //player_objs[player].animations.play("right")
+    }*/
     
     if (this.game.input.activePointer.isDown) {
         shootBullet(player_objs["player1"]);
     }
     
-    if (current_action == '') { return }
+    if (current_action == '') {
+        for(player in player_objs) {
+            player_objs[player].body.velocity.x = 0;
+            player_objs[player].animations.stop();
+        } 
+    }
     
     if (current_action["action"] == "move") {
         console.log(current_action);
@@ -180,9 +178,7 @@ function update() {
         }
     }
     
-    for(player in player_objs) {
-        player_objs[player].animations.stop();
-    }
+    
 
 }
 

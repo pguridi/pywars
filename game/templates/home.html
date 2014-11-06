@@ -3,34 +3,9 @@
 {% load staticfiles %}
 
 {% block js %}
-  <script src="{% static '/static/js/tron-render.js' %}"></script>
   <script src="{% static '/static/js/custom.js' %}"></script>
-  <script type="text/javascript">
-
-$(document).ready(function() {
-        function load_matches() {
-            jQuery.ajax({
-                  url: '/main-match',
-                  dataType: 'json',
-                  success: function(data, status) {
-                       $('#playlist').empty();
-                       $(data).each(function(index, match) {
-                            $('#playlist').append('<a href="#" onclick="request_match(' + match.id + ')" title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration + '/' + match.moves + ' moves)</a></br>');
-                        });
-                  },
-            });
-        }
-        load_matches();
-        setInterval(load_matches, 60000)
-        {% if match_id %}
-        request_match({{match_id}});
-        {% endif %}
-        //$('#speed_set_label').text($('#speed_set').val()/10);
-        //$('#speed_set').on('change', function () {
-          //  $('#speed_set_label').text($(this).val()/10);
-        //});
-    });
-  </script>
+  <script src="{% static '/static/phaser/build/phaser.js' %}"></script>
+  <script src="{% static '/static/js/pywars.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -53,9 +28,7 @@ $(document).ready(function() {
                         <span id="player2"></span>
                         <img id="p2_img" src="/static/media/lightcycle-start-transparent-2.png" />
                 </div>
-                <div class="row">
-                    <canvas id="the-game">Your browser does not support HTML5 Canvas.</canvas>
-                </div>
+                <div id=“game”></div>
             </div>
         </div>
     </div> <!-- /container -->

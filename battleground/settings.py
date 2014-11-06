@@ -86,7 +86,7 @@ STATIC_URL = '/static/'
 
 CELERY_TASK_SERIALIZER = "json"
 
-STATIC_ROOT = "/var/www/battleground/static/"
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
 
 
@@ -102,9 +102,8 @@ STATICFILES_FINDERS = (
 # Disable this for testing the compressor
 #COMPRESS_ENABLED = True
 
-ACCOUNT_ACTIVATION_DAYS=5
-
 BOWER_INSTALLED_APPS = (
     'jquery',
     'bootstrap',
+    'phaser',
 )

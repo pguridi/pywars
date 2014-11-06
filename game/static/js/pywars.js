@@ -1,0 +1,168 @@
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '#game', { preload: preload, create: create, update: update});
+
+function preload() {
+    game.load.image('background', 'static/assets/background2.png');
+    game.load.spritesheet('tank', 'static/assets/tanks.png', 74, 62);
+    game.load.image('bullet', 'static/assets/bullet.png');
+
+}
+
+var cursors;
+
+var players = ["player1", "player2"]
+var match_inst = [ {"action":"move", "player": "player1", "direction": "right", "destination": 250},
+            {"action":"move", "player": "player2", "direction": "left", "destination": 400}];
+
+var player_objs = {}
+
+var match_inst_frames = [];
+var current_action = "";
+
+var score = 0;
+var scoreText;
+var bulletPool;
+var fpsText;
+
+var myVar = setInterval(function () {myTimer()}, 2000);
+
+function myTimer() {
+    current_action = "";
+    if (match_inst.length > 0) {
+        var obj = match_inst.pop();
+        console.log(obj['action']);
+        if (obj["action"] == 'move') {
+            current_action = obj;
+        }
+    } else {
+        clearInterval(myVar);
+    }
+}
+
+
+function createPlayer(playerName, playerNumber) {
+    // The player and its settings
+    player = game.add.sprite(74, game.world.height - 150, 'tank');
+    game.physics.arcade.enable(player);
+
+    player.body.gravity.y = 300;
+    player.body.collideWorldBounds = true;
+
+    //  Our two animations, walking left and right.
+    player.animations.add('left', [0, 1, 2, 3], 10, true);
+    player.animations.add('right', [4, 5, 6, 7], 10, true);
+
+    if (playerNumber == 1) {
+        player.position.x = 0;
+        score1Text = game.add.text(16, 16, 'player1: 0', { fontSize: '32px', fill: '#000' });
+    }
+    if (playerNumber == 2) {
+        score2Text = game.add.text(640, 16, 'player2: 0', { fontSize: '32px', fill: '#000' });
+        player.position.x = 600;
+        player.frame = 0;
+    }
+    player_objs[playerName] = player;
+}
+
+function create() {
+
+    //  We're going to be using physics, so enable the Arcade Physics system
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    // add the background
+    game.add.tileSprite(0,0, 800, 600, 'background');
+
+
+    // Create an object pool of bullets
+    bulletPool = game.add.group();
+    for(var i = 0; i < 200; i++) {
+        // Create each bullet and add it to the group.
+        var bullet = game.add.sprite(0, 0, 'bullet');
+        bulletPool.add(bullet);
+
+        // Set its pivot point to the center of the bullet
+        bullet.anchor.setTo(0.5, 0.5);
+
+        // Enable physics on the bullet
+        game.physics.enable(bullet, Phaser.Physics.ARCADE);
+
+        // Set its initial state to "dead".
+        bullet.kill();
+    }
+
+    // Load the players and its settings
+    for(var i=0;i<players.length;i++){
+        createPlayer(players[i], i+1);
+    }
+    game.time.advancedTiming = true;
+    fpsText = game.add.text(
+        20, 0, '', { font: '16px Arial', fill: '#ffffff' }
+    );
+
+}
+
+function shootBullet(player) {
+    // Enforce a short delay between shots by recording
+    // the time that each bullet is shot and testing if
+    // the amount of time since the last shot is more than
+    // the required delay.
+    // Get a dead bullet from the pool
+    var bullet = bulletPool.getFirstDead();
+
+    // If there aren't any bullets available then don't shoot
+    if (bullet === null || bullet === undefined) return;
+
+    // Revive the bullet
+    // This makes the bullet "alive"
+    bullet.revive();
+
+    // Bullets should kill themselves when they leave the world.
+    // Phaser takes care of this for me by setting this flag
+    // but you can do it yourself by killing the bullet if
+    // its x,y coordinates are outside of the world.
+    bullet.checkWorldBounds = true;
+    bullet.outOfBoundsKill = true;
+
+    // Set the bullet position to the gun position.
+    bullet.reset(player.body.x, player.body.y);
+    bullet.rotation = player.body.rotation;
+
+    // Shoot it in the right direction
+    bullet.body.velocity.x = Math.cos(bullet.rotation) * 800;
+    bullet.body.velocity.y = Math.sin(bullet.rotation) * 800;
+};
+
+
+function update() {
+    //  Reset the players velocity (movement)
+    if (game.time.fps !== 0) {
+        fpsText.setText(game.time.fps + ' FPS');
+    }
+
+    /*for (player in player_objs) {
+        player_objs[player].body.velocity.x = 0;
+        //player_objs[player].animations.play("right")
+    }*/
+
+    if (this.game.input.activePointer.isDown) {
+        shootBullet(player_objs["player1"]);
+    }
+
+    if (current_action == '') {
+        for(player in player_objs) {
+            player_objs[player].body.velocity.x = 0;
+            player_objs[player].animations.stop();
+        }
+    }
+
+    if (current_action["action"] == "move") {
+        console.log(current_action);
+        player = player_objs[current_action["player"]];
+        if (player.body.x != current_action["destination"]) {
+            player.body.velocity.x = 150;
+            player.animations.play(current_action["direction"]);
+        }
+    }
+
+
+
+}
