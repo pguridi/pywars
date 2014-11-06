@@ -289,7 +289,7 @@ def main(argv):
     bot_mod1 = bot_mod1.replace('/', '.')
 
     bot_mod2 = argv[1].replace(".py", "")
-    bot2_username = bot_mod1.split("/")[-1]
+    bot2_username = bot_mod2.split("/")[-1]
     bot_mod2 = bot_mod2.replace('/', '.')
     try:
         bot_module1 = importlib.import_module(bot_mod1, package='bots')
