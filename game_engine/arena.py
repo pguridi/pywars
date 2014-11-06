@@ -61,6 +61,11 @@ class ArenaGrid(object):
         """Return just a copy of the portion we provide to the player."""
         return [self.arena[i][0] for i in xrange(self.width)]
 
+    def players_distance(self):
+        """Return the distance between the bots. Only two players."""
+        p1, p2 = [i for i in xrange(self.width) if self.arena[i][0] != FREE]
+        return p2 - p1
+
     def __getitem__(self, (x, y)):
         return self.arena[x][y]
 
