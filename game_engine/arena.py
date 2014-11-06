@@ -156,9 +156,8 @@ class BattleGroundArena(object):
     def start(self):
         try:
             for player in self.players:
-                arena_snapshot = self.arena.copy_for_player()
                 try:
-                    bot_response = player.evaluate_turn(arena_snapshot,
+                    bot_response = player.evaluate_turn(self.arena.players_distance(),
                                                         self.context.feedback(player),
                                                         self.context.life(player))
                     self._validate_bot_output(bot_response)
@@ -270,9 +269,9 @@ class BotPlayer(object):
     def bot(self):
         return self._bot
 
-    def evaluate_turn(self, arena_array, feedback, life):
+    def evaluate_turn(self, distance, feedback, life):
         # Ask bot what to do this turn
-        return self._bot.evaluate_turn(arena_array, feedback, life)
+        return self._bot.evaluate_turn(distance, feedback, life)
 
     def assign_team(self, x_factor):
         """Assign team depending on which side is allocated
