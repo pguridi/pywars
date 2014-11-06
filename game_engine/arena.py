@@ -20,7 +20,11 @@ DAMAGE_DELTA = 5
 INITIAL_HEALTH = 100
 MISSED_TARGED = 'FAILED'
 TARGET_HIT = 'SUCCESS'
-
+LOSER = 'loser'
+WINNER = 'winner'
+DRAW = 'draw'
+RESULT = 'result'
+ACTION = 'action'
 
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
     '''
