@@ -15,7 +15,7 @@
     function turnsTimer() {
         if (gameData['actions'].length > 0) {
             var turnAction = gameData['actions'].shift();
-            //console.log(turnAction['action']);
+            console.log(turnAction['action']);
         } else {
             clearInterval(gameTimer);
         }
@@ -68,7 +68,7 @@
         var jqxhr = $.get( "get_match", function(data) {
           if (data['success']) {
               startGame(data['data']);
-              gameTimer = setInterval(function () {turnsTimer()}, 2000);
+              gameTimer = setInterval(function () {turnsTimer()}, 500);
           }
         })
           .fail(function() {
