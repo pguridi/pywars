@@ -7,6 +7,7 @@ from exc import (
     InvalidBotOutput,
     BotTimeoutException,
     MissedTargetException,
+    TankDestroyedException,
 )
 
 #Exit error codes
@@ -87,6 +88,8 @@ class Context(object):
 
     def decrease_life(self, player, amount):
         self.info[player][self.LIFE] -= amount
+        if self.info[player][self.LIFE] <= 0:
+            raise TankDestroyedException()
 
     def life(self, player):
         return self.info[player][self.LIFE]
@@ -167,12 +170,12 @@ class BattleGroundArena(object):
                             self.resolve_move_action(player, bot_response['WHERE'])
                         elif bot_response['ACTION'] == 'SHOOT':
                             self.resolve_shoot_action(player,
-                                                    bot_response['VEL'],
-                                                    bot_response['ANGLE'])
-                    except InvalidBotOutput:
-                        self.match.lost(player, u'Invalid output')
-                    except BotTimeoutException:
-                        self.match.lost(player, u'Timeout')
+                                                      bot_response['VEL'],
+                                                      bot_response['ANGLE'])
+                    except (InvalidBotOutput,
+                            BotTimeoutException,
+                            TankDestroyedException) as e:
+                        self.match.lost(player, e.reason)
                     except Exception as e:
                         self.match.lost(player, u'Crashed')
         except Exception as e:  # TODO: remove at last
