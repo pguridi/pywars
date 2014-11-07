@@ -201,8 +201,16 @@ class BattleGroundArena(object):
         else:
             self.context.provide_feedback(player, FAILED)
 
+    def adjust_player_shoot_trajectory(self, player, trajectory):
+        """Depending on which side of the arena :player: is, we need or not to
+        reverse the x coordinates."""
+        if player.x_factor == -1:  # Side B, symetric x
+            trajectory = [(self.width - x, y) for x, y in trajectory]
+        return trajectory
+
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle)
+        trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
         # Log the shoot made by the player
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
