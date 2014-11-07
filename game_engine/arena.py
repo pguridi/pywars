@@ -23,13 +23,16 @@ FAILED = 'FAILED'
 SUCCESS = 'SUCCESS'
 
 
-def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
+def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
+                     x_limit=1000):
     '''
     returns a list of (x, y) projectile motion data points
     where:
     x axis is distance (or range) in meters
     y axis is height in meters
+    :x_limit: Indicates if the trajectory is going out of the grid
     '''
+    x = 0.0
     data_xy = []
     t = 0.0
     angle = math.radians(angle)
@@ -37,7 +40,7 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
         # now calculate the height y
         y = starting_height + (t * speed * math.sin(angle)) - (gravity * t * t)/2
         # projectile has hit ground level
-        if y < 0:
+        if y < 0 or x > x_limit:
             break
         # calculate the distance x
         x = speed * math.cos(angle) * t
@@ -213,10 +216,12 @@ class BattleGroundArena(object):
         """Given impact coords (x, y), translate their numbers to our arena
         grid.
         Current Scale: 1m² per grid cell"""
+        if y <= 3:
+            y = 0
         return int(round(x)), int(round(y))
 
     def resolve_shoot_action(self, player, speed, angle):
-        trajectory = shoot_projectile(speed, angle)
+        trajectory = shoot_projectile(speed, angle, x_limit=self.width)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
         # Log the shoot made by the player
         self.match.trace_action(dict(action="make_shoot",
