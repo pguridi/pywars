@@ -1,4 +1,4 @@
-@font-face {
+/*@font-face {
     font-family: 'FixedsysExcelsior301Regular';
     src: url('fsex300-webfont.eot');
     src: url('fsex300-webfont.eot?#iefix') format('embedded-opentype'),
@@ -9,10 +9,10 @@
     font-style: normal;
     -webkit-font-smoothing:aliased;
     font-smooth:never;
-}
+}*/
 
 body,body .container{
-    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
+/*    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;*/
     background-color: black;
     font-size: 1em;
 }
