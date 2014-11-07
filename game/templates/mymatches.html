@@ -12,7 +12,6 @@
             <th>Challenged</th>
             <th>Winner</th>
             <th>Duration</th>
-            <th>Moves</th>
             <th>Date</th>
             <th>Action</th>
           </tr>
@@ -24,8 +23,7 @@
                 <td>{{ match.challenger_bot.owner }}{% if match.result %} ({{ match.score.0 }}){% endif %}</td>
                 <td>{{ match.challenged_bot.owner }}{% if match.result %} ({{ match.score.1 }}){% endif %}</td>
                 <td>{{ match.winner_bot.owner|default:"-" }}</td>
-                <td>{{ match.duration }}</td>
-                <td>{{ match.move_count }}</td>
+                <td>{{ match.elapsed_time }}</td>
                 <td>{{ match.creation_date }}</td>
                 <td><a class="btn btn-primary btn-warning" href="{% url 'view_match' match_id=match.id %}" {% if not match.result %}disabled="disabled"{% endif %} title="{{ match.result_description|escape }}">View</a></td>
             </tr>

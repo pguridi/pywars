@@ -2,16 +2,15 @@
 {% load i18n staticfiles %}
 
 {% block js %}
+
   {{ form.media }}
   <script src="{% static '/static/js/custom.js' %}"></script>
+
 {% endblock %}
 
 {% block content %}
 
 <div class="container-fluid main">
-    <script type="text/javascript">
-    </script>
-
     <div class="row-fluid">
         <div class="span4">
           <!--Sidebar content-->
@@ -29,8 +28,8 @@
         <form action="" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary btn-xs" name="save_buffer">Save Buffer</button>
-            <button type="submit" class="btn btn-success btn-xs" name="publish_buffer">Publish Bot</button>
+            <button type="submit" class="btn btn-primary btn-xs" name="save_buffer">Save</button>
+            <button type="submit" class="btn btn-success btn-xs" name="publish_buffer">Test & publish</button>
             <p><h5>Latest update: {{ user_prof.code_update_date }}</h5></p>
         </form>
 

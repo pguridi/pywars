@@ -39,15 +39,15 @@ def scoreboard(request):
 #    else:
 #        pending_challenges = False
 
-    pending_challenged_bots = [ c.challenged_bot for c in challenges ]
+    pending_challenged_bots = [c.challenged_bot for c in challenges]
 
     played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True)
-    challenged_bots = [ c.challenged_bot for c in played_challenges ]
+    challenged_bots = [c.challenged_bot for c in played_challenges]
 
-    return render(request, 'scoreboard.html', { 'tab' : 'score',
-                'users' : users,
-                'challenged_bots' : challenged_bots,
-                'pending_challenged_bots' : pending_challenged_bots})
+    return render(request, 'scoreboard.html', {'tab': 'score',
+                'users': users,
+                'challenged_bots': challenged_bots,
+                'pending_challenged_bots': pending_challenged_bots})
 
 @login_required
 def mybots(request):
@@ -56,9 +56,9 @@ def mybots(request):
         form = BotBufferForm(request.POST)
         if not form.is_valid():
             print "ERROR in form!"
+            return
         new_code = form.cleaned_data['code']
         user_prof.code = new_code
-        user_prof.save()
 
         if 'publish_buffer' in request.POST:
             bot = Bot()
@@ -66,7 +66,8 @@ def mybots(request):
             bot.code = new_code
             bot.save()
             user_prof.current_bot = bot
-            user_prof.save()
+
+        user_prof.save()
         return redirect('/mybots')
     else:
         form = BotBufferForm(instance=user_prof)
@@ -83,7 +84,47 @@ def mybots(request):
 @csrf_exempt
 @require_POST
 def challenge(request):
-    return HttpResponse(None)
+    if request.is_ajax():
+        challenge_bot_id = json.loads(request.body)['msg']
+        challenge_bot = Bot.objects.get(pk=challenge_bot_id)
+
+        # get the user current bot
+        user_prof = UserProfile.objects.get(user=request.user)
+        if not user_prof.current_bot:
+            print "Can not challenge if does not have a bot!"
+            return HttpResponse("Error")
+        if challenge_bot.owner == user_prof:
+            print "[CHEATING!] - wrong challenge bot!"
+            return HttpResponse("Error")
+
+        # challenged bot must be the owners current bot
+        if not challenge_bot.is_current_bot:
+            print "[CHEATING!] - wrong challenge bot!, must be the owners current bot!."
+            return HttpResponse("Error")
+
+        print "Got a challenge for bot: ", challenge_bot
+
+        # Get pending challenges for this user
+        challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
+        if challenges.count() > 0:
+            # has pending challenges, must wait.
+            return HttpResponse("Can not challenge more than one bot at a time")
+
+        # Check if these bots haven't already played.
+        #played_challs = Challenge.objects.filter(challenger_bot=user_prof.current_bot,
+        #    challenged_bot=challenge_bot, played=True)
+
+        #if played_challs.count() > 0:
+        #    # has already played against this bot, must upload a new one
+        #    return HttpResponse("Already played against this bot!. Upload a new one.")
+
+        new_challengue = Challenge()
+        new_challengue.requested_by = user_prof
+        new_challengue.challenger_bot = user_prof.current_bot
+        new_challengue.challenged_bot = challenge_bot
+        new_challengue.save()
+
+        return JsonResponse({'success': True})
 
 @login_required
 @cache_page(60)
@@ -93,7 +134,7 @@ def main_match(request):
 @login_required
 def my_matches(request):
     matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
-    return render(request, 'mymatches.html', {'matches': matches})
+    return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
 
 @login_required
 def get_match(request, match_id):

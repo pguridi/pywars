@@ -6,11 +6,11 @@ Battleground
 - [System configuration](#system-configurations)
 - [Game rules](#game-rules)
     - [Programming the tank bot](#programming-the-tank-bot)
+- [Running matchs](#running-the-celery-workers-for-running-matches)
 
 ## Introduction ##
 
 A turn based tank game for Python bots
-
 
 ## System configuration ##
 This is the configuration for development. Make sure you have a virtualenv. You need to do the following:
@@ -43,3 +43,6 @@ Taking this game status as an input, the method should evaluate programmatically
 
 ## IMPORTANT ##
 Code used to implement `evaluate_turn` must run in **PyPy**. For security reasons, this code runs in a PyPy Sandbox, so keep in mind that modules like `random` or `time` are not available, so you must figure out how to live with that :P
+
+# Running the Celery worker for running matches:
+celery -A battleground worker -l info
