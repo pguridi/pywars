@@ -8,8 +8,10 @@ class BotBufferForm(forms.ModelForm):
         model = UserProfile
         fields = ['code']
         widgets = {
-            "code": AceWidget(mode='python',
-                              theme='twilight'),
+            "code": AceWidget(  mode='python',
+                                theme='twilight',
+                                width="850px",
+                                height="500px"),
         }
 
     def clean_code(self):

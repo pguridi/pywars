@@ -17,13 +17,12 @@
 
 class Bot(object):
 
-    def evaluate_turn(self, arena_array, feedback, life):
+    def evaluate_turn(self, distance, feedback, life):
         '''
-        :param arena_array:  a Python array with players location. Ie:
-        arena_array = [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0] # (where the number is the player location)
+        :distance: A numerical value indicating the distance to the target
         :param feedback: the result of the previous turn, ie: for the move action 'SUCCESS' is returned when the enemy
             received a hit, or 'FAILED' when missed the shot.
         :param life: Current life level, An integer between between 0-100.
         :return: see the comments above
         '''
-        return None
+        return {'ACTION': 'SHOOT', 'VEL': 32.17, 'ANGLE': 35}

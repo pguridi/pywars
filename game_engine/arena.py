@@ -18,21 +18,25 @@ EXIT_ERROR_BOT_INSTANCE = 3
 FREE = 0
 DAMAGE_DELTA = 5
 INITIAL_HEALTH = 100
-MISSED_TARGED = 'FAILED'
-TARGET_HIT = 'SUCCESS'
+FAILED = 'FAILED'
+SUCCESS = 'SUCCESS'
 LOSER = 'loser'
 WINNER = 'winner'
 DRAW = 'draw'
 RESULT = 'result'
 ACTION = 'action'
 
-def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
+
+def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
+                     x_limit=1000):
     '''
     returns a list of (x, y) projectile motion data points
     where:
     x axis is distance (or range) in meters
     y axis is height in meters
+    :x_limit: Indicates if the trajectory is going out of the grid
     '''
+    x = 0.0
     data_xy = []
     t = 0.0
     angle = math.radians(angle)
@@ -40,15 +44,14 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
         # now calculate the height y
         y = starting_height + (t * speed * math.sin(angle)) - (gravity * t * t)/2
         # projectile has hit ground level
-        if y < 0:
+        if y < 0 or x > x_limit:
             break
         # calculate the distance x
         x = speed * math.cos(angle) * t
         # append the (x, y) tuple to the list
-        data_xy.append((x, y))
+        data_xy.append((round(x, 1), round(y, 1)))
         # use the time in increments of 0.1 seconds
         t += 0.1
-    # TODO: match every (x, y) (or at least the last one), with our grid.
     return data_xy
 
 

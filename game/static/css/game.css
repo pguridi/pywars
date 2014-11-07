@@ -1,4 +1,4 @@
-@font-face {
+/*@font-face {
     font-family: 'FixedsysExcelsior301Regular';
     src: url('fsex300-webfont.eot');
     src: url('fsex300-webfont.eot?#iefix') format('embedded-opentype'),
@@ -9,10 +9,10 @@
     font-style: normal;
     -webkit-font-smoothing:aliased;
     font-smooth:never;
-}
+}*/
 
 body,body .container{
-    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
+/*    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;*/
     background-color: black;
     font-size: 1em;
 }
@@ -45,8 +45,9 @@ background-color: transparent;
 color:white;
 }
 
-#score_table td,#score_table th{
+#score_table td, #score_table th{
 color:white;
+background: black;
 }
 
 .high_score {
@@ -131,7 +132,7 @@ background: grey;
 }
 
 #list_div{
-/*border: 1px solid red; */
+border: 1px solid red;
 margin-left: 1em;
 }
 
@@ -141,7 +142,7 @@ margin-left: 1em;
 }
 
 .scoreboard {
-  background-image:url('/static/img/pytron.png');
+  /*background-image:url('/static/img/');*/
   background-position: 50% 10em;
   background-repeat: no-repeat;
   min-height: 600px;
@@ -152,43 +153,51 @@ margin-left: 1em;
   font-size: .7em;
 }
 
-    #editor {
-        display: block;
-        position: relative;
-        height: 400px;
-        width: 650px;
+#editor {
+    display: block;
+    position: relative;
+    height: 400px;
+    width: 650px;
+}
+  body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    /*background-color: #f5f5f5;*/
+  }
+
+  .form-signin {
+    max-width: 300px;
+    padding: 19px 29px 29px;
+    margin: 0 auto 20px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    -webkit-border-radius: 5px;
+       -moz-border-radius: 5px;
+            border-radius: 5px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+       -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  }
+  .form-signin .form-signin-heading,
+  .form-signin .checkbox {
+    margin-bottom: 10px;
+  }
+  .form-signin input[type="text"],
+  .form-signin input[type="password"] {
+    font-size: 16px;
+    height: auto;
+    margin-bottom: 15px;
+    padding: 7px 9px;
+  }
+  .modal {
+    background: black;
     }
-      body {
-        padding-top: 40px;
-        padding-bottom: 40px;
-        /*background-color: #f5f5f5;*/
-      }
 
-      .form-signin {
-        max-width: 300px;
-        padding: 19px 29px 29px;
-        margin: 0 auto 20px;
-        background-color: #fff;
-        border: 1px solid #e5e5e5;
-        -webkit-border-radius: 5px;
-           -moz-border-radius: 5px;
-                border-radius: 5px;
-        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-                box-shadow: 0 1px 2px rgba(0,0,0,.05);
-      }
-      .form-signin .form-signin-heading,
-      .form-signin .checkbox {
-        margin-bottom: 10px;
-      }
-      .form-signin input[type="text"],
-      .form-signin input[type="password"] {
-        font-size: 16px;
-        height: auto;
-        margin-bottom: 15px;
-        padding: 7px 9px;
-      }
-      .modal {
-        background: black;
-        }
+/*code editor*/
+.django-ace-toolbar{
+  display: none;
+}
 
+#bot-history-list{
+  font-size: 20px;
+}

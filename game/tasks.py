@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import os
 import shutil
+import json
 
 ENGINE_LOCATION = os.path.abspath(os.path.join("game_engine", "arena.py"))
 ENGINE_EXCEPS = os.path.abspath(os.path.join("game_engine", "exc.py"))
@@ -46,5 +47,7 @@ def run_match(challengue_id, players):
     challng.elapsed_time = time.time() - start_time
 
     challng.played = True
-    challng.result = stdo
+
+    # Muy sucio.. pero es lo que hay.. :O
+    challng.result = json.dumps(eval(stdo))
     challng.save()

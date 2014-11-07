@@ -3,34 +3,81 @@
 {% load staticfiles %}
 
 {% block js %}
-  <script src="{% static '/static/js/tron-render.js' %}"></script>
   <script src="{% static '/static/js/custom.js' %}"></script>
+  <script src="{% static '/static/phaser/build/phaser.js' %}"></script>
+  <script src="{% static '/static/js/pywars/Player.js' %}"></script>
+  <script src="{% static '/static/js/pywars/Level.js' %}"></script>
   <script type="text/javascript">
+    // here goes the match turns
+    var gameData = [];
+    var gameTimer = null;
 
-$(document).ready(function() {
-        function load_matches() {
-            jQuery.ajax({
-                  url: '/main-match',
-                  dataType: 'json',
-                  success: function(data, status) {
-                       $('#playlist').empty();
-                       $(data).each(function(index, match) {
-                            $('#playlist').append('<a href="#" onclick="request_match(' + match.id + ')" title="' + match.title + '">[' + match.id + '] ' + match.player1 + ' vs ' + match.player2 + ' (' + match.duration + '/' + match.moves + ' moves)</a></br>');
-                        });
-                  },
-            });
+    function turnsTimer() {
+        if (gameData['actions'].length > 0) {
+            var turnAction = gameData['actions'].shift();
+            //console.log(turnAction['action']);
+        } else {
+            clearInterval(gameTimer);
         }
-        load_matches();
-        setInterval(load_matches, 60000)
-        {% if match_id %}
-        request_match({{match_id}});
-        {% endif %}
-        //$('#speed_set_label').text($('#speed_set').val()/10);
-        //$('#speed_set').on('change', function () {
-          //  $('#speed_set_label').text($(this).val()/10);
-        //});
+    }
+    
+    var players = [];
+    var level = null;
+    var hud = null;
+        
+    var game = null;
+    
+    function startGame(data) {
+        gameData = data;
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+        
+        function preload()
+        {
+	        level = new Level(game);
+            level.preload();
+
+            for (var k in gameData['actions']) {
+                playerData = gameData['actions'][k];
+                if (playerData['action'] == 'new_player') {
+                    var new_player = new Player(game, playerData['name'], playerData['position']);
+                    new_player.preload();
+                    players.push(new_player);
+                }
+            }
+        }
+
+        function create()
+        {
+            level.create();
+            for (playerK in players) {
+                players[playerK].create();
+            }
+            //hud.create();
+        }
+
+        function update() 
+        {
+            level.update();
+            for (playerK in players) {
+                players[playerK].update();
+            }
+        }
+    }
+    
+    $(document).ready(function() {
+        var jqxhr = $.get( "get_match", function(data) {
+          if (data['success']) {
+              startGame(data['data']);
+              gameTimer = setInterval(function () {turnsTimer()}, 2000);
+          }
+        })
+          .fail(function() {
+            console.log("Failed to get match");
+          });
+        
+        
     });
-  </script>
+</script>
 {% endblock %}
 
 {% block content %}
@@ -44,18 +91,18 @@ $(document).ready(function() {
             </div>
             <div class="span8">
                 <div id="header">
-                  <h1>Onapsis <img src="{% static '/static/img/pytron_logo.png' %}"/> Challenge</h1>
+                  <h1>Pywars<!--<img alt="logo" src="{% static '/static/img/logo.png' %}"/>--> Challenge</h1>
                 </div>
                 <div id="players_divs">
-                        <img id="p1_img" src="/static/media/lightcycle-start-transparent.png" />
-                        <span id="player1"></span>
-                        <span id="vs_text"> vs</span>
-                        <span id="player2"></span>
-                        <img id="p2_img" src="/static/media/lightcycle-start-transparent-2.png" />
+                    <!--<img id="p1_img" alt="tank1" src="/static/media/tank1.png" />-->
+                    <span id="player1"></span>
+                    <span id="vs_text"> vs</span>
+                    <span id="player2"></span>
+                    <!--<img id="p2_img" alt="tank2" src="/static/media/tank2.png" />-->
                 </div>
-                <div class="row">
-                    <canvas id="the-game">Your browser does not support HTML5 Canvas.</canvas>
-                </div>
+            </div>
+            <div class="span8">
+                <div id="game"></div>
             </div>
         </div>
     </div> <!-- /container -->

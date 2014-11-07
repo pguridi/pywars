@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^main-match$', 'game.views.main_match', name='main_match'),
     url(r'^my-matches$', 'game.views.my_matches', name='my_matches'),
     url(r'^test-match$', 'game.views.random_test_match', name='test_match'),
-    url(r'^get-match/(\d+)$', 'game.views.get_match', name='get_match'),
+    url(r'^get_match$', 'game.views.get_match', name='get_match'),
     url(r'^bot_code/(\d+)$', 'game.views.bot_code', name='bot_code'),
 
 
