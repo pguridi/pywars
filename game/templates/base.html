@@ -4,19 +4,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Battleground Onapsis</title>
+    <title>PyWars by Onapsis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     {% compress css %}
       <link href="{% static 'bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet" media="screen">
       <link rel="stylesheet" href="{% static 'css/game.css' %}">
-      {% block css %}{% endblock %}
+    {% block css %}{% endblock %}
     {% endcompress %}
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
     {% compress js %}
     <script src="{% static 'jquery/dist/jquery.js' %}"></script>
     <script src="{% static 'bootstrap/dist/js/bootstrap.js' %}"></script>
-      {% block js %}{% endblock %}
+    {% block js %}{% endblock %}
       <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
       <!--[if lt IE 9]>
         <script src="/static/js/html5shiv.js"></script>
@@ -27,31 +27,53 @@
 </head>
   <body>
   {% if user.is_authenticated %}
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Battleground</a>
-          <div class="nav-collapse collapse">
-            <p class="navbar-text pull-right">
-              Logged in as {{ user }}, <a href="/accounts/logout">logout</a>
-            </p>
-            <ul class="nav">
-              <li {% if tab == "arena" %}class="active"{% endif %}><a href="/">Arena</a></li>
-              <li {% if tab == "score" %}class="active"{% endif %}><a href="/scoreboard">Tournament</a></li>
-              <li {% if tab == "mymatches" %}class="active"{% endif %}><a href="/my-matches">My Challenges</a></li>
-              <li {% if tab == "mybots" %}class="active"{% endif %}><a href="/mybots">My bots</a></li>
-              <li {% if tab == "about" %}class="active"{% endif %}><a href="/about">About the game</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+          <a class="navbar-brand" href="#">PyWars</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li role="presentation" {% if tab == "arena" %}class="active"{% endif %}>
+              <a href="/">Arena</a>
+            </li>
+            <li role="presentation"{% if tab == "score" %}class="active"{% endif %}>
+              <a href="/scoreboard">Tournament</a>
+            </li>
+            <li role="presentation"{% if tab == "my-matches" %}class="active"{% endif %}>
+              <a href="/my-matches">My Matches</a>
+            </li>
+            <li role="presentation"{% if tab == "mybots" %}class="active"{% endif %}>
+              <a href="/mybots">My bots</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <!--<li><a href="#">Link</a></li>-->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">User: <strong>{{ user }}</strong> &nbsp;<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/accounts/logout">Logout</a></li>
+                <li class="divider"></li>
+                <li>
+                  <a href="/about" {% if tab == "about" %}class="active"{% endif %}>About the game</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-    {% block content %}{% endblock %}
+    </nav>
+    {% block content %}
+    {% endblock %}
   {% else %}
     <div class="container">
       <form method="post" action="/accounts/login/" class="form-signin">
@@ -75,8 +97,7 @@
         <p></p>
         <p>{% trans "Not registered" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
       </form>
-
     </div> <!-- /container -->
-{% endif %}
+  {% endif %}
   </body>
 </html>
