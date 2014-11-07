@@ -53,7 +53,6 @@ class ArenaGrid(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        # TODO: we only need the X axis, not the whole matrix
         self.arena = [[FREE for _ in xrange(self.height)] for __ in xrange(self.width)]
 
     def copy_for_player(self):
@@ -207,6 +206,12 @@ class BattleGroundArena(object):
             trajectory = [(self.width - x, y) for x, y in trajectory]
         return trajectory
 
+    def _scale_coords(self, (x, y)):
+        """Given impact coords (x, y), translate their numbers to our arena
+        grid.
+        Current Scale: 1m² per grid cell"""
+        return int(round(x)), int(round(y))
+
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
@@ -216,8 +221,7 @@ class BattleGroundArena(object):
                                      angle=angle,
                                      trajectory=trajectory))
         # Get the impact coordinates
-        # TODO: translate coordinates
-        x_imp, y_imp = trajectory[-1]
+        x_imp, y_imp = self._scale_coords(trajectory[-1])
         try:
             affected_players = [p for p in self.players
                                 if p.x == x_imp and p.y == y_imp]
