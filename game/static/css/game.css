@@ -1,4 +1,4 @@
-@font-face {
+/*@font-face {
     font-family: 'FixedsysExcelsior301Regular';
     src: url('fsex300-webfont.eot');
     src: url('fsex300-webfont.eot?#iefix') format('embedded-opentype'),
@@ -9,10 +9,10 @@
     font-style: normal;
     -webkit-font-smoothing:aliased;
     font-smooth:never;
-}
+}*/
 
 body,body .container{
-    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
+/*    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;*/
     background-color: black;
     font-size: 1em;
 }
@@ -45,8 +45,9 @@ background-color: transparent;
 color:white;
 }
 
-#score_table td,#score_table th{
+#score_table td, #score_table th{
 color:white;
+background: black;
 }
 
 .high_score {
@@ -141,7 +142,7 @@ margin-left: 1em;
 }
 
 .scoreboard {
-  background-image:url('/static/img/pytron.png');
+  /*background-image:url('/static/img/');*/
   background-position: 50% 10em;
   background-repeat: no-repeat;
   min-height: 600px;
@@ -192,3 +193,11 @@ margin-left: 1em;
     background: black;
     }
 
+/*code editor*/
+.django-ace-toolbar{
+  display: none;
+}
+
+#bot-history-list{
+  font-size: 20px;
+}
