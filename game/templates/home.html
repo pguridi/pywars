@@ -14,62 +14,62 @@
 
     function turnsTimer() {
         if (gameData['actions'].length > 0) {
-            var turnAction = gameData['actions'].pop();
-            console.log(turnAction);
+            var turnAction = gameData['actions'].shift();
+            //console.log(turnAction['action']);
         } else {
             clearInterval(gameTimer);
         }
     }
     
-    
-    var player1 = null;
-    var player2 = null;
-
-    var username1 = "player1";
-    var username2 = "player2";
+    var players = [];
     var level = null;
     var hud = null;
         
     var game = null;
     
     function startGame(data) {
+        gameData = data;
         game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
         
-        gameData = data;
-      
         function preload()
         {
 	        level = new Level(game);
             level.preload();
 
-            player1 = new Player(game, username1, 50);
-            player1.preload();
-            
-            player2 = new Player(game, username2, 780);
-            player2.preload();
-            //hud = new HUD(game);
+            for (var k in gameData['actions']) {
+                playerData = gameData['actions'][k];
+                if (playerData['action'] == 'new_player') {
+                    var new_player = new Player(game, playerData['name'], playerData['position']);
+                    new_player.preload();
+                    players.push(new_player);
+                }
+            }
         }
 
         function create()
         {
             level.create();
-            player1.create();
-            player2.create();
+            for (playerK in players) {
+                players[playerK].create();
+            }
             //hud.create();
         }
 
         function update() 
         {
             level.update();
-            player1.update();
-            player2.update();
+            for (playerK in players) {
+                players[playerK].update();
+            }
         }
     }
     
     $(document).ready(function() {
         var jqxhr = $.get( "get_match", function(data) {
-          startGame(data['data']);
-          gameTimer = setInterval(function () {turnsTimer()}, 2000);
+          if (data['success']) {
+              startGame(data['data']);
+              gameTimer = setInterval(function () {turnsTimer()}, 2000);
+          }
         })
           .fail(function() {
             console.log("Failed to get match");

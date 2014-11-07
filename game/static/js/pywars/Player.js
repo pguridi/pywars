@@ -1,8 +1,8 @@
 Player = function(game, username, position) {
 
 	this.game = game;
-	this.username = name;
-	this.player_position = position;
+	this.username = username;
+	this.player_position = position[0] * 10;
 	this.sprite = null;
 	this.cursors = null;
 	
@@ -19,18 +19,15 @@ Player.prototype = {
 		
 		this.game.physics.arcade.enable(this.sprite);
 		
-		console.log("position: " + this.player_position);
 		this.sprite.position.x = this.player_position;
 		
 		if (this.player_position < 400) {
 		    // is the left player
-		    console.log("Is left player");
-		    score1Text = game.add.text(16, 16, 'player1: 0', { fontSize: '32px', fill: '#000' });
+		    this.health_status = game.add.text(16, 16, this.username + ': 0', { fontSize: '32px', fill: '#ffffff' });
 		    this.sprite.frame = 6;
 		} else {
 		    // is the right player
-		    console.log("Is right player");
-		    score1Text = game.add.text(16, 16, 'player2: 0', { fontSize: '32px', fill: '#000' });
+		    this.health_status = game.add.text(650, 16, this.username + ': 0', { fontSize: '32px', fill: '#ffffff' });
 		    this.sprite.frame = 8;
 		}
 
