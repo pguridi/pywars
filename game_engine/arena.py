@@ -41,10 +41,9 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8):
         # calculate the distance x
         x = speed * math.cos(angle) * t
         # append the (x, y) tuple to the list
-        data_xy.append((x, y))
+        data_xy.append((round(x, 1), round(y, 1)))
         # use the time in increments of 0.1 seconds
         t += 0.1
-    # TODO: match every (x, y) (or at least the last one), with our grid.
     return data_xy
 
 
