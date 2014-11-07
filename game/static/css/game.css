@@ -45,8 +45,9 @@ background-color: transparent;
 color:white;
 }
 
-#score_table td,#score_table th{
+#score_table td, #score_table th{
 color:white;
+background: black;
 }
 
 .high_score {
