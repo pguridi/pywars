@@ -141,7 +141,7 @@ margin-left: 1em;
 }
 
 .scoreboard {
-  background-image:url('/static/img/pytron.png');
+  /*background-image:url('/static/img/');*/
   background-position: 50% 10em;
   background-repeat: no-repeat;
   min-height: 600px;
