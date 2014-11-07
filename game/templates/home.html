@@ -5,7 +5,79 @@
 {% block js %}
   <script src="{% static '/static/js/custom.js' %}"></script>
   <script src="{% static '/static/phaser/build/phaser.js' %}"></script>
-  <script src="{% static '/static/js/pywars.js' %}"></script>
+  <script src="{% static '/static/js/pywars/Player.js' %}"></script>
+  <script src="{% static '/static/js/pywars/Level.js' %}"></script>
+  <script type="text/javascript">
+    // here goes the match turns
+    var gameData = [];
+    var gameTimer = null;
+
+    function turnsTimer() {
+        if (gameData['actions'].length > 0) {
+            var turnAction = gameData['actions'].pop();
+            console.log(turnAction);
+        } else {
+            clearInterval(gameTimer);
+        }
+    }
+    
+    
+    var player1 = null;
+    var player2 = null;
+
+    var username1 = "player1";
+    var username2 = "player2";
+    var level = null;
+    var hud = null;
+        
+    var game = null;
+    
+    function startGame(data) {
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+        
+        gameData = data;
+      
+        function preload()
+        {
+	        level = new Level(game);
+            level.preload();
+
+            player1 = new Player(game, username1, 50);
+            player1.preload();
+            
+            player2 = new Player(game, username2, 780);
+            player2.preload();
+            //hud = new HUD(game);
+        }
+
+        function create()
+        {
+            level.create();
+            player1.create();
+            player2.create();
+            //hud.create();
+        }
+
+        function update() 
+        {
+            level.update();
+            player1.update();
+            player2.update();
+        }
+    }
+    
+    $(document).ready(function() {
+        var jqxhr = $.get( "get_match", function(data) {
+          startGame(data['data']);
+          gameTimer = setInterval(function () {turnsTimer()}, 2000);
+        })
+          .fail(function() {
+            console.log("Failed to get match");
+          });
+        
+        
+    });
+</script>
 {% endblock %}
 
 {% block content %}

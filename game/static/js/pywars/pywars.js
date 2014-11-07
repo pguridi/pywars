@@ -2,7 +2,6 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '#game', { preload: preload, c
 
 function preload() {
     game.load.image('background', 'static/assets/background2.png');
-    game.load.spritesheet('tank', 'static/assets/tanks.png', 74, 62);
     game.load.image('bullet', 'static/assets/bullet.png');
 
 }
@@ -73,7 +72,7 @@ function create() {
 
 
     // Create an object pool of bullets
-    bulletPool = game.add.group();
+    /*bulletPool = game.add.group();
     for(var i = 0; i < 200; i++) {
         // Create each bullet and add it to the group.
         var bullet = game.add.sprite(0, 0, 'bullet');
@@ -87,7 +86,7 @@ function create() {
 
         // Set its initial state to "dead".
         bullet.kill();
-    }
+    }*/
 
     // Load the players and its settings
     for(var i=0;i<players.length;i++){

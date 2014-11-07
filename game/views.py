@@ -137,8 +137,12 @@ def my_matches(request):
     return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
 
 @login_required
-def get_match(request, match_id):
-    return HttpResponse(None)
+def get_match(request):
+    challenges = Challenge.objects.filter(played=True)
+    if challenges.count() > 0:
+        return JsonResponse({'success': True, 'data': json.loads(challenges[0].result)})
+    else:
+        return JsonResponse({'success': False})
 
 @login_required
 def random_test_match(request):

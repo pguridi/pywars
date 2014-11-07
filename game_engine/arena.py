@@ -191,15 +191,15 @@ class BattleGroundArena(object):
                                         e.reason)
                         raise GameOverException(str(e))
                     except Exception as e:
+                        sys.stderr.write('ERROR1: ' + str(e))
                         self.match.lost(player, u'Crashed')
                         raise GameOverException(str(e))
             except GameOverException as e:
-                print e
+                sys.stderr.write('ERROR2: ' + str(e))
                 break
         else:  # for-else, if all rounds are over
             table = self.context.current_points()
             points = {}
-            print(table)
             for p, life in table.iteritems():
                 points[life] = points.get(life, []) + [p]
             top = max(points)
@@ -207,9 +207,8 @@ class BattleGroundArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
-        self.match.print_trace()
-        return ''
-        #return self.match.__json__()
+        #self.match.print_trace()
+        return self.match.__json__()
 
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
@@ -292,7 +291,7 @@ class BattleGroundMatchLog(object):
         self.game_over_template['draw'] = True
         self.trace_action(self.game_over_template)
 
-    def winner(self, player):
+    def winner(self, player, cause):
         player.status = BattleGroundArena.WINNER
         self._trace_game_over('winner', 'loser', player, cause)
 
