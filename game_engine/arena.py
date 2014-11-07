@@ -83,6 +83,7 @@ class Context(object):
     def __init__(self, players):
         self.info = {player: {self.FEEDBACK: None,
                               self.LIFE: INITIAL_HEALTH} for player in players}
+        self.affected_player = None
 
     def feedback(self, player):
         return self.info[player][self.FEEDBACK]
@@ -93,10 +94,16 @@ class Context(object):
     def decrease_life(self, player, amount):
         self.info[player][self.LIFE] -= amount
         if self.info[player][self.LIFE] <= 0:
+            self.affected_player = player  # whose tank was just destroyed
             raise TankDestroyedException()
 
     def life(self, player):
         return self.info[player][self.LIFE]
+
+    def current_points(self):
+        """Returns the current points per player, mapping
+        player:life"""
+        return {p: d.get(self.LIFE) for p, d in self.info.iteritems()}
 
 
 class BattleGroundArena(object):
@@ -180,7 +187,8 @@ class BattleGroundArena(object):
                     except (InvalidBotOutput,
                             BotTimeoutException,
                             TankDestroyedException) as e:
-                        self.match.lost(player, e.reason)
+                        self.match.lost(self.context.affected_player or player,
+                                        e.reason)
                         raise GameOverException(str(e))
                     except Exception as e:
                         self.match.lost(player, u'Crashed')
@@ -188,7 +196,17 @@ class BattleGroundArena(object):
             except GameOverException as e:
                 print e
                 break
-        # TODO: self.match.trace_action(GAME OVER)
+        else:  # for-else, if all rounds are over
+            table = self.context.current_points()
+            points = {}
+            print(table)
+            for p, life in table.iteritems():
+                points[life] = points.get(life, []) + [p]
+            top = max(points)
+            if len(points[top]) > 1:  # draw
+                self.match.draw()
+            else:  # The player with more resistence wins
+                self.match.winner(points[top][0])
         self.match.print_trace()
         return ''
         #return self.match.__json__()
@@ -259,22 +277,35 @@ class BattleGroundMatchLog(object):
         self.players = players
         self.trace = []   # All actions performed during the match
         self.result = {}
+        self.game_over_template = {'action': 'game_over',
+                                   'winner': '',
+                                   'loser': '',
+                                   'draw': False,
+                                   'reason': ''}
 
     def trace_action(self, arena_action):
         """Receive an action performed on the arena, and log it as a part of
         the match."""
-        # TODO: review
         self.trace.append(arena_action)
 
-    def winner(self, player):  # FIXME
-        player.status = BattleGroundArena.WINNER
-        self.result['winner'] = player.username
+    def draw(self):
+        self.game_over_template['draw'] = True
+        self.trace_action(self.game_over_template)
 
-    def lost(self, player, cause): # FIXME
+    def winner(self, player):
+        player.status = BattleGroundArena.WINNER
+        self._trace_game_over('winner', 'loser', player, cause)
+
+    def lost(self, player, cause):
         player.status = BattleGroundArena.LOST
-        if 'lost' not in self.result:
-            self.result['lost'] = {}
-        self.result['lost'][player.username] = cause
+        self._trace_game_over('loser', 'winner', player, cause)
+
+    def _trace_game_over(self, k1, k2, player, cause):
+        self.game_over_template[k1] = player.username
+        self.game_over_template['reason'] = cause
+        others = ','.join(p.username for p in self.players if p is not player)
+        self.game_over_template[k2] = others
+        self.trace_action(self.game_over_template)
 
     def print_trace(self):
         for i, log in enumerate(self.trace, start=1):
