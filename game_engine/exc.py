@@ -15,3 +15,7 @@ class MissedTargetException(Exception):
 class TankDestroyedException(Exception):
     reason = u'Tank Destroyed'
     pass
+
+
+class GameOverException(Exception):
+    pass

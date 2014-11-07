@@ -8,6 +8,7 @@ from exc import (
     BotTimeoutException,
     MissedTargetException,
     TankDestroyedException,
+    GameOverException,
 )
 
 #Exit error codes
@@ -142,52 +143,55 @@ class BattleGroundArena(object):
     def _validate_bot_output(self, bot_output):
         try:
             if bot_output is None:
-                # None is a valid command, do nothing
                 return
             if bot_output['ACTION'] == 'MOVE':
                 if int(bot_output['WHERE']) not in (-1, 1):
                     # for moving, valid integers are: -1 or 1
                     raise InvalidBotOutput("Moving must be -1 or 1.")
             elif bot_output['ACTION'] == 'SHOOT':
-                if int(bot_output['VEL']) not in range(1, 151):
-                    # velocity must be an integer between 1 and 150
+                # velocity must be an integer between 1 and 150
+                if not (1 <= int(bot_output['VEL']) <= 150):
                     raise InvalidBotOutput("Velocity not in range [1, 150].")
-                if int(bot_output['ANGLE']) not in range(10, 90):
-                    # angle must be an integer between 10 and 89
+                # angle must be an integer between 10 and 89
+                if not (10 <= int(bot_output['ANGLE']) <= 90):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
-        except:
-            raise InvalidBotOutput()
+        except Exception as e:
+            raise InvalidBotOutput(str(e))
 
     def start(self):
-        try:
-            for _ in self.rounds:
+        for _ in self.rounds:
+            try:
                 for player in self.players:
                     try:
                         bot_response = player.evaluate_turn(self.arena.players_distance(),
                                                             self.context.feedback(player),
                                                             self.context.life(player))
                         self._validate_bot_output(bot_response)
+                        if bot_response is None:  # None is a valid command, do nothing
+                            continue
                         # Here the engine calculates the new status
                         # according to the response and updates all tables
                         if bot_response['ACTION'] == 'MOVE':
                             self.resolve_move_action(player, bot_response['WHERE'])
                         elif bot_response['ACTION'] == 'SHOOT':
                             self.resolve_shoot_action(player,
-                                                      bot_response['VEL'],
-                                                      bot_response['ANGLE'])
+                                                        bot_response['VEL'],
+                                                        bot_response['ANGLE'])
                     except (InvalidBotOutput,
                             BotTimeoutException,
                             TankDestroyedException) as e:
                         self.match.lost(player, e.reason)
+                        raise GameOverException(str(e))
                     except Exception as e:
                         self.match.lost(player, u'Crashed')
-        except Exception as e:  # TODO: remove at last
-            print(str(e))
-        finally:
-            # TODO: self.match.trace_action(GAME OVER)
-            self.match.print_trace()
-            return ''
-            #return self.match.__json__()
+                        raise GameOverException(str(e))
+            except GameOverException as e:
+                print e
+                break
+        # TODO: self.match.trace_action(GAME OVER)
+        self.match.print_trace()
+        return ''
+        #return self.match.__json__()
 
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
@@ -293,6 +297,8 @@ class BotPlayer(object):
         self._bot = bot
         self.x_factor = None
         self.username = bot_name
+        self.x = 0
+        self.y = 0
 
     @property
     def bot(self):
