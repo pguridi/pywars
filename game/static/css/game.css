@@ -193,3 +193,11 @@ margin-left: 1em;
     background: black;
     }
 
+/*code editor*/
+.django-ace-toolbar{
+  display: none;
+}
+
+#bot-history-list{
+  font-size: 20px;
+}

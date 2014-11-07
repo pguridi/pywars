@@ -10,49 +10,45 @@
 
 {% block content %}
 
-<div class="container-fluid main">
-    <div class="row-fluid">
-        <div class="span4">
-          <!--Sidebar content-->
-            <p>
-            <h3>Bot history</h3>
-            {% for bot in my_bots %}
-                <p>
-                <a id="{{bot.pk}}" class="select_bot" content="{{bot.code}}" data-toggle="modal" data-target=".bs-example-modal-lg" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
-                </p>
-            {% endfor %}
-        </div>
-        <div class="span8">
+<div class="container main">
+    <div class="row">
+      <div class="col-sm-9">
           <!--Body content-->
-    <p><h3>Write your bot here!</h3></p>
-        <form action="" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary btn-xs" name="save_buffer">Save</button>
-            <button type="submit" class="btn btn-success btn-xs" name="publish_buffer">Test & publish</button>
-            <p><h5>Latest update: {{ user_prof.code_update_date }}</h5></p>
-        </form>
-
-    </div>
+          <p><h3>Write your bot here!</h3></p>
+          <form action="" method="post">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <button type="submit" class="btn btn-primary btn-xs" name="save_buffer">Save</button>
+              <button type="submit" class="btn btn-success btn-xs" name="publish_buffer">Test & publish</button>
+              <p><h5>Latest update: {{ user_prof.code_update_date }}</h5></p>
+          </form>
+      </div>
+      <div class="col-sm-3">
+        <!--Sidebar content-->
+          <h3>Bot history</h3>
+          {% for bot in my_bots %}
+              <span id="bot-history-list">
+                <a id="{{bot.pk}}" class="select_bot" content="{{bot.code}}" data-toggle="modal" data-target=".bot-code-modal" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
+              </span>
+          {% endfor %}
+      </div>
   </div>
 
 
-<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-        <h4 class="modal-title" id="myModalLabel"></h4>
-    </div>
-
+  <div class="modal fade bot-code-modal" tabindex="-1" role="dialog" aria-labelledby="botCodeModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+          <h4 class="modal-title" id="botCodeModal"></h4>
+      </div>
       <div class="modal-content">
-        <pre>
-
-        </pre>
+        <pre></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
-</div>
-
 
 </div>
 
