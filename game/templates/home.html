@@ -8,24 +8,56 @@
   <script src="{% static '/static/js/pywars/Player.js' %}"></script>
   <script src="{% static '/static/js/pywars/Level.js' %}"></script>
   <script type="text/javascript">
-    // here goes the match turns
+    var game = null;
     var gameData = [];
     var gameTimer = null;
+    var turnEndTimer = null;
+    var players = [];
+    var level = null;
+    var hud = null;
+    var current_turn = null;
+    var play_number = 0;
 
+    function verifyTurnEnd(player) {
+        if (player.busy == true) {
+            console.log("player busy");
+            return
+        } else {
+            console.log("player released!");
+            current_turn = null;
+            clearInterval(turnEndTimer);
+        }
+    }
+    
     function turnsTimer() {
         if (gameData['actions'].length > 0) {
-            var turnAction = gameData['actions'].shift();
-            console.log(turnAction['action']);
+            if (current_turn != null) {
+                return;
+            }
+            current_turn = gameData['actions'].shift();
+            if (current_turn['action'] == 'make_move') {
+                player = getPlayer(current_turn['player']);
+                player.move(current_turn['position']);
+                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 300);
+                console.log(player);
+                console.log(current_turn['action']);
+            } else {
+                current_turn = null;
+            }
         } else {
             clearInterval(gameTimer);
         }
     }
-    
-    var players = [];
-    var level = null;
-    var hud = null;
-        
-    var game = null;
+
+    function getPlayer(username) {
+        for (i = 0; i < players.length; i++) {
+            if (players[i].username == username) {
+                console.log("moving player: "+ players[i].username);
+                return players[i];
+            }
+        }
+        return;
+    }
     
     function startGame(data) {
         gameData = data;
@@ -59,7 +91,7 @@
         {
             level.update();
             for (playerK in players) {
-                players[playerK].update();
+               players[playerK].update();
             }
         }
     }
@@ -68,7 +100,7 @@
         var jqxhr = $.get( "get_match", function(data) {
           if (data['success']) {
               startGame(data['data']);
-              gameTimer = setInterval(function () {turnsTimer()}, 500);
+              gameTimer = setInterval(function () {turnsTimer()}, 1000);
           }
         })
           .fail(function() {
