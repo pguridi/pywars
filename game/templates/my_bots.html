@@ -26,13 +26,15 @@
       <div class="col-sm-3">
         <!--Sidebar content-->
           <h3>Bot history</h3>
+          <ul class="bot-history-list">
           {% for bot in my_bots %}
-              <ul id="bot-history-list">
+
                 <li>
                     <a id="{{bot.pk}}" class="select_bot" content="{{bot.code}}" data-toggle="modal" data-target=".bot-code-modal" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
                 </li>
-              </ul>
+
           {% endfor %}
+          </ul>
       </div>
   </div>
 
