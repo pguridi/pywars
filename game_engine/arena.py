@@ -229,9 +229,13 @@ class BattleGroundArena(object):
 
     def adjust_player_shoot_trajectory(self, player, trajectory):
         """Depending on which side of the arena :player: is, we need or not to
-        reverse the x coordinates."""
+        reverse the x coordinates.
+        Calibrate according to the position of :player:"""
         if player.x_factor == -1:  # Side B, symetric x
-            trajectory = [(self.width - x, y) for x, y in trajectory]
+            trajectory = trajectory[::-1]
+        initial_x = trajectory[0][0]  #  x of the first coord
+        delta_x = player.x - initial_x
+        trajectory = [(x + delta_x, y) for x, y in trajectory]
         return [(round(x, 1), round(y, 1)) for x, y in trajectory]
 
     def _scale_coords(self, (x, y)):
