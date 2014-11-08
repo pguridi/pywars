@@ -58,22 +58,22 @@ class ArenaGrid(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.arena = [[FREE for _ in xrange(self.height)] for __ in xrange(self.width)]
+        self.arena = [FREE for _ in xrange(self.width)]
 
     def copy_for_player(self):
         """Return just a copy of the portion we provide to the player."""
-        return [self.arena[i][0] for i in xrange(self.width)]
+        return self.arena[:]
 
     def players_distance(self):
         """Return the distance between the bots. Only two players."""
-        p1, p2 = [i for i in xrange(self.width) if self.arena[i][0] != FREE]
+        p1, p2 = [i for i in xrange(self.width) if self.arena[i] != FREE]
         return p2 - p1
 
     def __getitem__(self, (x, y)):
-        return self.arena[x][y]
+        return self.arena[x]
 
     def __setitem__(self, (x, y), value):
-        self.arena[x][y] = value
+        self.arena[x] = value
 
 
 class Context(object):
