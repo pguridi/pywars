@@ -16,7 +16,7 @@ EXIT_ERROR_NUMBER_OF_PARAMS  = 1
 EXIT_ERROR_MODULE = 2
 EXIT_ERROR_BOT_INSTANCE = 3
 
-
+# Constants we use in the game
 FREE = 0
 DAMAGE_DELTA = 25
 REPAIR_DELTA = 10
@@ -106,7 +106,10 @@ class Context(object):
 
     def repair_tank(self, player):
         """If a player action returns None, it repairs its tank."""
-        self.info[player][self.LIFE] += REPAIR_DELTA
+        if self.info[player][self.LIFE] + REPAIR_DELTA <= INITIAL_HEALTH:
+            self.info[player][self.LIFE] += REPAIR_DELTA
+        else:
+            self.info[player][self.LIFE] = INITIAL_HEALTH
 
     def life(self, player):
         return self.info[player][self.LIFE]
@@ -124,7 +127,7 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=80, height=50):
+    def __init__(self, players, width=30, height=50):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
@@ -278,7 +281,9 @@ class BattleGroundArena(object):
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
                                      angle=angle,
-                                     trajectory=trajectory))
+                                     speed=speed,
+                                     trajectory=trajectory,
+                                     ))
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
         try:
@@ -407,6 +412,7 @@ def main(argv):
     game_result = engine.start()
     print game_result
     sys.exit(0)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
