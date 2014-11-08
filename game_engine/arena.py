@@ -236,7 +236,8 @@ class BattleGroundArena(object):
         initial_x = trajectory[0][0]  #  x of the first coord
         delta_x = player.x - initial_x
         trajectory = [(x + delta_x, y) for x, y in trajectory]
-        return [(round(x, 1), round(y, 1)) for x, y in trajectory]
+        x_off = lambda i: round(i, 1) if player.x_factor == -1 else int(i)
+        return [(x_off(x), round(y, 1)) for x, y in trajectory]
 
     def _scale_coords(self, (x, y)):
         """Given impact coords (x, y), translate their numbers to our arena
