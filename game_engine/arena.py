@@ -32,6 +32,19 @@ DRAW = 'draw'
 RESULT = 'result'
 ACTION = 'action'
 TANK_LENGTH = 3
+# Map each firing result threshold with its feedback
+HOT = 'HOT'
+WARM = 'WARM'
+CODL = 'COLD'
+
+
+def _resolve_missing(distance):
+    if distance <= 3:
+        return HOT
+    elif distance <= 8:
+        return WARM
+    else:
+        return COLD
 
 
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
@@ -43,23 +56,9 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
     y axis is height in meters
     :x_limit: Indicates if the trajectory is going out of the grid
     '''
-    x = 0.0
-    data_xy = []
-    t = 0.0
     angle = math.radians(angle)
-    while True:
-        # now calculate the height y
-        y = starting_height + (t * speed * math.sin(angle)) - (gravity * t * t)/2
-        # projectile has hit ground level
-        if y < 0 or x > x_limit:
-            break
-        # calculate the distance x
-        x = speed * math.cos(angle) * t
-        # append the (x, y) tuple to the list
-        data_xy.append((x, y))
-        # use the time in increments of 0.1 seconds
-        t += 0.1
-    return data_xy
+    distance = (speed ** 2) * math.sin(2*angle) / gravity
+    return [(0, 0), (distance, 0)]
 
 
 class ArenaGrid(object):
@@ -95,11 +94,32 @@ class Context(object):
                               self.LIFE: INITIAL_HEALTH} for player in players}
         self.affected_player = None
 
+    def _feedback_template(self):
+        return {'RESULT': None, 'POSITION': None, 'MISSING': None, }
+
     def feedback(self, player):
         return self.info[player][self.FEEDBACK]
 
     def provide_feedback(self, player, feedback):
         self.info[player][self.FEEDBACK] = feedback
+
+    def move_feedback(self, player, ok=True):
+        _tmp = self._feedback_template()
+        _tmp['RESULT'] = SUCCESS if ok else FAILED
+        _tmp['POSITION'] = (player.x, player.y) if ok else None
+        _tmp['MISSING'] = None
+        self.info[player][self.FEEDBACK] = _tmp
+
+    def shoot_feedback(self, player, ok=True, difference=0):
+        """:difference: How long the shoot was missed"""
+        _tmp = self._feedback_template()
+        _tmp['RESULT'] = SUCCESS if ok else FAILED
+        _tmp['POSITION'] = None
+        if not ok:
+            _tmp['MISSING'] = _resolve_missing(difference)
+        else:
+            _tmp['MISSING'] = None
+        self.info[player][self.FEEDBACK] = _tmp
 
     def decrease_life(self, player, amount):
         self.info[player][self.LIFE] -= amount
@@ -231,6 +251,8 @@ class BattleGroundArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
+        #print(self.match.print_trace())
+        #return ''
         return self.match.__json__()
 
     def _check_player_boundaries(self, player, new_x):
@@ -253,9 +275,9 @@ class BattleGroundArena(object):
                                          player=player.username,
                                          position=[player.x, player.y], ))
             # Tell the user it moved successfully
-            self.context.provide_feedback(player, SUCCESS)
+            self.context.move_feedback(player, ok=True)
         else:
-            self.context.provide_feedback(player, FAILED)
+            self.context.move_feedback(player, ok=False)
 
     def adjust_player_shoot_trajectory(self, player, trajectory):
         """Depending on which side of the arena :player: is, we need or not to
@@ -281,12 +303,11 @@ class BattleGroundArena(object):
         trajectory = shoot_projectile(speed, angle, x_limit=self.width)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
         # Log the shoot made by the player
-        endpoints = [trajectory[0], trajectory[-1]]
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
                                      angle=angle,
                                      speed=speed,
-                                     trajectory=endpoints,
+                                     trajectory=trajectory,
                                      ))
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
@@ -298,9 +319,11 @@ class BattleGroundArena(object):
             if not affected_players:
                 raise MissedTargetException
         except MissedTargetException:
-            self.context.provide_feedback(player, FAILED)
+            # TODO: calculate how missed was the shot: difference
+            self.context.shoot_feedback(player, ok=False, difference=0)
+            #self.context.provide_feedback(player, FAILED)
         else:
-            self.context.provide_feedback(player, SUCCESS)
+            self.context.shoot_feedback(player, ok=True)
             for p in affected_players:
                 self.context.decrease_life(p, DAMAGE_DELTA)
                 self.match.trace_action(dict(action="health_status",
