@@ -19,6 +19,7 @@
     var play_number = 0;
 
     function verifyTurnEnd(player) {
+        console.log("activity1");
         if (player.busy == true) {
             console.log("player busy");
             return
@@ -30,6 +31,7 @@
     }
     
     function turnsTimer() {
+        console.log("activity2");
         if (gameData['actions'].length > 0) {
             if (current_turn != null) {
                 return;
@@ -38,7 +40,7 @@
             if (current_turn['action'] == 'make_move') {
                 player = getPlayer(current_turn['player']);
                 player.move(current_turn['position']);
-                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 300);
+                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
                 console.log(player);
                 console.log(current_turn['action']);
             } else if (current_turn['action'] == 'make_shoot') {

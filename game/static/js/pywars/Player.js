@@ -68,6 +68,9 @@ Player.prototype = {
 
 	update_shooting: function() {
 	    console.log(this.bullet.position);
+	    this.bulletPool.forEachAlive(function(bullet) {
+            bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
+        }, this);
         if (this.bullet.position.y > 600) {
 	        // if shooting
 		    // Create an explosion
@@ -84,6 +87,7 @@ Player.prototype = {
             this.shoot(80, 55);
         }
 	    if (this.move_position != null) {
+	        console.log("activity_move");
 	        // means we are moving
 		    if (this.sprite.body.velocity.x != 0){
 		        // we are moving
