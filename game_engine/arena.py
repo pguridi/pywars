@@ -127,7 +127,7 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=80, height=50):
+    def __init__(self, players, width=30, height=50):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
@@ -282,7 +282,8 @@ class BattleGroundArena(object):
                                      player=player.username,
                                      angle=angle,
                                      speed=speed,
-                                     trajectory=trajectory))
+                                     trajectory=trajectory,
+                                     ))
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
         try:
@@ -411,6 +412,7 @@ def main(argv):
     game_result = engine.start()
     print game_result
     sys.exit(0)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
