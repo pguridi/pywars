@@ -32,9 +32,9 @@
     <div class="container main scoreboard">
 
       <h1>Tournament Rank</h1>
-{% if pending_challenged_bots|length > 0 %}
-* Pending challenges
-{% endif%}
+    {% if pending_challenged_bots|length > 0 %}
+    * Pending challenges
+    {% endif%}
 
 <table id="score_table" class="table table-striped">
         <thead>
@@ -82,7 +82,7 @@
             </td>
             <td>
             {% if latest_match_id %}
-              <a class="btn btn-primary btn-warning" href="{% url 'view_match' match_id=latest_match_id %}">View</a>
+              <a class="btn btn-xs btn-warning" href="{% url 'view_match' match_id=latest_match_id %}">View</a>
             {% endif %}
             </td>
           </tr>

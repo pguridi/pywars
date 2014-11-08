@@ -1,4 +1,4 @@
-/*@font-face {
+@font-face {
     font-family: 'FixedsysExcelsior301Regular';
     src: url('fsex300-webfont.eot');
     src: url('fsex300-webfont.eot?#iefix') format('embedded-opentype'),
@@ -9,10 +9,10 @@
     font-style: normal;
     -webkit-font-smoothing:aliased;
     font-smooth:never;
-}*/
+}
 
 body,body .container{
-/*    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;*/
+    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
     background-color: black;
     font-size: 1em;
 }
@@ -28,16 +28,22 @@ body,body .container{
   margin: 0;
 }
 .about h4{
-    font-size: 1.2em;
+    font-size: 1.5em;
     text-decoration: underline;
 }
-.about p, .about pre {
-    font-size: 1em;
+
+.about p {
+    font-size: 1.5em;
+    font-family: FixedsysExcelsior301Regular;
+    text-align: left;
+
 }
+
 .about pre{
+    font-size: 1.5em;
     background-color: transparent;
     color:white;
-    font-family: FixedsysExcelsior301Regular, FreeMono, monospace;
+    font-family: FixedsysExcelsior301Regular;
 }
 
 .table-striped tbody>tr:nth-child(odd)>td, .table-striped tbody>tr:nth-child(odd)>th {
@@ -102,6 +108,9 @@ img#p1_img,img#p2_img{
     margin-bottom: 1em;
     text-align:center;
 }
+.playlist-box h3{
+  margin: 0;
+}
 #playlist{
     white-space:nowrap;
 }
@@ -129,6 +138,7 @@ background: grey;
     margin-bottom: 1em;
 	margin-left: auto ;
 	margin-right: auto ;
+  min-height: 65px;
 }
 
 #list_div{
@@ -198,6 +208,43 @@ margin-left: 1em;
   display: none;
 }
 
-#bot-history-list{
-  font-size: 20px;
+/* Modal for bot-code-modal */
+.bot-code-modal .modal-header {
+    border: 1px solid #E5E5E5;
+    border-bottom: black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    }
+
+/* Modal for modal-footer */
+.modal-lg .modal-footer {
+    border: 1px solid #E5E5E5;
+    border-top: black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    }
+
+/* Modal for modal-content */
+.modal-lg .modal-content pre{
+    /*border: 1px solid #000000;*/
+    border-radius: none;
+    height: 400px;
+    }
+
+/* bot-history-list */
+.bot-history-list {
+    font-size: 20px;
+    list-style-type: none;
+    padding:0;
+    margin:0;
+}
+
+/* menu bar */
+.navbar-nav li{
+    font-size: 15px
+}
+
+/* score table */
+#score_table tr{
+    font-size: 15px
 }
