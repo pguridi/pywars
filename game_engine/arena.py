@@ -46,7 +46,7 @@ def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
         # calculate the distance x
         x = speed * math.cos(angle) * t
         # append the (x, y) tuple to the list
-        data_xy.append((round(x, 1), round(y, 1)))
+        data_xy.append((x, y))
         # use the time in increments of 0.1 seconds
         t += 0.1
     return data_xy
@@ -232,7 +232,7 @@ class BattleGroundArena(object):
         reverse the x coordinates."""
         if player.x_factor == -1:  # Side B, symetric x
             trajectory = [(self.width - x, y) for x, y in trajectory]
-        return trajectory
+        return [(round(x, 1), round(y, 1)) for x, y in trajectory]
 
     def _scale_coords(self, (x, y)):
         """Given impact coords (x, y), translate their numbers to our arena
