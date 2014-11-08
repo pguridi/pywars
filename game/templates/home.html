@@ -41,7 +41,11 @@
                 turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 300);
                 console.log(player);
                 console.log(current_turn['action']);
-            } else {
+            } else if (current_turn['action'] == 'make_shoot') {
+                player = getPlayer(current_turn['player']);
+                player.shoot(current_turn['speed'], current_turn['angle']);
+            }
+             else {
                 current_turn = null;
             }
         } else {

@@ -8,7 +8,9 @@ Player = function(game, username, position) {
 	this.bulletPool = null;
 	this.move_position = null;
 	this.busy = false;
+	this.bullet = null;
 	this.NUMBER_OF_BULLETS = 50;
+	this.GRAVITY = 980;
 	
 };
 
@@ -16,12 +18,15 @@ Player.prototype = {
 
 	preload: function () {
 		this.game.load.spritesheet('tank', 'static/assets/tanks.png', 74, 62);
+		this.game.load.spritesheet('explosion', 'static/assets/explosion.png', 128, 128);
 		this.game.load.image('bullet', 'static/assets/bullet.png');
 	},
 
 	create: function () {
 		this.sprite = game.add.sprite(74, game.world.height - 150, 'tank');
 		this.game.physics.arcade.enable(this.sprite);
+		
+		this.game.physics.arcade.gravity.y = this.GRAVITY;
 		this.sprite.position.x = this.player_position;
 		
 		if (this.player_position < 400) {
@@ -41,6 +46,9 @@ Player.prototype = {
         this.sprite.animations.add('left', [0, 1, 2, 3], 10, true);
         this.sprite.animations.add('right', [4, 5, 6, 7], 10, true);
         
+        // Create a group for explosions
+        this.explosionGroup = this.game.add.group();
+        
         this.bulletPool = this.game.add.group();
         for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
             // Create each bullet and add it to the group.
@@ -58,25 +66,47 @@ Player.prototype = {
         }
 	},
 
+	update_shooting: function() {
+	    console.log(this.bullet.position);
+        if (this.bullet.position.y > 600) {
+	        // if shooting
+		    // Create an explosion
+            this.getExplosion(this.bullet.x, this.bullet.y);
+
+            // Kill the bullet
+            this.bullet.kill();
+            this.bullet = null
+        }
+	},
+	
 	update: function() {
-		if (this.sprite.body.velocity.x != 0){
-		    // we are moving
-		    if (this.move_position == parseInt(this.sprite.position.x)) {
-		        // not moving anymore
-		        if (this.sprite.body.position.x < 400) {
-		           // left player
-		           this.sprite.frame = 4;
-		        } else {
-		           this.sprite.frame = 0;
+	    if (game.input.activePointer.isDown) {
+            this.shoot(80, 55);
+        }
+	    if (this.move_position != null) {
+	        // means we are moving
+		    if (this.sprite.body.velocity.x != 0){
+		        // we are moving
+		        if (this.move_position == parseInt(this.sprite.position.x)) {
+		            // not moving anymore
+		            if (this.sprite.body.position.x < 400) {
+		               // left player
+		               this.sprite.frame = 4;
+		            } else {
+		               this.sprite.frame = 0;
+		            }
+		            this.sprite.body.velocity.x = 0;
+		            this.move_position = null;
+		            this.sprite.animations.stop();
+		            this.busy = false;
 		        }
-		        this.sprite.body.velocity.x = 0;
-		        this.sprite.animations.stop();
-		        this.busy = false;
 		    }
+		    return;
+		} else if (this.bullet != null) {
+		    // we are shooting
+		    this.update_shooting();
 		}
-		/*if (game.input.activePointer.isDown) {
-            this.shoot(100, 90);
-        }*/
+		
 	},
 	
 	move: function(move_position) {
@@ -94,25 +124,67 @@ Player.prototype = {
 	    }
         
 	},
-		
-	shoot: function(bullet_speed, angle) {
-	    var bullet = this.bulletPool.getFirstDead();
-	    if (bullet === null || bullet === undefined) return;
-	    
+	
+	shoot: function(speed, angle) {
+	    this.busy = true;
+	    this.bullet = this.bulletPool.getFirstDead();
+	    console.log(this.username + " shooting" + angle + " " + speed);
+	        
+	    if (this.bullet === null || this.bullet === undefined) return;
+	    speed = speed * 10;
+    	angle = -1 * angle;
 	    // Revive the bullet
         // This makes the bullet "alive"
-	    bullet.revive();
+	    this.bullet.revive();
 	    
-	    bullet.checkWorldBounds = true;
-        bullet.outOfBoundsKill = true;
+	    this.bullet.checkWorldBounds = true;
+        this.bullet.outOfBoundsKill = true;
 
         // Set the bullet position to the gun position.
-        bullet.reset(this.sprite.position.x, 0);
-        bullet.rotation = angle;
+        this.bullet.reset(this.sprite.position.x, 600);
+        this.bullet.rotation = angle * Math.PI / 180;
 
         // Shoot it in the right direction
-        bullet.body.velocity.x = Math.cos(angle) * bullet_speed;
-        bullet.body.velocity.y = Math.sin(angle) * bullet_speed;
-	}
+        this.bullet.body.velocity.x = Math.cos(this.bullet.rotation) * speed;
+        this.bullet.body.velocity.y = Math.sin(this.bullet.rotation) * speed;
+	},
+	
+	getExplosion: function(x, y) {
+        // Get the first dead explosion from the explosionGroup
+        var explosion = this.explosionGroup.getFirstDead();
+        
+
+        // If there aren't any available, create a new one
+        if (explosion === null) {
+            explosion = this.game.add.sprite(0, 0, 'explosion');
+            explosion.anchor.setTo(0.5, 0.5);
+
+            // Add an animation for the explosion that kills the sprite when the
+            // animation is complete
+            var animation = explosion.animations.add('boom', [0,1,2,3], 60, false);
+            animation.killOnComplete = true;
+
+            // Add the explosion sprite to the group
+            this.explosionGroup.add(explosion);
+        }
+
+        // Revive the explosion (set it's alive property to true)
+        // You can also define a onRevived event handler in your explosion objects
+        // to do stuff when they are revived.
+        explosion.revive();
+
+        // Move the explosion to the given coordinates
+        explosion.x = x;
+        explosion.y = y;
+
+        // Set rotation of the explosion at random for a little variety
+        explosion.angle = this.game.rnd.integerInRange(0, 360);
+
+        // Play the animation
+        explosion.animations.play('boom');
+
+        // Return the explosion itself in case we want to do anything else with it
+        return explosion;
+    }
 
 };
