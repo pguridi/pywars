@@ -183,8 +183,8 @@ class BattleGroundArena(object):
                             self.resolve_move_action(player, bot_response['WHERE'])
                         elif bot_response['ACTION'] == 'SHOOT':
                             self.resolve_shoot_action(player,
-                                                        bot_response['VEL'],
-                                                        bot_response['ANGLE'])
+                                                      bot_response['VEL'],
+                                                      bot_response['ANGLE'])
                     except (InvalidBotOutput,
                             BotTimeoutException,
                             TankDestroyedException) as e:
@@ -212,10 +212,18 @@ class BattleGroundArena(object):
         return ''
         #return self.match.__json__()
 
+    def _check_player_boundaries(self, player, new_x):
+        half = self.width // 2
+        if player.x_factor == 1:
+            return 0 <= new_x <= half
+        elif player.x_factor == -1:
+            return half <= new_x <= self.width
+        else:
+            raise Exception("Invalid player location")
+
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
-        if 0 <= new_x <= self.arena.width:
-            # TODO: check boundaries for player
+        if self._check_player_boundaries(player, new_x):
             self.arena[player.x, player.y] = FREE
             player.x = new_x
             self.arena[player.x, player.y] = player.color
