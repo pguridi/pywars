@@ -109,33 +109,25 @@
         
         
     });
+*/
 </script>
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid main">
-        <div class="row-fluid">
-            <div class="span4">
-                <div>
-                    <h3>Playlist</h3>
-                    <div id="playlist"></div>
-                </div>
-            </div>
-            <div class="span8">
-                <div id="header">
-                  <h1>Pywars<!--<img alt="logo" src="{% static '/static/img/logo.png' %}"/>--> Challenge</h1>
-                </div>
-                <div id="players_divs">
-                    <!--<img id="p1_img" alt="tank1" src="/static/media/tank1.png" />-->
-                    <span id="player1"></span>
-                    <span id="vs_text"> vs</span>
-                    <span id="player2"></span>
-                    <!--<img id="p2_img" alt="tank2" src="/static/media/tank2.png" />-->
-                </div>
-            </div>
-            <div class="span8">
-                <div id="game"></div>
+    <div class="col-md-offset-1 main">
+        <div class="row">
+            <div id="header">
+              <h1>Pywars Challenge</h1>
             </div>
         </div>
-    </div> <!-- /container -->
+        <div class="row">            
+            <div class="col-md-8">
+                <div id="game"></div>
+            </div>
+            <div class="col-md-4 playlist-box">
+                <h3>Playlist</h3>
+                <div id="playlist"></div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

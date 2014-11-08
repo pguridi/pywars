@@ -102,6 +102,9 @@ img#p1_img,img#p2_img{
     margin-bottom: 1em;
     text-align:center;
 }
+.playlist-box h3{
+  margin: 0;
+}
 #playlist{
     white-space:nowrap;
 }
@@ -129,6 +132,7 @@ background: grey;
     margin-bottom: 1em;
 	margin-left: auto ;
 	margin-right: auto ;
+  min-height: 65px;
 }
 
 #list_div{
