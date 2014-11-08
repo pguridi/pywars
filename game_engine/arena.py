@@ -164,8 +164,8 @@ class BattleGroundArena(object):
                     raise InvalidBotOutput("Moving must be -1 or 1.")
             elif bot_output['ACTION'] == 'SHOOT':
                 # velocity must be an integer between 1 and 150
-                if not (1 <= int(bot_output['VEL']) <= 150):
-                    raise InvalidBotOutput("Velocity not in range [1, 150].")
+                #if not (1 <= int(bot_output['VEL']) <= 150):
+                    #raise InvalidBotOutput("Velocity not in range [1, 150].")
                 # angle must be an integer between 10 and 89
                 if not (10 <= int(bot_output['ANGLE']) <= 89):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
@@ -177,8 +177,7 @@ class BattleGroundArena(object):
             try:
                 for player in self.players:
                     try:
-                        bot_response = player.evaluate_turn(self.arena.players_distance(),
-                                                            self.context.feedback(player),
+                        bot_response = player.evaluate_turn(self.context.feedback(player),
                                                             self.context.life(player))
                         self._validate_bot_output(bot_response)
                         if bot_response is None:  # None is a valid command, do nothing
@@ -357,9 +356,9 @@ class BotPlayer(object):
     def bot(self):
         return self._bot
 
-    def evaluate_turn(self, distance, feedback, life):
+    def evaluate_turn(self, feedback, life):
         # Ask bot what to do this turn
-        return self._bot.evaluate_turn(distance, feedback, life)
+        return self._bot.evaluate_turn(feedback, life)
 
     def assign_team(self, x_factor):
         """Assign team depending on which side is allocated

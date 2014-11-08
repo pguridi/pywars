@@ -1,5 +1,5 @@
 class Bot(object):
-    def evaluate_turn(self, distance, feedback, life):
+    def evaluate_turn(self, feedback, life):
         A = 1
         B = 2
         C = 3
