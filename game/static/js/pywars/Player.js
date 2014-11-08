@@ -6,6 +6,8 @@ Player = function(game, username, position) {
 	this.sprite = null;
 	this.cursors = null;
 	this.bulletPool = null;
+	this.move_position = null;
+	this.busy = false;
 	this.NUMBER_OF_BULLETS = 50;
 	
 };
@@ -57,12 +59,42 @@ Player.prototype = {
 	},
 
 	update: function() {
-		this.sprite.body.velocity.x = 0;
-		if (game.input.activePointer.isDown) {
+		if (this.sprite.body.velocity.x != 0){
+		    // we are moving
+		    if (this.move_position == parseInt(this.sprite.position.x)) {
+		        // not moving anymore
+		        if (this.sprite.body.position.x < 400) {
+		           // left player
+		           this.sprite.frame = 4;
+		        } else {
+		           this.sprite.frame = 0;
+		        }
+		        this.sprite.body.velocity.x = 0;
+		        this.sprite.animations.stop();
+		        this.busy = false;
+		    }
+		}
+		/*if (game.input.activePointer.isDown) {
             this.shoot(100, 90);
-        }
+        }*/
 	},
 	
+	move: function(move_position) {
+	    this.move_position = move_position[0] * 10;
+	    this.busy = true;
+	    if (this.move_position > this.sprite.position.x) {
+	        // move to the right
+	        console.log(this.username + " moving to the right");
+	        this.sprite.body.velocity.x = 60;
+	        this.sprite.animations.play("right");
+	    } else {
+	        console.log(this.username + " moving to the left");
+	        this.sprite.body.velocity.x = -60;
+	        this.sprite.animations.play("left");
+	    }
+        
+	},
+		
 	shoot: function(bullet_speed, angle) {
 	    var bullet = this.bulletPool.getFirstDead();
 	    if (bullet === null || bullet === undefined) return;

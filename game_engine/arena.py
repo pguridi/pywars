@@ -16,9 +16,10 @@ EXIT_ERROR_NUMBER_OF_PARAMS  = 1
 EXIT_ERROR_MODULE = 2
 EXIT_ERROR_BOT_INSTANCE = 3
 
-
+# Constants we use in the game
 FREE = 0
-DAMAGE_DELTA = 5
+DAMAGE_DELTA = 25
+REPAIR_DELTA = 10
 INITIAL_HEALTH = 100
 FAILED = 'FAILED'
 SUCCESS = 'SUCCESS'
@@ -103,6 +104,13 @@ class Context(object):
             self.affected_player = player  # whose tank was just destroyed
             raise TankDestroyedException()
 
+    def repair_tank(self, player):
+        """If a player action returns None, it repairs its tank."""
+        if self.info[player][self.LIFE] + REPAIR_DELTA <= INITIAL_HEALTH:
+            self.info[player][self.LIFE] += REPAIR_DELTA
+        else:
+            self.info[player][self.LIFE] = INITIAL_HEALTH
+
     def life(self, player):
         return self.info[player][self.LIFE]
 
@@ -119,7 +127,7 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=80, height=50):
+    def __init__(self, players, width=30, height=50):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
@@ -164,8 +172,8 @@ class BattleGroundArena(object):
                     raise InvalidBotOutput("Moving must be -1 or 1.")
             elif bot_output['ACTION'] == 'SHOOT':
                 # velocity must be an integer between 1 and 150
-                if not (1 <= int(bot_output['VEL']) <= 150):
-                    raise InvalidBotOutput("Velocity not in range [1, 150].")
+                #if not (1 <= int(bot_output['VEL']) <= 150):
+                    #raise InvalidBotOutput("Velocity not in range [1, 150].")
                 # angle must be an integer between 10 and 89
                 if not (10 <= int(bot_output['ANGLE']) <= 89):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
@@ -177,11 +185,17 @@ class BattleGroundArena(object):
             try:
                 for player in self.players:
                     try:
-                        bot_response = player.evaluate_turn(self.arena.players_distance(),
-                                                            self.context.feedback(player),
+                        bot_response = player.evaluate_turn(self.context.feedback(player),
                                                             self.context.life(player))
                         self._validate_bot_output(bot_response)
-                        if bot_response is None:  # None is a valid command, do nothing
+                        if bot_response is None:
+                            self.context.repair_tank(player)
+                            self.match.trace_action(dict(
+                                action="idle",
+                                player=player.username,
+                                position=[player.x, player.y],
+                                health=self.context.life(player),
+                                ))
                             continue
                         # Here the engine calculates the new status
                         # according to the response and updates all tables
@@ -201,12 +215,12 @@ class BattleGroundArena(object):
                         self.match.lost(player, u'Crashed')
                         raise GameOverException(str(e))
             except GameOverException as e:
-                print e
+                #print e
                 break
         else:  # for-else, if all rounds are over
             table = self.context.current_points()
             points = {}
-            print(table)
+            #print(table)
             for p, life in table.iteritems():
                 points[life] = points.get(life, []) + [p]
             top = max(points)
@@ -214,9 +228,7 @@ class BattleGroundArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
-        self.match.print_trace()
-        return ''
-        #return self.match.__json__()
+        return self.match.__json__()
 
     def _check_player_boundaries(self, player, new_x):
         half = self.width // 2
@@ -269,7 +281,9 @@ class BattleGroundArena(object):
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
                                      angle=angle,
-                                     trajectory=trajectory))
+                                     speed=speed,
+                                     trajectory=trajectory,
+                                     ))
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
         try:
@@ -314,7 +328,7 @@ class BattleGroundMatchLog(object):
 
     def winner(self, player):
         player.status = BattleGroundArena.WINNER
-        self._trace_game_over('winner', 'loser', player, cause)
+        self._trace_game_over('winner', 'loser', player, 'Max points')
 
     def lost(self, player, cause):
         player.status = BattleGroundArena.LOST
@@ -355,9 +369,9 @@ class BotPlayer(object):
     def bot(self):
         return self._bot
 
-    def evaluate_turn(self, distance, feedback, life):
+    def evaluate_turn(self, feedback, life):
         # Ask bot what to do this turn
-        return self._bot.evaluate_turn(distance, feedback, life)
+        return self._bot.evaluate_turn(feedback, life)
 
     def assign_team(self, x_factor):
         """Assign team depending on which side is allocated
@@ -398,6 +412,7 @@ def main(argv):
     game_result = engine.start()
     print game_result
     sys.exit(0)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
