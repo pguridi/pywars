@@ -19,6 +19,7 @@ EXIT_ERROR_BOT_INSTANCE = 3
 
 FREE = 0
 DAMAGE_DELTA = 25
+REPAIR_DELTA = 10
 INITIAL_HEALTH = 100
 FAILED = 'FAILED'
 SUCCESS = 'SUCCESS'
@@ -103,6 +104,10 @@ class Context(object):
             self.affected_player = player  # whose tank was just destroyed
             raise TankDestroyedException()
 
+    def repair_tank(self, player):
+        """If a player action returns None, it repairs its tank."""
+        self.info[player][self.LIFE] += REPAIR_DELTA
+
     def life(self, player):
         return self.info[player][self.LIFE]
 
@@ -180,11 +185,14 @@ class BattleGroundArena(object):
                         bot_response = player.evaluate_turn(self.context.feedback(player),
                                                             self.context.life(player))
                         self._validate_bot_output(bot_response)
-                        if bot_response is None:  # None is a valid command, do nothing
+                        if bot_response is None:
+                            self.context.repair_tank(player)
                             self.match.trace_action(dict(
                                 action="idle",
                                 player=player.username,
-                                position=[player.x, player.y], ))
+                                position=[player.x, player.y],
+                                health=self.context.life(player),
+                                ))
                             continue
                         # Here the engine calculates the new status
                         # according to the response and updates all tables
@@ -315,7 +323,7 @@ class BattleGroundMatchLog(object):
 
     def winner(self, player):
         player.status = BattleGroundArena.WINNER
-        self._trace_game_over('winner', 'loser', player, cause)
+        self._trace_game_over('winner', 'loser', player, 'Max points')
 
     def lost(self, player, cause):
         player.status = BattleGroundArena.LOST
