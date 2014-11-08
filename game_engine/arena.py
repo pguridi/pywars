@@ -22,6 +22,7 @@ DAMAGE_DELTA = 5
 INITIAL_HEALTH = 100
 FAILED = 'FAILED'
 SUCCESS = 'SUCCESS'
+TANK_LENGTH = 3
 
 
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
@@ -116,7 +117,7 @@ class BattleGroundArena(object):
     def __init__(self, players, width=100, height=50):
         self.width = width
         self.height = height
-        self.rounds = xrange(100)  # TODO: change for width*height
+        self.rounds = xrange(100)
         self.players = players
         self.match = BattleGroundMatchLog(width, height, players)
         self.arena = ArenaGrid(self.width, self.height)
@@ -160,7 +161,7 @@ class BattleGroundArena(object):
                 if not (1 <= int(bot_output['VEL']) <= 150):
                     raise InvalidBotOutput("Velocity not in range [1, 150].")
                 # angle must be an integer between 10 and 89
-                if not (10 <= int(bot_output['ANGLE']) <= 90):
+                if not (10 <= int(bot_output['ANGLE']) <= 89):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
         except Exception as e:
             raise InvalidBotOutput(str(e))
