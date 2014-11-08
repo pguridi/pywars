@@ -182,6 +182,10 @@ class BattleGroundArena(object):
                                                             self.context.life(player))
                         self._validate_bot_output(bot_response)
                         if bot_response is None:  # None is a valid command, do nothing
+                            self.match.trace_action(dict(
+                                action="idle",
+                                player=player.username,
+                                position=[player.x, player.y], ))
                             continue
                         # Here the engine calculates the new status
                         # according to the response and updates all tables
