@@ -201,3 +201,34 @@ margin-left: 1em;
 #bot-history-list{
   font-size: 20px;
 }
+
+/* Modal for bot-code-modal */
+.bot-code-modal .modal-header {
+    border: 1px solid #E5E5E5;
+    border-bottom: black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    }
+
+/* Modal for modal-footer */
+.modal-lg .modal-footer {
+    border: 1px solid #E5E5E5;
+    border-top: black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    }
+
+/* Modal for modal-content */
+.modal-lg .modal-content pre{
+    /*border: 1px solid #000000;*/
+    border-radius: none;
+    height: 400px;
+    }
+
+/* bot-history-list */
+#bot-history-list li{
+    font-size: 20px;
+    list-style-type: none;
+    padding:0;
+    margin:0;
+}
