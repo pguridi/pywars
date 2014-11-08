@@ -16,7 +16,7 @@ EXIT_ERROR_NUMBER_OF_PARAMS  = 1
 EXIT_ERROR_MODULE = 2
 EXIT_ERROR_BOT_INSTANCE = 3
 
-
+# Constants we use in the game
 FREE = 0
 DAMAGE_DELTA = 25
 REPAIR_DELTA = 10
@@ -106,7 +106,10 @@ class Context(object):
 
     def repair_tank(self, player):
         """If a player action returns None, it repairs its tank."""
-        self.info[player][self.LIFE] += REPAIR_DELTA
+        if self.info[player][self.LIFE] + REPAIR_DELTA <= INITIAL_HEALTH:
+            self.info[player][self.LIFE] += REPAIR_DELTA
+        else:
+            self.info[player][self.LIFE] = INITIAL_HEALTH
 
     def life(self, player):
         return self.info[player][self.LIFE]
