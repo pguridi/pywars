@@ -17,8 +17,19 @@ This is the configuration for development. Make sure you have a virtualenv. You 
 * Install the dependencies running `pip install -r requirements.txt`
 * Create the database running `python manage.py migrate`
 * Create an admin user with `python manage.py createsuperuser`
+* We need Bower intalled, if we have it we can run this:  `python manage.py bower install`
 * Run the development server `python manage.py runserver`
 * Open the browser at `http://127.0.0.1:8000/`
+
+##Intall Bower##
+* Fedora 
+**sudo yum install npm
+**sudo npm install -g bower
+* Ubuntu
+** sudo apt-get install npm
+** sudo npm install -g bower
+** in Ubuntu 14.04 we need do this `sudo ln -s /usr/bin/nodejs /usr/bin/node`
+
 
 ## Game rules ##
 The game is simple, you will program a tank-bot that should destroy the oponent's tank. The game is by turns, and in each turn the tank has three possible actions to take:
