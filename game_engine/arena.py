@@ -16,6 +16,9 @@ EXIT_ERROR_NUMBER_OF_PARAMS  = 1
 EXIT_ERROR_MODULE = 2
 EXIT_ERROR_BOT_INSTANCE = 3
 
+#Relation between our grid and the coordinates in [m]
+SCALE = 15
+
 # Constants we use in the game
 FREE = 0
 DAMAGE_DELTA = 25
@@ -127,7 +130,7 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=30, height=50):
+    def __init__(self, players, width=60, height=50):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
@@ -278,14 +281,17 @@ class BattleGroundArena(object):
         trajectory = shoot_projectile(speed, angle, x_limit=self.width)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
         # Log the shoot made by the player
+        endpoints = [trajectory[0], trajectory[-1]]
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
                                      angle=angle,
                                      speed=speed,
-                                     trajectory=trajectory,
+                                     trajectory=endpoints,
                                      ))
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
+        # Correct x_imp according to our scale
+        x_imp = x_imp // SCALE
         try:
             affected_players = [p for p in self.players
                                 if p.x == x_imp and p.y == y_imp]
