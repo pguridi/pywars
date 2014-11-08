@@ -46,13 +46,24 @@
   <h4>Interfáz</h4> 
   <p>F. La posición inicial de los jugadores es sorteada al azar. El jugador debe implementar el método evaualte_turn que recibe los siguientes parámetros:</p>
     <pre>
-      - feedback: El resultado de la . For instance, the shoot action 'SUCESS' is returned if the enemy is hit, and 'FAILED' otherwise.
-  life: Current tank life. A number between 0-100.
-  Taking this game status as an input, the method should evaluate programmatically the best strategy for the tank; and then return a dictionary indicating what the tank will do in its turn. For this, the player has a few options:
-
-  Move: Return a dictionary like this {'ACTION': 'MOVE', 'WHERE': 1}, where 1 is for moving forward and -1 is for moving backwards.
-  Shoot: Return a dictionary like this {'ACTION': 'SHOOT', 'ANGLE': 35, 'VEL': 100} where ANGLE values must be between 0 and 89 and VEL must be between 0 and 100.
-  Stay: Player decides not doing anything, so it returns an empty dictionary.
+      - Feedback: El resultado del turno anterior, en forma de diccionario. Las posibles claves son:
+          * 'RESULT': Indica si el movimiento realizado anteriormente fue exito o fracaso. Sus valores son:
+            ** 'SUCCESS': La acción fue correcta. Por ejemplo, este valor estará presente si en la acción anterior disparamos y pudimos
+               darle a nuestro objetivo.
+            ** 'FAILED': La acción no fue correcta o no pudo realizarse. Por ejemplo, si el tanque no pudo moverse, o si el disparo no dio 
+               al objetivo.
+          * 'MISSING': Representa la distancia en la que cae el misil con respecto a la posición del tanque enemigo. Los valores posibles son:
+            ** 'HOT': El disparo cayó muy cerca del tanque.
+            ** 'WARM': El disparo cayó a una mediana distancia del objetivo.
+            ** 'COLD': El disparo cayó lejos. 
+          * 'POSITION': Un punto de coordenadas en el eje x que representa la posición a la que llegó el tanque en caso de moverse. Por ejemplo: (5, 0).
+      - Life: Current enemy tank life. A number between 0-100.
+  
+Taking this game status as an input, the method should evaluate programmatically the best strategy for the tank; and then return a dictionary indicating what the tank will do in its turn. For this, the player has a few options:
+  <pre>
+    Move: Return a dictionary like this {'ACTION': 'MOVE', 'WHERE': 1}, where 1 is for moving forward and -1 is for moving backwards.
+    Shoot: Return a dictionary like this {'ACTION': 'SHOOT', 'ANGLE': 35, 'VEL': 100} where ANGLE values must be between 0 and 89 and VEL must be between 0 and 100.
+    Stay: Player decides not doing anything, so it returns an empty dictionary.
    </pre> 
   <h4>Desafíos</h4>
 
