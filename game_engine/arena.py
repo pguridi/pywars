@@ -281,6 +281,7 @@ class BattleGroundArena(object):
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
                                      angle=angle,
+                                     speed=speed,
                                      trajectory=trajectory))
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
