@@ -319,9 +319,10 @@ class BattleGroundArena(object):
             if not affected_players:
                 raise MissedTargetException
         except MissedTargetException:
-            # TODO: calculate how missed was the shot: difference
-            self.context.shoot_feedback(player, ok=False, difference=0)
-            #self.context.provide_feedback(player, FAILED)
+            other_x = [p.x for p in self.players if p is not player][0]
+            difference = (x_imp - other_x) * player.x_factor
+            self.context.shoot_feedback(player, ok=False,
+                                        difference=difference)
         else:
             self.context.shoot_feedback(player, ok=True)
             for p in affected_players:
