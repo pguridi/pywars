@@ -86,7 +86,8 @@ STATIC_URL = '/static/'
 
 CELERY_TASK_SERIALIZER = "json"
 
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+#STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+STATIC_ROOT = "/var/www/static"
 BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
 
 
