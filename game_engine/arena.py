@@ -233,7 +233,7 @@ class BattleGroundArena(object):
                                         e.reason)
                         raise GameOverException(str(e))
                     except Exception as e:
-                        self.match.lost(player, u'Crashed')
+                        self.match.lost(player, u'Crashed: %s' % str(e))
                         raise GameOverException(str(e))
             except GameOverException as e:
                 break
