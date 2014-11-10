@@ -1,4 +1,4 @@
-import json
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -8,8 +8,7 @@ import os
 from game.tasks import run_match
 
 
-parent = os.path.abspath(os.path.join(__file__, os.pardir))
-sample_bot_location = os.path.join(parent, 'game_engine', 'default_user_bot.py')
+sample_bot_location = os.path.join(settings.PROJECT_ROOT, 'game_engine', 'default_user_bot.py')
 
 DEFAULT_BOT_CODE = ''
 with open(sample_bot_location, 'r') as f:
