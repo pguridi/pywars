@@ -20,19 +20,16 @@
     var play_number = 0;
 
     function verifyTurnEnd(player) {
-        console.log("activity1");
         if (player.busy == true) {
             console.log("player busy");
             return
         } else {
-            console.log("player released!");
             current_turn = null;
             clearInterval(turnEndTimer);
         }
     }
     
     function turnsTimer() {
-        console.log("activity2");
         if (gameData['actions'].length > 0) {
             if (current_turn != null) {
                 return;
@@ -52,6 +49,7 @@
                 current_turn = null;
             }
         } else {
+            console.log("end");
             clearInterval(gameTimer);
         }
     }
