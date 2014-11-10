@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 import os
 from game.tasks import run_match
+from datetime import datetime
 
 
 sample_bot_location = os.path.join(settings.PROJECT_ROOT, 'game_engine', 'default_user_bot.py')
@@ -56,6 +57,11 @@ class Bot(models.Model):
             return False
 
 
+class FinalChallenge(models.Model):
+    description = models.TextField(default='Final Challenge', null=False)
+    creation_date = models.DateTimeField(auto_now=True, default=datetime.now())
+
+
 class Challenge(models.Model):
     requested_by = models.ForeignKey(UserProfile)
     creation_date = models.DateTimeField(auto_now=True)
@@ -65,6 +71,7 @@ class Challenge(models.Model):
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
     elapsed_time = models.TextField(null=True)
+    final_challenge = models.ForeignKey(FinalChallenge, blank=True, null=True, default=None)
 
     def result_description(self):
         if self.result:
@@ -74,6 +81,7 @@ class Challenge(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
 
 def dispatch_challengue(sender, instance, created, **kwargs):
     if created:

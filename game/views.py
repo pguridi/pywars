@@ -1,5 +1,4 @@
 import json
-
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -117,6 +116,8 @@ def challenge(request):
         new_challengue.save()
 
         return JsonResponse({'success': True})
+
+
 
 @login_required
 @cache_page(60)
