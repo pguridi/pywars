@@ -2,21 +2,13 @@ import json
 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.utils.html import escape
-from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.db.models import Q
-
+from django.core import serializers
 from .forms import BotBufferForm
-#from tournament.tools import compare_bots
-#from game_engine.arena import LightCycleArena
-#from game_engine.basebot import LightCycleRandomBot
-#from game_engine.player import Player
-
 
 from models import Challenge, Bot, UserProfile
 
