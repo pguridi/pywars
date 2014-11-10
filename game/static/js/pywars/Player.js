@@ -17,9 +17,9 @@ Player = function(game, username, position) {
 Player.prototype = {
 
 	preload: function () {
-		this.game.load.spritesheet('tank', 'static/assets/tanks.png', 74, 62);
-		this.game.load.spritesheet('explosion', 'static/assets/explosion.png', 128, 128);
-		this.game.load.image('bullet', 'static/assets/bullet.png');
+		this.game.load.spritesheet('tank', 'static/assets/tank2.png', 74, 62);
+		this.game.load.spritesheet('explosion', 'static/assets/GrenadeExplosion.png', 50, 128);
+		this.game.load.image('bullet', 'static/assets/bullet3.png');
 	},
 
 	create: function () {
@@ -74,7 +74,7 @@ Player.prototype = {
         if (this.bullet.position.y > 600) {
 	        // if shooting
 		    // Create an explosion
-            this.getExplosion(this.bullet.x, this.bullet.y);
+            this.getExplosion(this.bullet.x, this.bullet.y - 30);
 
             // Kill the bullet
             this.bullet.kill();
@@ -165,7 +165,7 @@ Player.prototype = {
 
             // Add an animation for the explosion that kills the sprite when the
             // animation is complete
-            var animation = explosion.animations.add('boom', [0,1,2,3], 60, false);
+            var animation = explosion.animations.add('boom', [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], 20, false);
             animation.killOnComplete = true;
 
             // Add the explosion sprite to the group
@@ -182,7 +182,7 @@ Player.prototype = {
         explosion.y = y;
 
         // Set rotation of the explosion at random for a little variety
-        explosion.angle = this.game.rnd.integerInRange(0, 360);
+        //explosion.angle = this.game.rnd.integerInRange(0, 360);
 
         // Play the animation
         explosion.animations.play('boom');

@@ -5,6 +5,7 @@
 {% block js %}
   <script src="{% static '/static/js/custom.js' %}"></script>
   <script src="{% static '/static/phaser/build/phaser.js' %}"></script>
+  <!--<script src="{% static '/static/js/phaser-debug.js' %}"></script>-->
   <script src="{% static '/static/js/pywars/Player.js' %}"></script>
   <script src="{% static '/static/js/pywars/Level.js' %}"></script>
   <script type="text/javascript">
@@ -69,6 +70,7 @@
         gameData = data;
         game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
         
+        
         function preload()
         {
 	        level = new Level(game);
@@ -82,6 +84,7 @@
                     players.push(new_player);
                 }
             }
+         //game.add.plugin(Phaser.Plugin.Debug);
         }
 
         function create()
@@ -96,8 +99,8 @@
         function update() 
         {
             level.update();
-            for (playerK in players) {
-               players[playerK].update();
+            for (i = 0; i < players.length; i++) {
+               players[i].update();
             }
         }
     }
