@@ -111,9 +111,11 @@ img#p1_img,img#p2_img{
 .playlist-box h3{
   margin: 0;
 }
-#playlist{
+#div-playlist{
     white-space:nowrap;
+    font-size: 15px;
 }
+
 #action_buttons{
     height: 40px;
 	width: 470px ;
