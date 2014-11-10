@@ -41,7 +41,7 @@ Player.prototype = {
 		    this.sprite.frame = 6;
 		} else {
 		    // is the right player
-		    this.health_status = game.add.text(650, 16, this.username + ': 0', { fontSize: '32px', fill: '#ffffff' });
+		    this.health_status = game.add.text(600, 16, this.username + ': 0', { fontSize: '32px', fill: '#ffffff' });
 		    this.sprite.frame = 8;
 		}
 
