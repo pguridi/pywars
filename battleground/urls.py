@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^test-match$', 'game.views.random_test_match', name='test_match'),
     url(r'^get_match$', 'game.views.get_match', name='get_match'),
     url(r'^bot_code/(\d+)$', 'game.views.bot_code', name='bot_code'),
+    url(r'^get_playlist$', 'game.views.get_playlist', name='get_playlist'),
 
 
     # Uncomment the next line to enable the admin:

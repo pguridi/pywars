@@ -148,3 +148,14 @@ def bot_code(request, bot_pk):
 
     bot_code = Bot.objects.get(pk=bot_pk, owner=request.user).code
     return HttpResponse(bot_code)
+
+
+@login_required
+def get_playlist(request):
+    challenges = Challenge.objects.filter(played=True)
+    if not challenges:
+        return JsonResponse({'success': False, 'data': [] })
+    data = json.loads(serializers.serialize('json', challenges))
+    for d in data:
+        del d['fields']['result']
+    return JsonResponse({'success': True , 'data': data })
