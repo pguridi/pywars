@@ -7,19 +7,19 @@
 <div class="container main about">
 
   <div id="header">
-    <img src="{% static '/static/img/pytron_logo.png'%}"/><h1>Onapsis Challenge</h1>
+    <img src="{% static '/static/img/PyWars.jpg'%}"/><h1>Onapsis Challenge</h1>
           <h3>PyCon Argentina 2014</h3>
   </div>
 
 
-  <h4>Mecánica de juego</h4>
+  <h4>Mec&aacute;nica de juego</h4>
 
   <p>A. Los jugadores deberán suscribirse a la competencia ingresando en el sitio
   publicado para tal fin.</p>
 
-  <p>B. Una vez registrados, los jugadores podrán subir una estrategia, escrita en el
-  lenguaje de programación Python, mediante la cual controlarán las acciones de
-  un tanque de guerra, siendo una competencia entre estrategias autónomas (sin interacción
+  <p>B. Una vez registrados, los jugadores podr&aacute;n subir una estrategia, escrita en el
+  lenguaje de programación Python, mediante la cual controlar&aacute;n las acciones de
+  un tanque de guerra, siendo una competencia entre estrategias aut&oacute;nomas (sin interacci&oacute;n
   de un humano, planta o animal). La estrategia podrá ser actualizada en cualquier
   momento mientras dure la competencia.</p>
 
@@ -43,7 +43,7 @@
       - Tiene mas vida que su oponente cuando finaliza la cantidad de turnos de la partida.
     </pre>
  
-  <h4>Interfáz</h4> 
+  <h4>Interf&aacute;z</h4>
   <p>F. La posición inicial de los jugadores es sorteada al azar. El jugador debe implementar el método evaualte_turn que recibe los siguientes parámetros:</p>
     <pre>
       - Feedback: El resultado del turno anterior, en forma de diccionario. Las posibles claves son:
@@ -57,14 +57,15 @@
             ** 'WARM': El disparo cayó a una mediana distancia del objetivo.
             ** 'COLD': El disparo cayó lejos. 
           * 'POSITION': Un punto de coordenadas en el eje x que representa la posición a la que llegó el tanque en caso de moverse. Por ejemplo: (5, 0).
-      - Life: Current enemy tank life. A number between 0-100.
-  
-Taking this game status as an input, the method should evaluate programmatically the best strategy for the tank; and then return a dictionary indicating what the tank will do in its turn. For this, the player has a few options:
+      - Life: Vida del tanque. Un numero entre 0-100
+    </pre>
+   <p>G. Teniendo en cuenta el estado del juego como input, el método debería evaluar programáticamente la mejor estrategia para el tanque; para luego, devolver un diccionario indicando lo que va a hacer el tanque en su turno.
+   El jugador cuenta con varias opciones:</p>
   <pre>
-    Move: Return a dictionary like this {'ACTION': 'MOVE', 'WHERE': 1}, where 1 is for moving forward and -1 is for moving backwards.
-    Shoot: Return a dictionary like this {'ACTION': 'SHOOT', 'ANGLE': 35, 'VEL': 100} where ANGLE values must be between 0 and 89 and VEL must be between 0 and 100.
-    Stay: Player decides not doing anything, so it returns an empty dictionary.
-   </pre> 
+      - Move: Devuelve un diccionario de esta forma: {'ACTION': 'MOVE', 'WHERE': 1}, donde 1 es para moverser adelante y -1 para moverse hacia atras.
+      - Shoot: Devuelve un diccionario de esta forma: {'ACTION': 'SHOOT', 'ANGLE': 35, 'VEL': 100} donde los valores de ANGLE deben estar entre 0 y 89; y VEL entre 0 y 100.
+      - Stay: El jugador decide no hacer nada, por lo tanto, devuelve un diccionario vacio.
+  </pre>
   <h4>Desafíos</h4>
 
   <p>H. Cada jugador podrá DESAFIAR a otros jugadores. Un desafío consiste en un enfrentamiento entre
@@ -103,16 +104,14 @@ Taking this game status as an input, the method should evaluate programmatically
 
   <h4>Ganador de la competencia</h4>
 
-  <pre>
-  M. Gana la competencia el jugador con mayor puntuación
+  <p>M. Gana la competencia el jugador con mayor puntuación</p>
 
-  N. Los primeros 3 puestos serán ganadores de premios a designar por la organización
-  de la competencia y serán informados al momento de iniciarse la misma.
+  <p>N. Los primeros 3 puestos serán ganadores de premios a designar por la organización
+  de la competencia y serán informados al momento de iniciarse la misma.</p>
 
-  O. Si dos jugadores obtienen la misma cantidad de puntos, quedará primero en la tabla
+  <p>O. Si dos jugadores obtienen la misma cantidad de puntos, quedará primero en la tabla
   de posiciones aquel que lo haya logrado antes (según el tiempo del server que ejecuta
-  las partidas).
-  </pre>
+  las partidas).</p>
 
 
   <h4>Consideraciones Generales</h4>
