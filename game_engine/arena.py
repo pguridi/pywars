@@ -293,13 +293,18 @@ class BattleGroundArena(object):
             y = 0
         return int(round(x)), int(round(y))
 
+    def get_adjusted_angle(self, player, angle):
+        if (player.x_factor == -1):
+            return angle + 90
+        return angle
+
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle, x_limit=self.width)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
         # Log the shoot made by the player
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
-                                     angle=angle,
+                                     angle=self.get_adjusted_angle(player, angle),
                                      speed=speed,
                                      trajectory=trajectory,
                                      ))
