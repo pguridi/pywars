@@ -4,40 +4,15 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
-
+import os
 from game.tasks import run_match
 
 
-DEFAULT_BOT_CODE = """# Example responses:
-#
-# Move to the right:
-#   return {'ACTION': 'MOVE', 'WHERE': 1}
-#
-# Move to the left:
-#   return {'ACTION': 'MOVE', 'WHERE': -1}
-#
-# Shooting projectile:
-#   return {'ACTION': 'SHOOT', 'VEL': 100, 'ANGLE': 35}
-#   # 'VEL' should be an integer > 0 and < 100
-#   # 'ANGLE' should be an integer > 0 and < 90
-#
-#
-# Do nothing:
-#   return None
+sample_bot_location = os.path.join(os.getcwd(), 'game_engine/default_user_bot.py')
 
-class Bot(object):
-
-    def evaluate_turn(self, arena_array, feedback, life):
-        '''
-        :param arena_array:  a Python array with players location. Ie:
-        arena_array = [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0] # (where the number is the player location)
-        :param feedback: the result of the previous turn, ie: for the move action 'SUCCESS' is returned when the enemy
-            received a hit, or 'FAILED' when missed the shot.
-        :param life: Current life level, An integer between between 0-100.
-        :return: see the comments above
-        '''
-        return None
-    """
+DEFAULT_BOT_CODE = ''
+with open(sample_bot_location, 'r') as f:
+    DEFAULT_BOT_CODE = f.read()
 
 
 class UserProfile(models.Model):

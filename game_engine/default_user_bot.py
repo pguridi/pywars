@@ -24,4 +24,4 @@ class Bot(object):
         :param life: Current life level, An integer between between 0-100.
         :return: see the comments above
         '''
-        return {'ACTION': 'SHOOT', 'VEL': 32.17, 'ANGLE': 35}
+        return None

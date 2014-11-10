@@ -236,7 +236,6 @@ class BattleGroundArena(object):
                         self.match.lost(player, u'Crashed')
                         raise GameOverException(str(e))
             except GameOverException as e:
-                print e
                 break
         else:  # for-else, if all rounds are over
             table = self.context.current_points()
@@ -248,8 +247,6 @@ class BattleGroundArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
-        # print(self.match.print_trace())
-        # return ''
         return self.match.__json__()
 
     def _check_player_boundaries(self, player, new_x):
