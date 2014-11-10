@@ -152,7 +152,7 @@ def bot_code(request, bot_pk):
 
 @login_required
 def get_playlist(request):
-    challenges = Challenge.objects.filter(played=True)
+    challenges = Challenge.objects.filter(played=True)[:25]
     if not challenges:
         return JsonResponse({'success': False, 'data': [] })
     data = json.loads(serializers.serialize('json', challenges))
