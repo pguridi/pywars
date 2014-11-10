@@ -23,12 +23,19 @@ This is the configuration for development. Make sure you have a virtualenv. You 
 
 ##Intall Bower##
 * Fedora 
-**sudo yum install npm
-**sudo npm install -g bower
+    ```bash
+    sudo yum install npm
+    sudo npm install -g bower
+    ```
 * Ubuntu
-** sudo apt-get install npm
-** sudo npm install -g bower
-** in Ubuntu 14.04 we need do this `sudo ln -s /usr/bin/nodejs /usr/bin/node`
+    ```bash
+    sudo apt-get install npm
+    sudo npm install -g bower
+    ```
+In Ubuntu 14.04 we need do this
+    ```bash
+    sudo ln -s /usr/bin/nodejs /usr/bin/node
+    ```
 
 
 ## Game rules ##
@@ -43,7 +50,6 @@ The game ends when one of the tanks is destroyed, i.e: its life reaches 0 points
 
 ### Programming the tank bot ###
 The user must define a class called `Bot` that implements the method `evaluate_turn`, which receives the following parameters:
-* `arena_array`: An array with the positions of the players in the battleground. For example: an array containing `[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0]`, where the numbers are the tanks ids, and positions in the array, their location.
 * `feedback`: The result of the previous turn. For instance, the shoot action 'SUCESS' is returned if the enemy is hit, and 'FAILED' otherwise.
 * `life`: Current tank life. A number between 0-100.
 
@@ -56,4 +62,6 @@ Taking this game status as an input, the method should evaluate programmatically
 Code used to implement `evaluate_turn` must run in **PyPy**. For security reasons, this code runs in a PyPy Sandbox, so keep in mind that modules like `random` or `time` are not available, so you must figure out how to live with that :P
 
 # Running the Celery worker for running matches:
-celery -A battleground worker -l info
+    ```bash
+    celery -A battleground worker -l info
+    ```
