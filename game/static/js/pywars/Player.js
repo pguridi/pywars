@@ -196,7 +196,7 @@ Player.prototype = {
 
         // Play the animation
         explosion.animations.play('boom');
-        this.explosion_sound.play();
+        //this.explosion_sound.play();
 
         // Return the explosion itself in case we want to do anything else with it
         return explosion;
