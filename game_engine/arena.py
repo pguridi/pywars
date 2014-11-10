@@ -227,6 +227,7 @@ class BattleGroundArena(object):
                                                       bot_response['VEL'],
                                                       bot_response['ANGLE'])
                     except (InvalidBotOutput,
+                            #FIXME BotTimeoutException is never thrown
                             BotTimeoutException,
                             TankDestroyedException) as e:
                         self.match.lost(self.context.affected_player or player,
@@ -253,13 +254,13 @@ class BattleGroundArena(object):
         return self.match.__json__()
 
     def _check_player_boundaries(self, player, new_x):
+        assert player.x_factor in [-1, 1]
         half = self.width // 2
         if player.x_factor == 1:
-            return 0 <= new_x <= half
-        elif player.x_factor == -1:
-            return half <= new_x <= self.width
-        else:
-            raise Exception("Invalid player location")
+            #Do not include half for ANY player, to avoid crashes
+            return 0 <= new_x < half
+        #player.x_factor == -1, idem: half is not valid location:
+        return half < new_x <= self.width
 
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
