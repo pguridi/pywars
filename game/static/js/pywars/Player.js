@@ -20,10 +20,16 @@ Player.prototype = {
 		this.game.load.spritesheet('tank', 'static/assets/tank2.png', 74, 62);
 		this.game.load.spritesheet('explosion', 'static/assets/GrenadeExplosion.png', 50, 128);
 		this.game.load.image('bullet', 'static/assets/bullet3.png');
+		this.game.load.audio('tank_running', 'static/assets/tank_running.mp3');
+		this.game.load.audio('tank_firing', 'static/assets/tank_firing.mp3');
+		this.game.load.audio('explosion', 'static/assets/explosion.mp3');
 	},
 
 	create: function () {
 		this.sprite = game.add.sprite(74, game.world.height - 150, 'tank');
+		this.moving_sound = game.add.audio('tank_running', 1, false);
+		this.firing_sound = game.add.audio('tank_firing', 1, false);
+		this.explosion_sound = game.add.audio('explosion', 1, false);
 		this.game.physics.arcade.enable(this.sprite);
 		
 		this.game.physics.arcade.gravity.y = this.GRAVITY;
@@ -87,12 +93,13 @@ Player.prototype = {
             this.shoot(80, 55);
         }
 	    if (this.move_position != null) {
-	        console.log("activity_move");
+	        //console.log("activity_move");
 	        // means we are moving
 		    if (this.sprite.body.velocity.x != 0){
 		        // we are moving
 		        if (this.move_position == parseInt(this.sprite.position.x)) {
 		            // not moving anymore
+		            this.moving_sound.stop();
 		            if (this.sprite.body.position.x < 400) {
 		               // left player
 		               this.sprite.frame = 4;
@@ -116,6 +123,7 @@ Player.prototype = {
 	move: function(move_position) {
 	    this.move_position = move_position[0] * 10;
 	    this.busy = true;
+	    this.moving_sound.play('',0,1,false);
 	    if (this.move_position > this.sprite.position.x) {
 	        // move to the right
 	        console.log(this.username + " moving to the right");
@@ -137,6 +145,7 @@ Player.prototype = {
 	    if (this.bullet === null || this.bullet === undefined) return;
 	    speed = speed * 10;
     	angle = -1 * angle;
+	    
 	    // Revive the bullet
         // This makes the bullet "alive"
 	    this.bullet.revive();
@@ -151,6 +160,7 @@ Player.prototype = {
         // Shoot it in the right direction
         this.bullet.body.velocity.x = Math.cos(this.bullet.rotation) * speed;
         this.bullet.body.velocity.y = Math.sin(this.bullet.rotation) * speed;
+        this.firing_sound.play();
 	},
 	
 	getExplosion: function(x, y) {
@@ -186,6 +196,7 @@ Player.prototype = {
 
         // Play the animation
         explosion.animations.play('boom');
+        this.explosion_sound.play();
 
         // Return the explosion itself in case we want to do anything else with it
         return explosion;
