@@ -11,12 +11,12 @@ from exc import (
     GameOverException,
 )
 
-#Exit error codes
-EXIT_ERROR_NUMBER_OF_PARAMS  = 1
+# Exit error codes
+EXIT_ERROR_NUMBER_OF_PARAMS = 1
 EXIT_ERROR_MODULE = 2
 EXIT_ERROR_BOT_INSTANCE = 3
 
-#Relation between our grid and the coordinates in [m]
+# Relation between our grid and the coordinates in [m]
 SCALE = 15
 
 # Constants we use in the game
@@ -35,7 +35,7 @@ TANK_LENGTH = 3
 # Map each firing result threshold with its feedback
 HOT = 'HOT'
 WARM = 'WARM'
-CODL = 'COLD'
+COLD = 'COLD'
 
 
 def _resolve_missing(distance):
@@ -194,9 +194,6 @@ class BattleGroundArena(object):
                     # for moving, valid integers are: -1 or 1
                     raise InvalidBotOutput("Moving must be -1 or 1.")
             elif bot_output['ACTION'] == 'SHOOT':
-                # velocity must be an integer between 1 and 150
-                #if not (1 <= int(bot_output['VEL']) <= 150):
-                    #raise InvalidBotOutput("Velocity not in range [1, 150].")
                 # angle must be an integer between 10 and 89
                 if not (10 <= int(bot_output['ANGLE']) <= 89):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
@@ -223,7 +220,8 @@ class BattleGroundArena(object):
                         # Here the engine calculates the new status
                         # according to the response and updates all tables
                         if bot_response['ACTION'] == 'MOVE':
-                            self.resolve_move_action(player, bot_response['WHERE'])
+                            self.resolve_move_action(player,
+                                                     bot_response['WHERE'])
                         elif bot_response['ACTION'] == 'SHOOT':
                             self.resolve_shoot_action(player,
                                                       bot_response['VEL'],
@@ -238,12 +236,11 @@ class BattleGroundArena(object):
                         self.match.lost(player, u'Crashed')
                         raise GameOverException(str(e))
             except GameOverException as e:
-                #print e
+                print e
                 break
         else:  # for-else, if all rounds are over
             table = self.context.current_points()
             points = {}
-            #print(table)
             for p, life in table.iteritems():
                 points[life] = points.get(life, []) + [p]
             top = max(points)
@@ -251,8 +248,8 @@ class BattleGroundArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
-        #print(self.match.print_trace())
-        #return ''
+        # print(self.match.print_trace())
+        # return ''
         return self.match.__json__()
 
     def _check_player_boundaries(self, player, new_x):
@@ -285,7 +282,7 @@ class BattleGroundArena(object):
         Calibrate according to the position of :player:"""
         if player.x_factor == -1:  # Side B, symetric x
             trajectory = trajectory[::-1]
-        initial_x = trajectory[0][0]  #  x of the first coord
+        initial_x = trajectory[0][0]  # x of the first coord
         delta_x = player.x - initial_x
         trajectory = [(x + delta_x, y) for x, y in trajectory]
         x_off = lambda i: round(i, 1) if player.x_factor == -1 else int(i)
@@ -340,11 +337,10 @@ class BattleGroundMatchLog(object):
         self.height = height
         self.players = players
         self.trace = []   # All actions performed during the match
-        self.result = {}
-        self.game_over_template = {'action': 'game_over',
-                                   'winner': '',
-                                   'loser': '',
-                                   'draw': False,
+        self.game_over_template = {ACTION: RESULT,
+                                   WINNER: None,
+                                   LOSER: None,
+                                   DRAW: False,
                                    'reason': ''}
 
     def trace_action(self, arena_action):
@@ -353,16 +349,16 @@ class BattleGroundMatchLog(object):
         self.trace.append(arena_action)
 
     def draw(self):
-        self.game_over_template['draw'] = True
+        self.game_over_template[DRAW] = True
         self.trace_action(self.game_over_template)
 
     def winner(self, player):
         player.status = BattleGroundArena.WINNER
-        self._trace_game_over('winner', 'loser', player, 'Max points')
+        self._trace_game_over(WINNER, LOSER, player, 'Max points')
 
     def lost(self, player, cause):
         player.status = BattleGroundArena.LOST
-        self._trace_game_over('loser', 'winner', player, cause)
+        self._trace_game_over(LOSER, WINNER, player, cause)
 
     def _trace_game_over(self, k1, k2, player, cause):
         self.game_over_template[k1] = player.username
@@ -376,13 +372,11 @@ class BattleGroundMatchLog(object):
             print("{} - {}".format(i, log))
 
     def __json__(self):
-        data = dict(
-                width=self.width,
-                height=self.height,
-                players=[player.username for player in self.players],
-                actions=self.trace,
-                result=self.result,
-                )
+        data = dict(width=self.width,
+                    height=self.height,
+                    players=[player.username for player in self.players],
+                    actions=self.trace,
+                    )
         return data
 
 

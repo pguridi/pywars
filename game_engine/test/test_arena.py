@@ -15,7 +15,7 @@ PY = ".py"
 BOTS = 'bots'
 ARENA_PY = 'arena.py'
 EXC_PY = 'exc.py'
-GAME_ENGINE_FOLDER = '..'
+GAME_ENGINE_FOLDER = '.'
 
 class ArenaProgramTestCase(unittest.TestCase):
 
@@ -73,12 +73,14 @@ class ArenaProgramTestCase(unittest.TestCase):
     def _get_bot_code(self, evaluate_turn_code):
         return '''
 class Bot(object):
-    def evaluate_turn(self, arena_array, feedback, life):%s
+    def evaluate_turn(self, feedback, life):%s
 ''' % evaluate_turn_code
 
     def _get_return_None_bot_code(self):
         return self._get_bot_code('''
         return None
 ''')
+
+
 if __name__ == '__main__':
     unittest.main()
