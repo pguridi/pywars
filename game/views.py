@@ -8,15 +8,17 @@ from django.views.decorators.cache import cache_page
 from django.db.models import Q
 from django.core import serializers
 from .forms import BotBufferForm
+from game.tasks import validate_bot
 
 from models import Challenge, Bot, UserProfile
 
 
 def index(request, match_id=None):
-    return render(request, 'home.html', {'tab' : 'arena', 'match_id': match_id})
+    return render(request, 'home.html', {'tab': 'arena', 'match_id': match_id})
+
 
 def about(request):
-    return render(request, 'about.html', {'tab' : 'about'})
+    return render(request, 'about.html', {'tab': 'about'})
 
 
 @login_required
@@ -40,6 +42,7 @@ def scoreboard(request):
                 'challenged_bots': challenged_bots,
                 'pending_challenged_bots': pending_challenged_bots})
 
+
 @login_required
 def mybots(request):
     user_prof = UserProfile.objects.get(user=request.user)
@@ -55,7 +58,9 @@ def mybots(request):
             bot = Bot()
             bot.owner = user_prof
             bot.code = new_code
+            bot.valid = False
             bot.save()
+            validate_bot.delay(bot.id, new_code)
             user_prof.current_bot = bot
 
         user_prof.save()
@@ -118,11 +123,11 @@ def challenge(request):
         return JsonResponse({'success': True})
 
 
-
 @login_required
 @cache_page(60)
 def main_match(request):
     return HttpResponse(None)
+
 
 @login_required
 def my_matches(request):
