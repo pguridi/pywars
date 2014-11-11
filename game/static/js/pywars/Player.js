@@ -77,11 +77,11 @@ Player.prototype = {
 	    this.bulletPool.forEachAlive(function(bullet) {
             bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
         }, this);
-        if (this.bullet.position.y > 600) {
+        if (this.bullet.position.y > 600 || this.bullet.position.x > 800) {
 	        // if shooting
 		    // Create an explosion
             this.getExplosion(this.bullet.x, this.bullet.y - 30);
-
+            this.busy = false;
             // Kill the bullet
             this.bullet.kill();
             this.bullet = null
@@ -126,11 +126,11 @@ Player.prototype = {
 	    this.moving_sound.play('',0,1,false);
 	    if (this.move_position > this.sprite.position.x) {
 	        // move to the right
-	        console.log(this.username + " moving to the right");
+	        //console.log(this.username + " moving to the right");
 	        this.sprite.body.velocity.x = 60;
 	        this.sprite.animations.play("right");
 	    } else {
-	        console.log(this.username + " moving to the left");
+	        //console.log(this.username + " moving to the left");
 	        this.sprite.body.velocity.x = -60;
 	        this.sprite.animations.play("left");
 	    }
