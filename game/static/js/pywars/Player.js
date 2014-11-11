@@ -103,10 +103,6 @@ Player.prototype = {
         game.camera.setPosition(this.bullet.position.x - 200,this.bullet.position.y);
         game.camera.update();
         
-        /*game.camera.unfollow();
-	    game.camera.follow(this.bullet.sprite);
-	    game.camera.update();*/
-	    
         // check if the bullet is out of the world
         /*if (this.bullet.position.x > this.game.world.width || this.bullet.position.x < 0) {
 	        // if shooting
@@ -187,8 +183,6 @@ Player.prototype = {
         // Shoot it in the right direction
         this.bullet.body.velocity.x = Math.cos(this.bullet.rotation) * speed;
         this.bullet.body.velocity.y = Math.sin(this.bullet.rotation) * speed;
-        
-        game.camera.setPosition(this.bullet.position.x - 400,this.bullet.position.y);
         
         this.firing_sound.play();
 	},
