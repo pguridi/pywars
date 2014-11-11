@@ -84,7 +84,6 @@ Player.prototype = {
 
 	update_shooting: function() {
 	    if (game.physics.arcade.collide(this.bullet, this.ground)) {
-	    //if (this.bullet.position.y > 530) {
 	        console.log("bullet collided!");
 	        // Create an explosion
             this.getExplosion(this.bullet.x, this.bullet.y - 30);
@@ -94,14 +93,13 @@ Player.prototype = {
             this.bullet = null
             return;
 	    }
-	    //console.log(this.bullet.position);
 	    this.bulletPool.forEachAlive(function(bullet) {
             bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
         }, this);
         
-        game.camera.unfollow();
+        //game.camera.unfollow();
         game.camera.setPosition(this.bullet.position.x - 200,this.bullet.position.y);
-        game.camera.update();
+        //game.camera.update();
         
         // check if the bullet is out of the world
         /*if (this.bullet.position.x > this.game.world.width || this.bullet.position.x < 0) {
@@ -111,9 +109,6 @@ Player.prototype = {
 	},
 	
 	update: function() {
-	    /*if (game.input.activePointer.isDown) {
-            this.shoot(80, 55);
-        }*/
         this.health_status.text = this.username + " : " + this.health;
 	    if (this.move_position != null) {
 	        //console.log("activity_move");
@@ -147,6 +142,14 @@ Player.prototype = {
 	    this.move_position = move_position[0] * 20;
 	    this.busy = true;
 	    this.moving_sound.play('',0,1,false);
+	    
+	    /*game.camera.setPosition(this.sprite.position.x - 200,this.sprite.position.y);
+        game.camera.update();*/
+	    
+	    /*game.camera.unfollow();
+        game.camera.setPosition(this.sprite.position.x - 200, game.camera.y);
+        game.camera.update();*/
+	    
 	    if (this.move_position > this.sprite.position.x) {
 	        // move to the right
 	        //console.log(this.username + " moving to the right");
@@ -161,6 +164,7 @@ Player.prototype = {
 	},
 	
 	shoot: function(speed, angle) {
+	    game.camera.unfollow();
 	    this.busy = true;
 	    this.bullet = this.bulletPool.getFirstDead();
 	    console.log(this.username + " shooting" + angle + " " + speed);

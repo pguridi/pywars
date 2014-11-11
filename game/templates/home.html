@@ -37,20 +37,23 @@
             current_turn = gameData['actions'].shift();
             if (current_turn['action'] == 'make_move') {
                 player = getPlayer(current_turn['player']);
+                game.camera.follow(player.sprite);
+                
                 player.move(current_turn['position']);
                 turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
-                console.log(player);
-                console.log(current_turn['action']);
             } else if (current_turn['action'] == 'make_shoot') {
                 player = getPlayer(current_turn['player']);
-                game.camera.setPosition(player.sprite.position.x - 400, game.camera.y);
-
+                game.camera.follow(player.sprite);
+                
                 // shoot in 2 secs
                 player.busy = true;
-                setTimeout(function () {player.shoot(current_turn['speed'], 
-                    current_turn['angle'])}, 2000);
-                    
-                //player.shoot(current_turn['speed'], current_turn['angle']);
+                /*game.time.events.add(Phaser.Timer.SECOND * 2, player.shoot, this, current_turn['speed'], 
+                    current_turn['angle']);*/
+                
+                /*setTimeout(function () {player.shoot(current_turn['speed'], 
+                    current_turn['angle'])}, 2000);*/
+                
+                player.shoot(current_turn['speed'], current_turn['angle']);
                 turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
             }
              else {
@@ -59,7 +62,7 @@
             }
         } else {
             console.log("end");
-            clearInterval(gameTimer);
+            //game.time.events.remove(gameTimer)
         }
     }
 
@@ -76,7 +79,7 @@
     function startGame(data) {
         gameData = data;
         this.level = null;
-        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render });
 
 
         function preload()
@@ -101,6 +104,7 @@
             for (playerK in players) {
                 players[playerK].create(this.level.ground);
             }
+            gameTimer = game.time.events.loop(Phaser.Timer.SECOND, turnsTimer, this);
             //hud.create();
         }
 
@@ -112,13 +116,16 @@
                players[i].update();
             }
         }
+        
+        function render() {
+            game.debug.cameraInfo(game.camera, 32, 500);
+        }
     }
 
     $(document).ready(function() {
         var jqxhr = $.get( "get_match", function(data) {
           if (data['success']) {
               startGame(data['data']);
-              gameTimer = setInterval(function () {turnsTimer()}, 1000);
           }
         })
           .fail(function() {
