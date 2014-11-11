@@ -49,5 +49,6 @@ def run_match(challengue_id, players):
     challng.played = True
 
     # Muy sucio.. pero es lo que hay.. :O
-    challng.result = json.dumps(eval(stdo))
+    r = eval(stdo)
+    challng.result = json.dumps(r)
     challng.save()
