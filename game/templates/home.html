@@ -20,19 +20,16 @@
     var play_number = 0;
 
     function verifyTurnEnd(player) {
-        console.log("activity1");
         if (player.busy == true) {
             console.log("player busy");
             return
         } else {
-            console.log("player released!");
             current_turn = null;
             clearInterval(turnEndTimer);
         }
     }
-    
+
     function turnsTimer() {
-        console.log("activity2");
         if (gameData['actions'].length > 0) {
             if (current_turn != null) {
                 return;
@@ -47,11 +44,14 @@
             } else if (current_turn['action'] == 'make_shoot') {
                 player = getPlayer(current_turn['player']);
                 player.shoot(current_turn['speed'], current_turn['angle']);
+                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
             }
              else {
+                console.log("turn action: " + current_turn);
                 current_turn = null;
             }
         } else {
+            console.log("end");
             clearInterval(gameTimer);
         }
     }
@@ -65,12 +65,12 @@
         }
         return;
     }
-    
+
     function startGame(data) {
         gameData = data;
         game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
-        
-        
+
+
         function preload()
         {
 	        level = new Level(game);
@@ -96,7 +96,7 @@
             //hud.create();
         }
 
-        function update() 
+        function update()
         {
             level.update();
             for (i = 0; i < players.length; i++) {
@@ -104,7 +104,7 @@
             }
         }
     }
-    
+
     $(document).ready(function() {
         var jqxhr = $.get( "get_match", function(data) {
           if (data['success']) {
@@ -115,8 +115,8 @@
           .fail(function() {
             console.log("Failed to get match");
           });
-        
-        
+
+
     });
 </script>
 {% endblock %}
@@ -128,13 +128,13 @@
               <h1>Pywars Challenge</h1>
             </div>
         </div>
-        <div class="row">            
+        <div class="row">
             <div class="col-md-8">
                 <div id="game"></div>
             </div>
             <div class="col-md-4 playlist-box">
                 <h3>Playlist</h3>
-                <div id="playlist"></div>
+                <div id="div-playlist"></div>
             </div>
         </div>
     </div>
