@@ -23,19 +23,23 @@ This is the configuration for development. Make sure you have a virtualenv. You 
 
 ##Intall Bower##
 * Fedora 
+
     ```bash
     sudo yum install npm
     sudo npm install -g bower
     ```
+
 * Ubuntu
+
     ```bash
     sudo apt-get install npm
     sudo npm install -g bower
     ```
+
 In Ubuntu 14.04 we need do this
-    ```bash
+
+
     sudo ln -s /usr/bin/nodejs /usr/bin/node
-    ```
 
 
 ## Game rules ##
@@ -62,6 +66,6 @@ Taking this game status as an input, the method should evaluate programmatically
 Code used to implement `evaluate_turn` must run in **PyPy**. For security reasons, this code runs in a PyPy Sandbox, so keep in mind that modules like `random` or `time` are not available, so you must figure out how to live with that :P
 
 # Running the Celery worker for running matches:
-    ```bash
+
     celery -A battleground worker -l info
-    ```
+
