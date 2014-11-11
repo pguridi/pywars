@@ -41,6 +41,13 @@ def scoreboard(request):
                 'pending_challenged_bots': pending_challenged_bots})
 
 @login_required
+def tournament(request):
+    users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
+
+    return render(request, 'tournament.html', {'tab': 'tournament',
+                'users': users})
+
+@login_required
 def mybots(request):
     user_prof = UserProfile.objects.get(user=request.user)
     if request.method == 'POST':

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block js %}
+<script type="text/javascript">
+        function postBot(data, url)
+        {
+            $.ajax(
+            {
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ msg: data}),
+                dataType: "json",
+                async: false,
+                contentType: "application/json"
+            }).fail(function(xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+              }).done(function() {
+                location.reload();
+              })
+        }
+    </script>
+
+    <script>
+        setTimeout(function(){
+            window.location.reload(1);
+        }, 60000);
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container main tournament">
+
+      <h1>Tournament Rank</h1>
+
+<table id="score_table" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Username</th>
+            <th>Score</th>
+            <th>Wins</th>
+            <th>Loses</th>
+            <th>Ties</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for user_prof in users %}
+            <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{ user_prof }} </td>
+            <td>{{ user_prof.score }}</td>
+            <td>{{ user_prof.win }}</td>
+            <td>{{ user_prof.lost }}</td>
+            <td>{{ user_prof.tie }}</td>
+          </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div> <!-- /container -->
+{% endblock %}

@@ -36,6 +36,22 @@ class UserProfile(models.Model):
         except ObjectDoesNotExist:
             return None
 
+    @property
+    def win(self):
+        #Query for beaten matches per user
+        return 5
+
+    @property
+    def lost(self):
+        #Query for lost matches per user
+        return 3
+
+    @property
+    def tie(self):
+        #Query for tied matches per user
+        return 1
+
+
 
 class Bot(models.Model):
     owner = models.ForeignKey(UserProfile)
