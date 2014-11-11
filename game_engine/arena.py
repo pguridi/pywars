@@ -205,8 +205,10 @@ class BattleGroundArena(object):
                     raise InvalidBotOutput("Moving must be -1 or 1.")
             elif bot_output['ACTION'] == 'SHOOT':
                 # angle must be an integer between 10 and 89
-                if not (10 <= int(bot_output['ANGLE']) <= 89):
+                if not (10 <= int(bot_output['ANGLE']) < 90):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
+                if not (0 <= int(bot_output['VEL']) < 50):
+                    raise InvalidBotOutput("Speed must be < 50")
         except Exception as e:
             raise InvalidBotOutput(str(e))
 
@@ -321,7 +323,7 @@ class BattleGroundArena(object):
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
         # Correct x_imp according to our scale
-        x_imp = x_imp // SCALE
+        #x_imp = x_imp // SCALE
         try:
             affected_players = [p for p in self.players
                                 if p.x == x_imp and p.y == y_imp]
