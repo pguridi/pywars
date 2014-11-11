@@ -43,11 +43,18 @@
                 console.log(current_turn['action']);
             } else if (current_turn['action'] == 'make_shoot') {
                 player = getPlayer(current_turn['player']);
-                player.shoot(current_turn['speed'], current_turn['angle']);
+                game.camera.setPosition(player.sprite.position.x - 400, game.camera.y);
+
+                // shoot in 2 secs
+                player.busy = true;
+                setTimeout(function () {player.shoot(current_turn['speed'], 
+                    current_turn['angle'])}, 2000);
+                    
+                //player.shoot(current_turn['speed'], current_turn['angle']);
                 turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
             }
              else {
-                console.log("turn action: " + current_turn);
+                console.log("turn action: " + current_turn['action']);
                 current_turn = null;
             }
         } else {
@@ -68,13 +75,14 @@
 
     function startGame(data) {
         gameData = data;
+        this.level = null;
         game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 
 
         function preload()
         {
-	        level = new Level(game);
-            level.preload();
+	        this.level = new Level(game);
+            this.level.preload();
 
             for (var k in gameData['actions']) {
                 playerData = gameData['actions'][k];
@@ -89,17 +97,18 @@
 
         function create()
         {
-            level.create();
+            this.level.create();
             for (playerK in players) {
-                players[playerK].create();
+                players[playerK].create(this.level.ground);
             }
             //hud.create();
         }
 
         function update()
         {
-            level.update();
+            this.level.update();
             for (i = 0; i < players.length; i++) {
+               game.physics.arcade.collide(players[i].sprite, this.level.ground);
                players[i].update();
             }
         }
