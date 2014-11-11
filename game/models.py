@@ -1,43 +1,19 @@
-import json
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
-
+import os
 from game.tasks import run_match
+from datetime import datetime
 
 
-DEFAULT_BOT_CODE = """# Example responses:
-#
-# Move to the right:
-#   return {'ACTION': 'MOVE', 'WHERE': 1}
-#
-# Move to the left:
-#   return {'ACTION': 'MOVE', 'WHERE': -1}
-#
-# Shooting projectile:
-#   return {'ACTION': 'SHOOT', 'VEL': 100, 'ANGLE': 35}
-#   # 'VEL' should be an integer > 0 and < 100
-#   # 'ANGLE' should be an integer > 0 and < 90
-#
-#
-# Do nothing:
-#   return None
+sample_bot_location = os.path.join(settings.PROJECT_ROOT, 'game_engine', 'default_user_bot.py')
 
-class Bot(object):
-
-    def evaluate_turn(self, arena_array, feedback, life):
-        '''
-        :param arena_array:  a Python array with players location. Ie:
-        arena_array = [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0] # (where the number is the player location)
-        :param feedback: the result of the previous turn, ie: for the move action 'SUCCESS' is returned when the enemy
-            received a hit, or 'FAILED' when missed the shot.
-        :param life: Current life level, An integer between between 0-100.
-        :return: see the comments above
-        '''
-        return None
-    """
+DEFAULT_BOT_CODE = ''
+with open(sample_bot_location, 'r') as f:
+    DEFAULT_BOT_CODE = f.read()
 
 
 class UserProfile(models.Model):
@@ -81,6 +57,11 @@ class Bot(models.Model):
             return False
 
 
+class FinalChallenge(models.Model):
+    description = models.TextField(default='Final Challenge', null=False)
+    creation_date = models.DateTimeField(auto_now=True, default=datetime.now())
+
+
 class Challenge(models.Model):
     requested_by = models.ForeignKey(UserProfile)
     creation_date = models.DateTimeField(auto_now=True)
@@ -90,6 +71,7 @@ class Challenge(models.Model):
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
     elapsed_time = models.TextField(null=True)
+    final_challenge = models.ForeignKey(FinalChallenge, blank=True, null=True, default=None)
 
     def result_description(self):
         if self.result:
@@ -99,6 +81,7 @@ class Challenge(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
 
 def dispatch_challengue(sender, instance, created, **kwargs):
     if created:

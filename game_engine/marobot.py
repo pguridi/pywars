@@ -14,4 +14,4 @@ class Bot(object):
         ANGLE = 45
         distance = 40
         v0 = (distance * g) / (math.sin(2*ANGLE)) * 1.0
-        return {'ACTION': 'SHOOT', 'VEL': 30, 'ANGLE': 45}
+        return {'ACTION': 'SHOOT', 'VEL': 40, 'ANGLE': 45}

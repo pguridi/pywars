@@ -47,6 +47,15 @@ def _resolve_missing(distance):
         return COLD
 
 
+def _x_for_players(players, limit):
+    """Given the list of players, return the numbers which will indicate the
+    initial position of each one, according to the formula."""
+    half = limit // 2
+    m = len(''.join(p.username for p in players))
+    n = sum(xrange(m))
+    return m % half, (n % half) + half
+
+
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
                      x_limit=1000):
     '''
@@ -150,7 +159,7 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=60, height=50):
+    def __init__(self, players, width=90, height=50):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
@@ -164,11 +173,12 @@ class BattleGroundArena(object):
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
+        x1, x2 = _x_for_players(self.players, limit=self.width)
         for i, player in enumerate(self.players, start=1):
             player.color = i
             player.status = self.PLAYING
-
-            x = i if i % 2 != 0 else self.width - i
+            # Initial position
+            x = x1 if i % 2 != 0 else x2
             y = 0
             self.setup_new_player(player, x, y, self.width)
 
@@ -195,8 +205,10 @@ class BattleGroundArena(object):
                     raise InvalidBotOutput("Moving must be -1 or 1.")
             elif bot_output['ACTION'] == 'SHOOT':
                 # angle must be an integer between 10 and 89
-                if not (10 <= int(bot_output['ANGLE']) <= 89):
+                if not (10 <= int(bot_output['ANGLE']) < 90):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
+                if not (0 <= int(bot_output['VEL']) < 50):
+                    raise InvalidBotOutput("Speed must be < 50")
         except Exception as e:
             raise InvalidBotOutput(str(e))
 
@@ -234,10 +246,9 @@ class BattleGroundArena(object):
                                         e.reason)
                         raise GameOverException(str(e))
                     except Exception as e:
-                        self.match.lost(player, u'Crashed')
+                        self.match.lost(player, u'Crashed: %s' % str(e))
                         raise GameOverException(str(e))
             except GameOverException as e:
-                print e
                 break
         else:  # for-else, if all rounds are over
             table = self.context.current_points()
@@ -249,8 +260,6 @@ class BattleGroundArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
-        # print(self.match.print_trace())
-        # return ''
         return self.match.__json__()
 
     def _check_player_boundaries(self, player, new_x):
@@ -297,20 +306,25 @@ class BattleGroundArena(object):
             y = 0
         return int(round(x)), int(round(y))
 
+    def get_adjusted_angle(self, player, angle):
+        if (player.x_factor == -1):
+            return angle + 90
+        return angle
+
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle, x_limit=self.width)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
         # Log the shoot made by the player
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
-                                     angle=angle,
+                                     angle=self.get_adjusted_angle(player, angle),
                                      speed=speed,
                                      trajectory=trajectory,
                                      ))
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
         # Correct x_imp according to our scale
-        x_imp = x_imp // SCALE
+        #x_imp = x_imp // SCALE
         try:
             affected_players = [p for p in self.players
                                 if p.x == x_imp and p.y == y_imp]
