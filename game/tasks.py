@@ -52,3 +52,37 @@ def run_match(challengue_id, players):
     r = eval(stdo)
     challng.result = json.dumps(r)
     challng.save()
+
+
+@shared_task
+def validate_bot(bot_id, bot_code):
+    from game.models import Bot
+    bot = Bot.objects.get(pk=bot_id)
+
+    # create temp dir and dump :bot_code: in a temp file
+    match_dir = tempfile.mkdtemp()
+    bots_dir = os.path.join(match_dir, 'bots')
+    os.mkdir(bots_dir)
+    tmp_bot_file = tempfile.NamedTemporaryFile()
+    with open(os.path.join(bots_dir, "%s.py" % tmp_bot_file.name), 'w') as f:
+        f.write(bot_code)
+
+    # dump the engine and bots file in temp dir
+    shutil.copy2(ENGINE_LOCATION, match_dir)
+    shutil.copy2(ENGINE_EXCEPS, match_dir)
+
+    cmdargs = [PYPYSANDBOX_EXE,
+               '--tmp={}'.format(match_dir),
+               'arena.py',
+               tmp_bot_file.name, tmp_bot_file.name]
+    proc = subprocess.Popen(cmdargs,
+                            cwd=match_dir,
+                            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                            shell=True)
+    stdout, stderr = proc.communicate()
+
+    valid = proc.returncode != 0
+    bot.valid = valid
+    bot.invalid_reason = stderr if not valid and stderr else ''
+    bot.save()
+    return valid
