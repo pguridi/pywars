@@ -47,6 +47,15 @@ def _resolve_missing(distance):
         return COLD
 
 
+def _x_for_players(players, limit):
+    """Given the list of players, return the numbers which will indicate the
+    initial position of each one, according to the formula."""
+    half = limit // 2
+    m = len(''.join(p.username for p in players))
+    n = sum(xrange(m))
+    return m % half, (n % half) + half
+
+
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
                      x_limit=1000):
     '''
@@ -164,11 +173,12 @@ class BattleGroundArena(object):
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
+        x1, x2 = _x_for_players(self.players, limit=self.width)
         for i, player in enumerate(self.players, start=1):
             player.color = i
             player.status = self.PLAYING
-
-            x = i if i % 2 != 0 else self.width - i
+            # Initial position
+            x = x1 if i % 2 != 0 else x2
             y = 0
             self.setup_new_player(player, x, y, self.width)
 
