@@ -74,7 +74,6 @@ class Challenge(models.Model):
     result = models.TextField(default='', blank=True, null=True)
     elapsed_time = models.TextField(null=True)
     final_challenge = models.ForeignKey(FinalChallenge, blank=True, null=True, default=None)
-    information = models.TextField(default='', null=False)
 
     def result_description(self):
         if self.result:

@@ -8,16 +8,9 @@ from django.views.decorators.cache import cache_page
 from django.db.models import Q
 from django.core import serializers
 from .forms import BotBufferForm
-import shutil
-import tempfile
-import os
-import subprocess
+from game.tasks import validate_bot
+
 from models import Challenge, Bot, UserProfile
-
-
-PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
-CHECKER_LOCATION = os.path.abspath(os.path.join("game_engine",
-                                                "check_bot.py"))
 
 
 def index(request, match_id=None):
@@ -65,10 +58,9 @@ def mybots(request):
             bot = Bot()
             bot.owner = user_prof
             bot.code = new_code
-            valid, err_desc = _validate_bot(new_code)
-            bot.valid = valid
-            bot.invalid_reason = err_desc
+            bot.valid = False
             bot.save()
+            validate_bot.delay(bot.id, new_code)
             user_prof.current_bot = bot
 
         user_prof.save()
@@ -82,32 +74,6 @@ def mybots(request):
         'tab': 'mybots',
         'my_bots': reversed(Bot.objects.filter(owner=user_prof))
     })
-
-
-def _validate_bot(bot_code):
-    # create temp dir and dump :bot_code: in a temp file
-    match_dir = tempfile.mkdtemp()
-    bots_dir = os.path.join(match_dir, 'bots')
-    os.mkdir(bots_dir)
-    tmp_bot_file = tempfile.NamedTemporaryFile()
-    with open(os.path.join(bots_dir, "%s.py" % tmp_bot_file.name), 'w') as f:
-        f.write(bot_code)
-
-    # dump the engine and bots file in temp dir
-    shutil.copy2(CHECKER_LOCATION, match_dir)
-
-    cmdargs = [PYPYSANDBOX_EXE,
-               '--tmp={}'.format(match_dir),
-               'check_bot.py',
-               tmp_bot_file.name]
-    proc = subprocess.Popen(cmdargs,
-                            cwd=match_dir,
-                            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            shell=True)
-    stdout, stderr = proc.communicate()
-    if proc.returncode != 0:
-        return False, stderr
-    return True, ''
 
 
 @login_required
@@ -147,9 +113,6 @@ def challenge(request):
         #if played_challs.count() > 0:
         #    # has already played against this bot, must upload a new one
         #    return HttpResponse("Already played against this bot!. Upload a new one.")
-        if (user_prof.current_bot.valid is False
-                or challenge_bot.valid is False):
-            return JsonResponse({'success': False})
 
         new_challengue = Challenge()
         new_challengue.requested_by = user_prof
