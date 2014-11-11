@@ -159,7 +159,7 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=60, height=50):
+    def __init__(self, players, width=90, height=50):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
