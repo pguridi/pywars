@@ -77,7 +77,7 @@ Player.prototype = {
 	    this.bulletPool.forEachAlive(function(bullet) {
             bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
         }, this);
-        if (this.bullet.position.y > 600 || this.bullet.position.x > 800) {
+        if (this.bullet.position.y > this.game.height || this.bullet.position.x > this.game.width) {
 	        // if shooting
 		    // Create an explosion
             this.getExplosion(this.bullet.x, this.bullet.y - 30);
@@ -196,7 +196,7 @@ Player.prototype = {
 
         // Play the animation
         explosion.animations.play('boom');
-        //this.explosion_sound.play();
+        this.explosion_sound.play();
 
         // Return the explosion itself in case we want to do anything else with it
         return explosion;
