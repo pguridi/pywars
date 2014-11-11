@@ -13,15 +13,15 @@ from game.models import (
 )
 
 class UserProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'score', 'current_bot', 'code_update_date')
 admin.site.register(UserProfile, UserProfileAdmin)
 
 class BotAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('creation_date', 'modification_date', 'owner')
 admin.site.register(Bot, BotAdmin)
 
 class ChallengeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_bot')
 admin.site.register(Challenge, ChallengeAdmin)
 
 
