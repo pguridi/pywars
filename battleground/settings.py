@@ -120,3 +120,8 @@ BOWER_INSTALLED_APPS = (
     'bootstrap',
     'phaser',
 )
+
+try:
+    from local_settings import *
+except ImportError as e:
+    pass
