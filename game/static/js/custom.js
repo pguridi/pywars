@@ -2,8 +2,8 @@
 $(document).on("click", ".select_bot", function () {
      var botId = $(this).data('id');
      var botContent = $(this).attr('content');
-     $(".modal-content pre").html(botContent);
-     $(".modal-title").html($(this).html());
+     $("#bot-code .modal-content pre").html(botContent);
+     $("#bot-code .modal-title").html($(this).html());
 });
 
 $(document).ready(function() {
