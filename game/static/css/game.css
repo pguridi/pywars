@@ -243,10 +243,14 @@ margin-left: 1em;
 
 /* menu bar */
 .navbar-nav li{
-    font-size: 15px
+    font-size: 15px;
 }
 
 /* score table */
 #score_table tr{
-    font-size: 15px
+    font-size: 15px;
 }
+
+#img_menu {
+    padding-top: 12px;
+    margin-right: 10px;}

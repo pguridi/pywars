@@ -36,6 +36,21 @@ class UserProfile(models.Model):
         except ObjectDoesNotExist:
             return None
 
+    @property
+    def win(self):
+        return Challenge.objects.filter(final_challenge__isnull = False, winner_player = self).count()
+
+
+    @property
+    def lost(self):
+        return Challenge.objects.filter(final_challenge__isnull = False, loser_player = self).count()
+
+    @property
+    def tie(self):
+        return Challenge.objects.filter((Q(draw_player1 = self) | Q(draw_player2 = self)), final_challenge__isnull = False).count()
+
+
+
 
 class Bot(models.Model):
     owner = models.ForeignKey(UserProfile)
@@ -71,6 +86,10 @@ class Challenge(models.Model):
     challenged_bot = models.ForeignKey(Bot, related_name="challenged")
     played = models.BooleanField(default=False)
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
+    winner_player = models.ForeignKey(UserProfile, related_name="winner_player", blank=True, null=True)
+    loser_player = models.ForeignKey(UserProfile, related_name="loser_player", blank=True, null=True)
+    draw_player1 = models.ForeignKey(UserProfile, related_name="draw_player1", blank=True, null=True)
+    draw_player2 = models.ForeignKey(UserProfile, related_name="draw_playe2", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
     elapsed_time = models.TextField(null=True)
     final_challenge = models.ForeignKey(FinalChallenge, blank=True, null=True, default=None)

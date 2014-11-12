@@ -5,6 +5,7 @@
 <html>
   <head>
     <title>PyWars by Onapsis</title>
+    <link rel="icon" href="/static/img/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     {% compress css %}
@@ -37,7 +38,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">PyWars</a>
+          <a href="/"><img id="img_menu" src="{% static '/static/img/PyWars_menu.png'%}"/></a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -47,7 +48,10 @@
               <a href="/">Arena</a>
             </li>
             <li role="presentation"{% if tab == "score" %}class="active"{% endif %}>
-              <a href="/scoreboard">Tournament</a>
+              <a href="/scoreboard">Free Play</a>
+            </li>
+            <li role="presentation"{% if tab == "tournament" %}class="active"{% endif %}>
+              <a href="/tournament">Tournament</a>
             </li>
             <li role="presentation"{% if tab == "my-matches" %}class="active"{% endif %}>
               <a href="/my-matches">My Matches</a>
