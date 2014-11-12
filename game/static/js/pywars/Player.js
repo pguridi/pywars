@@ -39,8 +39,8 @@ Player.prototype = {
 		// physics
 		this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 		this.sprite.position.x = this.player_position;
-        this.sprite.body.collideWorldBounds = true;
-        //this.sprite.anchor.setTo(0.5, 0.5);
+        this.sprite.body.collideWorldBounds = false;
+        this.sprite.anchor.setTo(0.5, 0.5);
 		
 		this.health_status = game.add.text(16, 16, '', { fontSize: '32px', fill: '#ffffff' });
 		this.health_status.fixedToCamera = true;
