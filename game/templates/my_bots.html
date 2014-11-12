@@ -2,10 +2,8 @@
 {% load i18n staticfiles %}
 
 {% block js %}
-
   {{ form.media }}
   <script src="{% static '/static/js/custom.js' %}"></script>
-
 {% endblock %}
 
 {% block content %}
@@ -19,7 +17,7 @@
               {% csrf_token %}
               {{ form.as_p }}
               <button type="submit" class="btn btn-primary btn-xs" name="save_buffer">Save</button>
-              <button type="submit" class="btn btn-success btn-xs" name="publish_buffer">Test & publish</button>
+              <button type="submit"class="btn btn-success btn-xs" name="publish_buffer">Test & publish</button>
               <p><h5>Latest update: {{ user_prof.code_update_date }}</h5></p>
           </form>
       </div>
@@ -28,16 +26,28 @@
           <h3>Bot history</h3>
           <ul class="bot-history-list">
           {% for bot in my_bots %}
+              {% if bot.valid == 'PENDING' %}
                 <li>
-                    <a id="{{bot.pk}}" class="select_bot" content="{{bot.code}}" valid="{{bot.valid}}" invalid_reason="{{bot.invalid_reason}}" data-toggle="modal" data-target=".bot-code-modal" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
+                    <a id="{{bot.pk}}" title="{{bot.valid}}" class="select_bot bot-pending list-group-item-warning" content="{{bot.code}}" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}}</a>
                 </li>
+              {% endif %}
+              {% if bot.valid == 'READY' %}
+                <li>
+                    <a id="{{bot.pk}}" title="{{bot.valid}}" class="select_bot bot-ready list-group-item-success" content="{{bot.code}}" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %} </a>
+                </li>
+              {% endif %}
+              {% if bot.valid  == 'INVALID' %}
+                <li>
+                  <a id="{{bot.pk}}" title="{{bot.valid}}" class="select_bot bot-invalid list-group-item-danger" content="<span class='color-red'>{{bot.invalid_reason}}</span><br><span class='color-black'>{{bot.code}}</span>" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}}</a>
+                </li>
+              {% endif %}
           {% endfor %}
           </ul>
       </div>
   </div>
 
 
-  <div class="modal fade bot-code-modal" tabindex="-1" role="dialog" aria-labelledby="botCodeModal" aria-hidden="true">
+  <div id="bot-code" class="modal fade bot-code-modal" tabindex="-1" role="dialog" aria-labelledby="botCodeModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
@@ -51,7 +61,6 @@
       </div>
     </div>
   </div>
-
 </div>
 
 {% endblock %}
