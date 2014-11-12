@@ -34,10 +34,6 @@ function updateBots(){
       var $item = $( this );
       var refreshBotList = $.get( "get_bot_status/" + $item.attr('id') , function(data) {
         if (data['success']) {
-
-          if (data['status'] === 'PENDING') {
-            return;
-          }
           if (data['status'] === 'READY') {
             $item.removeClass('list-group-item-warning');
             $item.addClass('list-group-item-success');
