@@ -252,5 +252,17 @@ margin-left: 1em;
 }
 
 #img_menu {
-    padding-top: 12px;
-    margin-right: 10px;}
+  padding-top: 12px;
+  margin-right: 10px;
+}
+.bot-history-list li a{
+  background: black;
+}
+
+/*color for pre in modal bot*/
+.main span.color-red{
+  color:red;
+}
+.main span.color-black{
+  color:black;
+}
