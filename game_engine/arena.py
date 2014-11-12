@@ -278,14 +278,14 @@ class BattleGroundArena(object):
             self.arena[player.x, player.y] = FREE
             player.x = new_x
             self.arena[player.x, player.y] = player.color
-            # Trace what just happened in the match
-            self.match.trace_action(dict(action="make_move",
-                                         player=player.username,
-                                         position=[player.x, player.y], ))
             # Tell the user it moved successfully
             self.context.move_feedback(player, ok=True)
         else:
             self.context.move_feedback(player, ok=False)
+        # Trace what just happened in the match
+        self.match.trace_action(dict(action="make_move",
+                                     player=player.username,
+                                     position=[player.x, player.y], ))
 
     def adjust_player_shoot_trajectory(self, player, trajectory):
         """Depending on which side of the arena :player: is, we need or not to
