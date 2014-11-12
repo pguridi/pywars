@@ -91,6 +91,7 @@ class Challenge(models.Model):
     challenger_bot = models.ForeignKey(Bot, related_name="challenger")
     challenged_bot = models.ForeignKey(Bot, related_name="challenged")
     played = models.BooleanField(default=False)
+    canceled = models.BooleanField(default=False)
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     winner_player = models.ForeignKey(UserProfile, related_name="winner_player", blank=True, null=True)
     loser_player = models.ForeignKey(UserProfile, related_name="loser_player", blank=True, null=True)

@@ -50,7 +50,7 @@ The game is simple, you will program a tank-bot that should destroy the oponent'
   * **Move**: The tank can move forward or back, but only one step per turn.
   * **Do Nothing**: Pretty self explanatory. Nothing happens here.
 
-The game ends when one of the tanks is destroyed, i.e: its life reaches 0 points; or when 250 turns are played, in which case the winning tank is the one which has more lives at that moment.
+The game ends when one of the tanks is destroyed, i.e: its life reaches 0 points; or when 100 turns are played, in which case the winning tank is the one which has more lives at that moment.
 
 ### Programming the tank bot ###
 The user must define a class called `Bot` that implements the method `evaluate_turn`, which receives the following parameters:

@@ -33,6 +33,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('creation_date', models.DateTimeField(auto_now=True)),
                 ('played', models.BooleanField(default=False)),
+                ('canceled', models.BooleanField(default=False)),
                 ('result', models.TextField(default=b'', null=True, blank=True)),
                 ('elapsed_time', models.TextField(null=True)),
                 ('information', models.TextField(default=b'')),
@@ -48,7 +49,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('description', models.TextField(default=b'Final Challenge')),
-                ('creation_date', models.DateTimeField(default=datetime.datetime(2014, 11, 12, 13, 54, 15, 95225), auto_now=True)),
+                ('creation_date', models.DateTimeField(default=datetime.datetime(2014, 11, 12, 14, 27, 57, 425421), auto_now=True)),
             ],
             options={
             },

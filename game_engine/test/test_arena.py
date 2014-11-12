@@ -42,9 +42,18 @@ class ArenaProgramTestCase(unittest.TestCase):
         ret, _, __ = self._run_arena([bot_file])
         self.assertNotEqual(ret, EXIT_SUCCESS)
 
-    def test_two_return_None_bot_draw(self):
-        bot1_file = self._generate_bot_script("bot1", self._get_return_None_bot_code())
-        bot2_file = self._generate_bot_script("bot2", self._get_return_None_bot_code())
+    def test_return_None_bot_draw(self):
+        self._test_bots_draw(self._get_return_None_bot_code)
+
+    def test_only_moving_bots_draw(self):
+        self._test_bots_draw(self._get_only_moving_bot_code)
+
+    def test_shoot_in_the_air_bots_draw(self):
+        self._test_bots_draw(self._get_shoot_in_the_air_bot_code)
+
+    def _test_bots_draw(self, get_bot_code):
+        bot1_file = self._generate_bot_script("bot1", get_bot_code())
+        bot2_file = self._generate_bot_script("bot2", get_bot_code())
         ret, output, err = self._run_arena([bot1_file, bot2_file])
         self.assertEqual(ret, EXIT_SUCCESS)
         #WARNING: make sure we are the only ones to access arena.py code,
@@ -81,6 +90,16 @@ class Bot(object):
         return None
 ''')
 
+    def _get_only_moving_bot_code(self):
+        return self._get_bot_code('''
+        return {'ACTION' : 'MOVE', 'WHERE': 1}
+''')
+
+    #We don't use minimum values, because bots kill themselves
+    def _get_shoot_in_the_air_bot_code(self):
+        return self._get_bot_code('''
+        return {'ACTION' : 'SHOOT', 'VEL': 15, 'ANGLE': 15}
+''')
 
 if __name__ == '__main__':
     unittest.main()
