@@ -54,7 +54,7 @@ def _x_for_players(players, limit):
     m = len(''.join(p.username for p in players))
     n = sum(xrange(m))
     k = (n * m) % quarter
-    return k, limit - k
+    return k, limit - k - 1
 
 
 def shoot_projectile(speed, angle, starting_height=0.0, gravity=9.8,
