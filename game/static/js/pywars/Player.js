@@ -40,7 +40,7 @@ Player.prototype = {
 		this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 		this.sprite.position.x = this.player_position;
         this.sprite.body.collideWorldBounds = true;
-        this.sprite.anchor.setTo(0.5, 0.5);
+        //this.sprite.anchor.setTo(0.5, 0.5);
 		
 		this.health_status = game.add.text(16, 16, '', { fontSize: '32px', fill: '#ffffff' });
 		this.health_status.fixedToCamera = true;
@@ -111,26 +111,28 @@ Player.prototype = {
 	update: function() {
         this.health_status.text = this.username + " : " + this.health;
 	    if (this.move_position != null) {
-	        //console.log("activity_move");
-	        // means we are moving
-		    if (this.sprite.body.velocity.x != 0){
-		        // we are moving
-		        if (this.move_position == parseInt(this.sprite.position.x)) {
-		            // not moving anymore
-		            this.moving_sound.stop();
-		            if (this.sprite.body.position.x < 400) {
-		               // left player
-		               this.sprite.frame = 4;
-		            } else {
-		               this.sprite.frame = 0;
-		            }
-		            this.sprite.body.velocity.x = 0;
-		            this.move_position = null;
-		            this.sprite.animations.stop();
-		            this.busy = false;
-		        }
-		    }
-		    return;
+	        // we are moving
+	        if (this.move_position == parseInt(this.sprite.position.x)) {
+	            // not moving anymore
+	            this.moving_sound.stop();
+	            if (this.sprite.body.position.x < 400) {
+	               // left player
+	               this.sprite.frame = 4;
+	            } else {
+	               this.sprite.frame = 0;
+	            }
+	            this.sprite.body.velocity.x = 0;
+	            this.move_position = null;
+	            this.sprite.animations.stop();
+	            this.busy = false;
+	        } else {
+	            if (this.move_position > this.sprite.position.x) {
+	                // move to the right
+	                this.sprite.position.x += 1;
+	            } else {
+	                this.sprite.position.x -= 1;
+	            }
+	        }
 		} else if (this.bullet != null) {
 		    // we are shooting
 		    this.update_shooting();
@@ -143,21 +145,10 @@ Player.prototype = {
 	    this.busy = true;
 	    this.moving_sound.play('',0,1,false);
 	    
-	    /*game.camera.setPosition(this.sprite.position.x - 200,this.sprite.position.y);
-        game.camera.update();*/
-	    
-	    /*game.camera.unfollow();
-        game.camera.setPosition(this.sprite.position.x - 200, game.camera.y);
-        game.camera.update();*/
-	    
 	    if (this.move_position > this.sprite.position.x) {
 	        // move to the right
-	        //console.log(this.username + " moving to the right");
-	        this.sprite.body.velocity.x = 60;
 	        this.sprite.animations.play("right");
 	    } else {
-	        //console.log(this.username + " moving to the left");
-	        this.sprite.body.velocity.x = -60;
 	        this.sprite.animations.play("left");
 	    }
         

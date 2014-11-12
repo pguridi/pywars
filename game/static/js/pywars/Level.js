@@ -10,7 +10,7 @@ Level.prototype = {
 	preload: function() {
 	    this.game.load.image('ground', 'static/assets/platform.png');
 	    this.game.load.image('background', 'static/assets/bg_castle.png');
-	    //this.game.load.audio('background_music', 'static/assets/background_music.mp3');
+	    this.game.load.audio('background_music', 'static/assets/background_music.mp3');
 	    this.game.time.advancedTiming = true;
 	},
 
@@ -31,9 +31,9 @@ Level.prototype = {
         cursors = this.game.input.keyboard.createCursorKeys();
         
 		// music
-		//this.background_music = this.game.add.audio('background_music', 1, false);
-		//this.background_music.volume -= 0.2;
-		//this.background_music.play();
+		this.background_music = this.game.add.audio('background_music', 1, false);
+		this.background_music.volume -= 0.2;
+		this.background_music.play();
         this.fpsText = game.add.text(
             20, 50, '', { font: '16px Arial', fill: '#000' }
         );

@@ -40,7 +40,7 @@
                 game.camera.follow(player.sprite);
                 
                 player.move(current_turn['position']);
-                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
+                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 500);
             } else if (current_turn['action'] == 'make_shoot') {
                 player = getPlayer(current_turn['player']);
                 game.camera.follow(player.sprite);
@@ -54,7 +54,7 @@
                     current_turn['angle'])}, 2000);*/
                 
                 player.shoot(current_turn['speed'], current_turn['angle']);
-                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
+                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 500);
             }
              else {
                 console.log("turn action: " + current_turn['action']);
@@ -62,7 +62,7 @@
             }
         } else {
             console.log("end");
-            //game.time.events.remove(gameTimer)
+            game.time.events.remove(gameTimer)
         }
     }
 
