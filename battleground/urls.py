@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     url(r'^get_match$', 'game.views.get_match', name='get_match'),
     url(r'^bot_code/(\d+)$', 'game.views.bot_code', name='bot_code'),
     url(r'^get_playlist$', 'game.views.get_playlist', name='get_playlist'),
-
+    url(r'^get_bot_status/(\d+)$', 'game.views.get_bot_status', name='get_bot_status'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

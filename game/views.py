@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.db.models import Q
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from .forms import BotBufferForm
 from models import Challenge, Bot, UserProfile
 from game.tasks import validate_bot
@@ -149,6 +150,14 @@ def get_match(request):
     if challenges.count() > 0:
         return JsonResponse({'success': True, 'data': json.loads(challenges[0].result)})
     else:
+        return JsonResponse({'success': False})
+        
+@login_required
+def get_bot_status(request, bot_id):
+    try:
+        bot = Bot.objects.get(pk=bot_id)
+        return JsonResponse({'success': True, 'status': bot.valid, 'reason': bot.invalid_reason})
+    except ObjectDoesNotExist:
         return JsonResponse({'success': False})
 
 
