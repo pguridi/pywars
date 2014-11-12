@@ -95,6 +95,8 @@ EMAIL_BACKEND = 'mailer.backend.DbBackend'
 STATIC_URL = '/static/'
 
 CELERY_TASK_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_RESULT_SERIALIZER = "json"
 
 #STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 STATIC_ROOT = "/var/www/static"
