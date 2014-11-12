@@ -68,6 +68,7 @@ class Challenge(models.Model):
     challenger_bot = models.ForeignKey(Bot, related_name="challenger")
     challenged_bot = models.ForeignKey(Bot, related_name="challenged")
     played = models.BooleanField(default=False)
+    canceled = models.BooleanField(default=False)
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
     elapsed_time = models.TextField(null=True)
