@@ -142,13 +142,18 @@ LOGGING = {
         },
     },
     'loggers': {
+        '': {  # THE ROOT LOGGER
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
         'django': {
             'handlers':['file'],
             'propagate': True,
             'level':'DEBUG',
         },
-        'game': {
+        'battleground.game': {
             'handlers': ['file'],
+            'propagate': True,
             'level': 'DEBUG',
         },
     }
