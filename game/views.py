@@ -9,7 +9,8 @@ from django.db.models import Q
 from django.core import serializers
 from .forms import BotBufferForm
 from models import Challenge, Bot, UserProfile
-                                               "check_bot.py"))
+from game.tasks import validate_bot
+
 
 def index(request, match_id=None):
     return render(request, 'home.html', {'tab': 'arena', 'match_id': match_id})
@@ -45,8 +46,8 @@ def scoreboard(request):
 def tournament(request):
     users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
 
-    return render(request, 'tournament.html', {'tab': 'tournament',
-                'users': users})
+    return render(request, 'tournament.html', {'tab': 'tournament', 'users': users})
+
 
 @login_required
 def mybots(request):
@@ -141,6 +142,7 @@ def my_matches(request):
     matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
     return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
 
+
 @login_required
 def get_match(request):
     challenges = Challenge.objects.filter(played=True)
@@ -149,9 +151,11 @@ def get_match(request):
     else:
         return JsonResponse({'success': False})
 
+
 @login_required
 def random_test_match(request):
     return HttpResponse(None)
+
 
 @login_required
 def bot_code(request, bot_pk):
@@ -167,8 +171,8 @@ def bot_code(request, bot_pk):
 def get_playlist(request):
     challenges = Challenge.objects.filter(played=True)[:25]
     if not challenges:
-        return JsonResponse({'success': False, 'data': [] })
+        return JsonResponse({'success': False, 'data': []})
     data = json.loads(serializers.serialize('json', challenges))
     for d in data:
         del d['fields']['result']
-    return JsonResponse({'success': True , 'data': data })
+    return JsonResponse({'success': True, 'data': data})
