@@ -239,7 +239,6 @@ class BattleGroundArena(object):
                                                       bot_response['VEL'],
                                                       bot_response['ANGLE'])
                     except (InvalidBotOutput,
-                            BotTimeoutException,
                             TankDestroyedException) as e:
                         self.match.lost(self.context.affected_player or player,
                                         e.reason)
