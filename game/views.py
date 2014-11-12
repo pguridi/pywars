@@ -8,10 +8,8 @@ from django.views.decorators.cache import cache_page
 from django.db.models import Q
 from django.core import serializers
 from .forms import BotBufferForm
-from game.tasks import validate_bot
-
 from models import Challenge, Bot, UserProfile
-
+                                               "check_bot.py"))
 
 def index(request, match_id=None):
     return render(request, 'home.html', {'tab': 'arena', 'match_id': match_id})
@@ -65,7 +63,6 @@ def mybots(request):
             bot = Bot()
             bot.owner = user_prof
             bot.code = new_code
-            bot.valid = False
             bot.save()
             validate_bot.delay(bot.id, new_code)
             user_prof.current_bot = bot
@@ -120,6 +117,9 @@ def challenge(request):
         #if played_challs.count() > 0:
         #    # has already played against this bot, must upload a new one
         #    return HttpResponse("Already played against this bot!. Upload a new one.")
+        if (user_prof.current_bot.valid is False
+                or challenge_bot.valid is False):
+            return JsonResponse({'success': False})
 
         new_challengue = Challenge()
         new_challengue.requested_by = user_prof

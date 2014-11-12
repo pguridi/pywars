@@ -53,12 +53,20 @@ class UserProfile(models.Model):
 
 
 class Bot(models.Model):
+    READY, PENDING, INVALID = 'READY', 'PENDING', 'INVALID'
+    STATUS_CHOICES = (
+        (READY, 'Ready'),
+        (PENDING, 'Pending'),
+        (INVALID, 'Invalid'),
+    )
     owner = models.ForeignKey(UserProfile)
     code = models.TextField()
     creation_date = models.DateTimeField(auto_now=True)
     modification_date = models.DateTimeField(auto_now=True)
-    valid = models.NullBooleanField(default=False)
-    invalid_reason = models.TextField(blank=True, null=True, default='pending')
+    valid = models.CharField(max_length=10,
+                             choices=STATUS_CHOICES,
+                             default=PENDING)
+    invalid_reason = models.TextField(null=True, default='')
 
     def to_dict(self):
         return {"owner": self.owner, "code": self.code}
@@ -93,6 +101,7 @@ class Challenge(models.Model):
     result = models.TextField(default='', blank=True, null=True)
     elapsed_time = models.TextField(null=True)
     final_challenge = models.ForeignKey(FinalChallenge, blank=True, null=True, default=None)
+    information = models.TextField(default='', null=False)
 
     def result_description(self):
         if self.result:

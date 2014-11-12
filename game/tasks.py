@@ -63,8 +63,8 @@ def validate_bot(bot_id, bot_code):
     match_dir = tempfile.mkdtemp()
     bots_dir = os.path.join(match_dir, 'bots')
     os.mkdir(bots_dir)
-    tmp_bot_file = tempfile.NamedTemporaryFile()
-    with open(os.path.join(bots_dir, "%s.py" % tmp_bot_file.name), 'w') as f:
+    tmp_bot_filename = 'testing.py'
+    with open(os.path.join(match_dir, tmp_bot_filename), 'w') as f:
         f.write(bot_code)
 
     # dump the engine and bots file in temp dir
@@ -74,15 +74,23 @@ def validate_bot(bot_id, bot_code):
     cmdargs = [PYPYSANDBOX_EXE,
                '--tmp={}'.format(match_dir),
                'arena.py',
-               tmp_bot_file.name, tmp_bot_file.name]
+               tmp_bot_filename, tmp_bot_filename]
     proc = subprocess.Popen(cmdargs,
                             cwd=match_dir,
-                            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            shell=True)
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, )
     stdout, stderr = proc.communicate()
+    valid = True
+    key = 'Traceback'
+    invalid_reason = ''
+    if stderr:
+        if key in stderr:
+            valid = False
+            i = stderr.index(key)
+            invalid_reason = stderr[i:]
 
-    valid = proc.returncode != 0
-    bot.valid = valid
-    bot.invalid_reason = stderr if not valid and stderr else ''
+    bot.valid = Bot.READY if valid else Bot.INVALID
+    bot.invalid_reason = invalid_reason
     bot.save()
     return valid
