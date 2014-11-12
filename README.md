@@ -34,7 +34,7 @@ This is the configuration for development. Make sure you have a virtualenv. You 
     ```bash
     sudo apt-get install npm
     sudo npm install -g bower
-    ```24
+    ```
 
 In Ubuntu 14.04 we need do this
 
