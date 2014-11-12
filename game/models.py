@@ -43,7 +43,7 @@ class Bot(models.Model):
     creation_date = models.DateTimeField(auto_now=True)
     modification_date = models.DateTimeField(auto_now=True)
     valid = models.NullBooleanField(default=False)
-    invalid_reason = models.TextField(null=True, default='pending')
+    invalid_reason = models.TextField(blank=True, null=True, default='pending')
 
     def to_dict(self):
         return {"owner": self.owner, "code": self.code}
