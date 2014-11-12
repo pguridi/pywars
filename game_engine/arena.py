@@ -17,7 +17,7 @@ EXIT_ERROR_MODULE = 2
 EXIT_ERROR_BOT_INSTANCE = 3
 
 # Relation between our grid and the coordinates in [m]
-SCALE = 30
+SCALE = 60
 
 # Constants we use in the game
 FREE = 0
@@ -192,7 +192,7 @@ class BattleGroundArena(object):
         self.context.move_feedback(player, ok=True)
         self.match.trace_action(dict(action="new_player",
                                      name=player.username,
-                                     position=[x, y],
+                                     position=[x * SCALE, y],
                                      tank=player.bot.__class__.__name__,
                                      ))
 

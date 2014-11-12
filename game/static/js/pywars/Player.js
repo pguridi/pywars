@@ -2,7 +2,7 @@ Player = function(game, username, position) {
 
 	this.game = game;
 	this.username = username;
-	this.player_position = position[0] * 20;
+	this.player_position = position[0];
 	this.health = 100;
 	this.sprite = null;
 	this.cursors = null;
@@ -83,7 +83,7 @@ Player.prototype = {
 	},
 
 	update_shooting: function() {
-	    if (game.physics.arcade.collide(this.bullet, this.ground)) {
+	    if (game.physics.arcade.collide(this.bullet, this.ground) || (this.bullet.position.x > this.game.world.width || this.bullet.position.x < 0)) {
 	        console.log("bullet collided!");
 	        // Create an explosion
             this.getExplosion(this.bullet.x, this.bullet.y - 30);
@@ -97,15 +97,10 @@ Player.prototype = {
             bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
         }, this);
         
+        console.log(this.bullet.position.x + " : " + this.bullet.position.y);
         //game.camera.unfollow();
         game.camera.setPosition(this.bullet.position.x - 200,this.bullet.position.y);
         //game.camera.update();
-        
-        // check if the bullet is out of the world
-        /*if (this.bullet.position.x > this.game.world.width || this.bullet.position.x < 0) {
-	        // if shooting
-		    
-        }*/
 	},
 	
 	update: function() {
@@ -141,7 +136,7 @@ Player.prototype = {
 	},
 	
 	move: function(move_position) {
-	    this.move_position = move_position[0] * 20;
+	    this.move_position = move_position[0];
 	    this.busy = true;
 	    this.moving_sound.play('',0,1,false);
 	    
@@ -161,7 +156,7 @@ Player.prototype = {
 	    console.log(this.username + " shooting" + angle + " " + speed);
 	        
 	    if (this.bullet === null || this.bullet === undefined) return;
-	    speed = speed * 20;
+	    speed = speed * 10;
     	angle = -1 * angle;
 	    
 	    // Revive the bullet
