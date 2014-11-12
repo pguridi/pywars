@@ -37,22 +37,32 @@
             current_turn = gameData['actions'].shift();
             if (current_turn['action'] == 'make_move') {
                 player = getPlayer(current_turn['player']);
+                game.camera.follow(player.sprite);
+                
                 player.move(current_turn['position']);
-                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
-                console.log(player);
-                console.log(current_turn['action']);
+                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 500);
             } else if (current_turn['action'] == 'make_shoot') {
                 player = getPlayer(current_turn['player']);
+                game.camera.follow(player.sprite);
+                
+                // shoot in 2 secs
+                player.busy = true;
+                /*game.time.events.add(Phaser.Timer.SECOND * 2, player.shoot, this, current_turn['speed'], 
+                    current_turn['angle']);*/
+                
+                /*setTimeout(function () {player.shoot(current_turn['speed'], 
+                    current_turn['angle'])}, 2000);*/
+                
                 player.shoot(current_turn['speed'], current_turn['angle']);
-                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 1000);
+                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 500);
             }
              else {
-                console.log("turn action: " + current_turn);
+                console.log("turn action: " + current_turn['action']);
                 current_turn = null;
             }
         } else {
             console.log("end");
-            clearInterval(gameTimer);
+            game.time.events.remove(gameTimer)
         }
     }
 
@@ -68,13 +78,14 @@
 
     function startGame(data) {
         gameData = data;
-        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+        this.level = null;
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render });
 
 
         function preload()
         {
-	        level = new Level(game);
-            level.preload();
+	        this.level = new Level(game);
+            this.level.preload();
 
             for (var k in gameData['actions']) {
                 playerData = gameData['actions'][k];
@@ -89,19 +100,25 @@
 
         function create()
         {
-            level.create();
+            this.level.create();
             for (playerK in players) {
-                players[playerK].create();
+                players[playerK].create(this.level.ground);
             }
+            gameTimer = game.time.events.loop(Phaser.Timer.SECOND, turnsTimer, this);
             //hud.create();
         }
 
         function update()
         {
-            level.update();
+            this.level.update();
             for (i = 0; i < players.length; i++) {
+               game.physics.arcade.collide(players[i].sprite, this.level.ground);
                players[i].update();
             }
+        }
+        
+        function render() {
+            game.debug.cameraInfo(game.camera, 32, 500);
         }
     }
 
@@ -109,7 +126,6 @@
         var jqxhr = $.get( "get_match", function(data) {
           if (data['success']) {
               startGame(data['data']);
-              gameTimer = setInterval(function () {turnsTimer()}, 1000);
           }
         })
           .fail(function() {
@@ -125,7 +141,8 @@
     <div class="col-md-offset-1 main">
         <div class="row">
             <div id="header">
-              <h1>Pywars Challenge</h1>
+              <img src="{% static '/static/img/PyWars_arena.png'%}"/>
+              <h1>Challenge</h1>
             </div>
         </div>
         <div class="row">

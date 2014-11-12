@@ -7,16 +7,18 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.db.models import Q
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from .forms import BotBufferForm
-
 from models import Challenge, Bot, UserProfile
+from game.tasks import validate_bot
 
 
 def index(request, match_id=None):
-    return render(request, 'home.html', {'tab' : 'arena', 'match_id': match_id})
+    return render(request, 'home.html', {'tab': 'arena', 'match_id': match_id})
+
 
 def about(request):
-    return render(request, 'about.html', {'tab' : 'about'})
+    return render(request, 'about.html', {'tab': 'about'})
 
 
 @login_required
@@ -40,6 +42,14 @@ def scoreboard(request):
                 'challenged_bots': challenged_bots,
                 'pending_challenged_bots': pending_challenged_bots})
 
+
+@login_required
+def tournament(request):
+    users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
+
+    return render(request, 'tournament.html', {'tab': 'tournament', 'users': users})
+
+
 @login_required
 def mybots(request):
     user_prof = UserProfile.objects.get(user=request.user)
@@ -56,6 +66,7 @@ def mybots(request):
             bot.owner = user_prof
             bot.code = new_code
             bot.save()
+            validate_bot.delay(bot.id, new_code)
             user_prof.current_bot = bot
 
         user_prof.save()
@@ -108,6 +119,9 @@ def challenge(request):
         #if played_challs.count() > 0:
         #    # has already played against this bot, must upload a new one
         #    return HttpResponse("Already played against this bot!. Upload a new one.")
+        if (user_prof.current_bot.valid is False
+                or challenge_bot.valid is False):
+            return JsonResponse({'success': False})
 
         new_challengue = Challenge()
         new_challengue.requested_by = user_prof
@@ -118,16 +132,17 @@ def challenge(request):
         return JsonResponse({'success': True})
 
 
-
 @login_required
 @cache_page(60)
 def main_match(request):
     return HttpResponse(None)
 
+
 @login_required
 def my_matches(request):
     matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
     return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
+
 
 @login_required
 def get_match(request):
@@ -136,10 +151,20 @@ def get_match(request):
         return JsonResponse({'success': True, 'data': json.loads(challenges[0].result)})
     else:
         return JsonResponse({'success': False})
+        
+@login_required
+def get_bot_status(request, bot_id):
+    try:
+        bot = Bot.objects.get(pk=bot_id)
+        return JsonResponse({'success': True, 'status': bot.valid, 'reason': bot.invalid_reason})
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False})
+
 
 @login_required
 def random_test_match(request):
     return HttpResponse(None)
+
 
 @login_required
 def bot_code(request, bot_pk):
@@ -155,8 +180,8 @@ def bot_code(request, bot_pk):
 def get_playlist(request):
     challenges = Challenge.objects.filter(played=True)[:25]
     if not challenges:
-        return JsonResponse({'success': False, 'data': [] })
+        return JsonResponse({'success': False, 'data': []})
     data = json.loads(serializers.serialize('json', challenges))
     for d in data:
         del d['fields']['result']
-    return JsonResponse({'success': True , 'data': data })
+    return JsonResponse({'success': True, 'data': data})

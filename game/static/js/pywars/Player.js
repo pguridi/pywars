@@ -2,7 +2,8 @@ Player = function(game, username, position) {
 
 	this.game = game;
 	this.username = username;
-	this.player_position = position[0] * 10;
+	this.player_position = position[0] * 20;
+	this.health = 100;
 	this.sprite = null;
 	this.cursors = null;
 	this.bulletPool = null;
@@ -11,6 +12,7 @@ Player = function(game, username, position) {
 	this.bullet = null;
 	this.NUMBER_OF_BULLETS = 50;
 	this.GRAVITY = 980;
+	this.ground = null;
 	
 };
 
@@ -25,29 +27,37 @@ Player.prototype = {
 		this.game.load.audio('explosion', 'static/assets/explosion.mp3');
 	},
 
-	create: function () {
-		this.sprite = game.add.sprite(74, game.world.height - 150, 'tank');
+	create: function (ground) {
+		this.ground = ground;
+		this.sprite = game.add.sprite(74, 0, 'tank');
+		// sounds
 		this.moving_sound = game.add.audio('tank_running', 1, false);
 		this.firing_sound = game.add.audio('tank_firing', 1, false);
 		this.explosion_sound = game.add.audio('explosion', 1, false);
 		this.game.physics.arcade.enable(this.sprite);
 		
-		this.game.physics.arcade.gravity.y = this.GRAVITY;
+		// physics
+		this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 		this.sprite.position.x = this.player_position;
+        this.sprite.body.collideWorldBounds = true;
+        //this.sprite.anchor.setTo(0.5, 0.5);
 		
-		if (this.player_position < 400) {
-		    // is the left player
-		    this.health_status = game.add.text(16, 16, this.username + ': 0', { fontSize: '32px', fill: '#ffffff' });
+		this.health_status = game.add.text(16, 16, '', { fontSize: '32px', fill: '#ffffff' });
+		this.health_status.fixedToCamera = true;
+		
+		if (this.player_position < 900) {
+		    this.health_status.x = 16;
+		    this.health_status.y = 16;
 		    this.sprite.frame = 6;
 		} else {
 		    // is the right player
-		    this.health_status = game.add.text(600, 16, this.username + ': 0', { fontSize: '32px', fill: '#ffffff' });
+		    this.health_status.x = 600;
+		    this.health_status.y = 16;
 		    this.sprite.frame = 8;
 		}
+		this.health_status.fixedToCamera = true;
 
-	    this.sprite.body.gravity.y = 300;
-        this.sprite.body.collideWorldBounds = true;
-
+        // animations
         //  Our two animations, walking left and right.
         this.sprite.animations.add('left', [0, 1, 2, 3], 10, true);
         this.sprite.animations.add('right', [4, 5, 6, 7], 10, true);
@@ -73,47 +83,56 @@ Player.prototype = {
 	},
 
 	update_shooting: function() {
-	    //console.log(this.bullet.position);
-	    this.bulletPool.forEachAlive(function(bullet) {
-            bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
-        }, this);
-        // check if the bullet is out of the world
-        if (this.bullet.position.y > this.game.height || this.bullet.position.x > this.game.width || this.bullet.position.x < 0) {
-	        // if shooting
-		    // Create an explosion
+	    if (game.physics.arcade.collide(this.bullet, this.ground)) {
+	        console.log("bullet collided!");
+	        // Create an explosion
             this.getExplosion(this.bullet.x, this.bullet.y - 30);
             this.busy = false;
             // Kill the bullet
             this.bullet.kill();
             this.bullet = null
-        }
+            return;
+	    }
+	    this.bulletPool.forEachAlive(function(bullet) {
+            bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
+        }, this);
+        
+        //game.camera.unfollow();
+        game.camera.setPosition(this.bullet.position.x - 200,this.bullet.position.y);
+        //game.camera.update();
+        
+        // check if the bullet is out of the world
+        /*if (this.bullet.position.x > this.game.world.width || this.bullet.position.x < 0) {
+	        // if shooting
+		    
+        }*/
 	},
 	
 	update: function() {
-	    if (game.input.activePointer.isDown) {
-            this.shoot(80, 55);
-        }
+        this.health_status.text = this.username + " : " + this.health;
 	    if (this.move_position != null) {
-	        //console.log("activity_move");
-	        // means we are moving
-		    if (this.sprite.body.velocity.x != 0){
-		        // we are moving
-		        if (this.move_position == parseInt(this.sprite.position.x)) {
-		            // not moving anymore
-		            this.moving_sound.stop();
-		            if (this.sprite.body.position.x < 400) {
-		               // left player
-		               this.sprite.frame = 4;
-		            } else {
-		               this.sprite.frame = 0;
-		            }
-		            this.sprite.body.velocity.x = 0;
-		            this.move_position = null;
-		            this.sprite.animations.stop();
-		            this.busy = false;
-		        }
-		    }
-		    return;
+	        // we are moving
+	        if (this.move_position == parseInt(this.sprite.position.x)) {
+	            // not moving anymore
+	            this.moving_sound.stop();
+	            if (this.sprite.body.position.x < 400) {
+	               // left player
+	               this.sprite.frame = 4;
+	            } else {
+	               this.sprite.frame = 0;
+	            }
+	            this.sprite.body.velocity.x = 0;
+	            this.move_position = null;
+	            this.sprite.animations.stop();
+	            this.busy = false;
+	        } else {
+	            if (this.move_position > this.sprite.position.x) {
+	                // move to the right
+	                this.sprite.position.x += 1;
+	            } else {
+	                this.sprite.position.x -= 1;
+	            }
+	        }
 		} else if (this.bullet != null) {
 		    // we are shooting
 		    this.update_shooting();
@@ -122,45 +141,44 @@ Player.prototype = {
 	},
 	
 	move: function(move_position) {
-	    this.move_position = move_position[0] * 10;
+	    this.move_position = move_position[0] * 20;
 	    this.busy = true;
 	    this.moving_sound.play('',0,1,false);
+	    
 	    if (this.move_position > this.sprite.position.x) {
 	        // move to the right
-	        //console.log(this.username + " moving to the right");
-	        this.sprite.body.velocity.x = 60;
 	        this.sprite.animations.play("right");
 	    } else {
-	        //console.log(this.username + " moving to the left");
-	        this.sprite.body.velocity.x = -60;
 	        this.sprite.animations.play("left");
 	    }
         
 	},
 	
 	shoot: function(speed, angle) {
+	    game.camera.unfollow();
 	    this.busy = true;
 	    this.bullet = this.bulletPool.getFirstDead();
 	    console.log(this.username + " shooting" + angle + " " + speed);
 	        
 	    if (this.bullet === null || this.bullet === undefined) return;
-	    speed = speed * 10;
+	    speed = speed * 20;
     	angle = -1 * angle;
 	    
 	    // Revive the bullet
         // This makes the bullet "alive"
 	    this.bullet.revive();
 	    
-	    this.bullet.checkWorldBounds = true;
+	    //this.bullet.checkWorldBounds = true;
         this.bullet.outOfBoundsKill = true;
 
         // Set the bullet position to the gun position.
-        this.bullet.reset(this.sprite.position.x, 600);
+        this.bullet.reset(this.sprite.position.x, this.sprite.position.y);
         this.bullet.rotation = angle * Math.PI / 180;
 
         // Shoot it in the right direction
         this.bullet.body.velocity.x = Math.cos(this.bullet.rotation) * speed;
         this.bullet.body.velocity.y = Math.sin(this.bullet.rotation) * speed;
+        
         this.firing_sound.play();
 	},
 	

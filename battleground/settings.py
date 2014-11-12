@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'game',
     'compressor',
     'djangobower',
+    'mailer',
 )
 
 MIDDLEWARE_CLASSES = (

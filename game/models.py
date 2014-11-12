@@ -36,12 +36,35 @@ class UserProfile(models.Model):
         except ObjectDoesNotExist:
             return None
 
+    @property
+    def win(self):
+        return Challenge.objects.filter(final_challenge__isnull = False, winner_player = self).count()
+
+
+    @property
+    def lost(self):
+        return Challenge.objects.filter(final_challenge__isnull = False, loser_player = self).count()
+
+    @property
+    def tie(self):
+        return Challenge.objects.filter((Q(draw_player1 = self) | Q(draw_player2 = self)), final_challenge__isnull = False).count()
+
 
 class Bot(models.Model):
+    READY, PENDING, INVALID = 'READY', 'PENDING', 'INVALID'
+    STATUS_CHOICES = (
+        (READY, 'Ready'),
+        (PENDING, 'Pending'),
+        (INVALID, 'Invalid'),
+    )
     owner = models.ForeignKey(UserProfile)
     code = models.TextField()
     creation_date = models.DateTimeField(auto_now=True)
     modification_date = models.DateTimeField(auto_now=True)
+    valid = models.CharField(max_length=10,
+                             choices=STATUS_CHOICES,
+                             default=PENDING)
+    invalid_reason = models.TextField(null=True, default='')
 
     def to_dict(self):
         return {"owner": self.owner, "code": self.code}
@@ -70,9 +93,14 @@ class Challenge(models.Model):
     played = models.BooleanField(default=False)
     canceled = models.BooleanField(default=False)
     winner_bot = models.ForeignKey(Bot, related_name="winner", blank=True, null=True)
+    winner_player = models.ForeignKey(UserProfile, related_name="winner_player", blank=True, null=True)
+    loser_player = models.ForeignKey(UserProfile, related_name="loser_player", blank=True, null=True)
+    draw_player1 = models.ForeignKey(UserProfile, related_name="draw_player1", blank=True, null=True)
+    draw_player2 = models.ForeignKey(UserProfile, related_name="draw_playe2", blank=True, null=True)
     result = models.TextField(default='', blank=True, null=True)
     elapsed_time = models.TextField(null=True)
     final_challenge = models.ForeignKey(FinalChallenge, blank=True, null=True, default=None)
+    information = models.TextField(default='', null=False)
 
     def result_description(self):
         if self.result:

@@ -28,11 +28,9 @@
           <h3>Bot history</h3>
           <ul class="bot-history-list">
           {% for bot in my_bots %}
-
                 <li>
-                    <a id="{{bot.pk}}" class="select_bot" content="{{bot.code}}" data-toggle="modal" data-target=".bot-code-modal" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
+                    <a id="{{bot.pk}}" class="select_bot" content="{{bot.code}}" valid="{{bot.valid}}" invalid_reason="{{bot.invalid_reason}}" data-toggle="modal" data-target=".bot-code-modal" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
                 </li>
-
           {% endfor %}
           </ul>
       </div>
