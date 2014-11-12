@@ -17,7 +17,7 @@ EXIT_ERROR_MODULE = 2
 EXIT_ERROR_BOT_INSTANCE = 3
 
 # Relation between our grid and the coordinates in [m]
-SCALE = 15
+SCALE = 30
 
 # Constants we use in the game
 FREE = 0
@@ -160,7 +160,7 @@ class BattleGroundArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=90, height=50):
+    def __init__(self, players, width=30, height=50):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
@@ -209,8 +209,8 @@ class BattleGroundArena(object):
                 # angle must be an integer between 10 and 89
                 if not (10 <= int(bot_output['ANGLE']) < 90):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
-                if not (0 <= int(bot_output['VEL']) < 50):
-                    raise InvalidBotOutput("Speed must be < 50")
+                #if not (0 <= int(bot_output['VEL']) < 50):
+                    #raise InvalidBotOutput("Speed must be < 50")
         except Exception as e:
             raise InvalidBotOutput(str(e))
 
@@ -325,7 +325,7 @@ class BattleGroundArena(object):
         # Get the impact coordinates
         x_imp, y_imp = self._scale_coords(trajectory[-1])
         # Correct x_imp according to our scale
-        #x_imp = x_imp // SCALE
+        x_imp = x_imp // SCALE
         try:
             affected_players = [p for p in self.players
                                 if p.x in(x_imp - 1, x_imp, x_imp + 1)]
