@@ -151,12 +151,12 @@ def get_match(request):
         return JsonResponse({'success': True, 'data': json.loads(challenges[0].result)})
     else:
         return JsonResponse({'success': False})
-        
+
 @login_required
 def get_bot_status(request, bot_id):
     try:
         bot = Bot.objects.get(pk=bot_id)
-        return JsonResponse({'success': True, 'status': bot.valid, 'reason': bot.invalid_reason})
+        return JsonResponse({'success': True, 'status': bot.valid, 'code': bot.code ,'reason': bot.invalid_reason})
     except ObjectDoesNotExist:
         return JsonResponse({'success': False})
 

@@ -28,17 +28,17 @@
           {% for bot in my_bots %}
               {% if bot.valid == 'PENDING' %}
                 <li>
-                    <a id="{{bot.pk}}" class="select_bot bot-pending list-group-item-warning" content="{{bot.code}}" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}}</a>
+                    <a id="{{bot.pk}}" title="{{bot.valid}}" class="select_bot bot-pending list-group-item-warning" content="{{bot.code}}" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}}</a>
                 </li>
               {% endif %}
               {% if bot.valid == 'READY' %}
                 <li>
-                    <a id="{{bot.pk}}" class="select_bot bot-ready list-group-item-success" content="{{bot.code}}" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %}</a>
+                    <a id="{{bot.pk}}" title="{{bot.valid}}" class="select_bot bot-ready list-group-item-success" content="{{bot.code}}" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}} {% if bot.is_current_bot %} [CURRENT] {% endif %} </a>
                 </li>
               {% endif %}
               {% if bot.valid  == 'INVALID' %}
                 <li>
-                  <a id="{{bot.pk}}" class="select_bot bot-invalid list-group-item-danger" content="{{bot.code}} {{bot.invalid_reason}}" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}}</a>
+                  <a id="{{bot.pk}}" title="{{bot.valid}}" class="select_bot bot-invalid list-group-item-danger" content="<span class='color-red'>{{bot.invalid_reason}}</span><br><span class='color-black'>{{bot.code}}</span>" data-toggle="modal" data-target="#bot-code" href="#">{{bot.creation_date}}</a>
                 </li>
               {% endif %}
           {% endfor %}

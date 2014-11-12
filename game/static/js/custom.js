@@ -28,3 +28,38 @@ $(document).ready(function() {
         });
     }
 });
+
+function updateBots(){
+    $( ".bot-pending" ).each(function( index ) {
+      var $item = $( this );
+      var refreshBotList = $.get( "get_bot_status/" + $item.attr('id') , function(data) {
+        if (data['success']) {
+
+          if (data['status'] === 'PENDING') {
+            return;
+          }
+          if (data['status'] === 'READY') {
+            $item.removeClass('list-group-item-warning');
+            $item.addClass('list-group-item-success');
+            $item.attr('title', data['status']);
+          }
+          if (data['status'] === 'INVALID') {
+            $item.removeClass('list-group-item-warning');
+            $item.addClass('list-group-item-danger');
+            $item.attr('content', '<span class="color-red">' + data['reason'] +
+                       '</span><br>' + '<span class="color-black">' + data['code'] + '</span>');
+            $item.attr('title', data['status']);
+          }
+        }
+      }).fail(function() {
+        console.log("Failed to get bot");
+      });
+
+    });
+}
+
+$(document).ready(function() {
+    if ($('.bot-pending').length > 0 ) {
+        setInterval( function() { updateBots(); }, 5000);
+    }
+});
