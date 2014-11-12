@@ -8,7 +8,6 @@ django-ace==1.0.1
 django-appconf==0.6
 django-bower==5.0.1
 django-compressor==1.4
-django-mailer==0.1.0
 django-registration-redux==1.1
 kombu==3.0.23
 mock==1.0.1
@@ -18,6 +17,5 @@ python-dateutil==2.2
 pytz==2014.7
 six==1.8.0
 wsgiref==0.1.2
-django-compressor==1.4
 django-bower==5.0.1
 git+https://github.com/pinax/django-mailer.git@752cd09b4ed46675449a2071484b39d823f3223e
