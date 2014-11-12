@@ -31,6 +31,10 @@ ALLOWED_HOSTS = []
 
 ACCOUNT_ACTIVATION_DAYS = 3
 
+RECAPTCHA_PUBLIC_KEY = 'c4376wtgd2sjsdydt2r5aaFGsahgssDfyt6sdad75fgh'
+RECAPTCHA_PRIVATE_KEY = 'a23dsadfg6df7dsa5adf3gdfgdfg62JDsada65GFGFGs'
+RECAPTCHA_USE_SSL = True
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -46,6 +50,7 @@ INSTALLED_APPS = (
     'compressor',
     'djangobower',
     'mailer',
+    'captcha'
 )
 
 MIDDLEWARE_CLASSES = (
