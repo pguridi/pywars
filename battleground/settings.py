@@ -113,7 +113,7 @@ STATICFILES_FINDERS = (
 
 # Default:  the opposite of DEBUG
 # Disable this for testing the compressor
-#COMPRESS_ENABLED = True
+COMPRESS_ENABLED = False
 
 BOWER_INSTALLED_APPS = (
     'jquery',
