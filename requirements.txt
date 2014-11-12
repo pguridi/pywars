@@ -17,5 +17,4 @@ python-dateutil==2.2
 pytz==2014.7
 six==1.8.0
 wsgiref==0.1.2
-django-bower==5.0.1
 git+https://github.com/pinax/django-mailer.git@752cd09b4ed46675449a2071484b39d823f3223e
