@@ -12,3 +12,4 @@ wsgiref==0.1.2
 django-compressor==1.4
 django-bower==5.0.1
 git+https://github.com/pinax/django-mailer.git@752cd09b4ed46675449a2071484b39d823f3223e
+
