@@ -99,7 +99,7 @@ class Context(object):
     LIFE = 2
 
     def __init__(self, players):
-        self.info = {player: {self.FEEDBACK: None,
+        self.info = {player: {self.FEEDBACK: {},
                               self.LIFE: INITIAL_HEALTH} for player in players}
         self.affected_player = None
 
@@ -188,6 +188,7 @@ class BattleGroundArena(object):
         self.arena[x, y] = player.color
         x_factor = 1 if x <= (width // 2) else -1
         player.assign_team(x_factor)
+        self.context.move_feedback(player, ok=True)
         self.match.trace_action(dict(action="new_player",
                                      name=player.username,
                                      position=[x, y],
@@ -227,7 +228,7 @@ class BattleGroundArena(object):
                                 player=player.username,
                                 position=[player.x, player.y],
                                 health=self.context.life(player),
-                                ))
+                            ))
                             continue
                         # Here the engine calculates the new status
                         # according to the response and updates all tables
@@ -327,7 +328,7 @@ class BattleGroundArena(object):
         #x_imp = x_imp // SCALE
         try:
             affected_players = [p for p in self.players
-                                if p.x == x_imp and p.y == y_imp]
+                                if p.x in(x_imp - 1, x_imp, x_imp + 1)]
             if not affected_players:
                 raise MissedTargetException
         except MissedTargetException:
