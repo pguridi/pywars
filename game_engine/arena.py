@@ -240,7 +240,6 @@ class BattleGroundArena(object):
                                                       bot_response['VEL'],
                                                       bot_response['ANGLE'])
                     except (InvalidBotOutput,
-                            #FIXME BotTimeoutException is never thrown
                             BotTimeoutException,
                             TankDestroyedException) as e:
                         self.match.lost(self.context.affected_player or player,

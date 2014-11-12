@@ -53,7 +53,6 @@ def run_match(challengue_id, players):
     challng.result = json.dumps(r)
     challng.save()
 
-
 @shared_task
 def validate_bot(bot_id, bot_code):
     from game.models import Bot
@@ -94,3 +93,4 @@ def validate_bot(bot_id, bot_code):
     bot.invalid_reason = invalid_reason
     bot.save()
     return valid
+
