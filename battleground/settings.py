@@ -82,7 +82,12 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-MAILER_EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if DEBUG:
+    MAILER_EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    MAILER_EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
 EMAIL_BACKEND = 'mailer.backend.DbBackend'
 
 # Static files (CSS, JavaScript, Images)
