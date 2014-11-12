@@ -50,8 +50,6 @@ class UserProfile(models.Model):
         return Challenge.objects.filter((Q(draw_player1 = self) | Q(draw_player2 = self)), final_challenge__isnull = False).count()
 
 
-
-
 class Bot(models.Model):
     READY, PENDING, INVALID = 'READY', 'PENDING', 'INVALID'
     STATUS_CHOICES = (
