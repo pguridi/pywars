@@ -38,19 +38,18 @@
         game.state.start("Boot", true, false, gameData);
 
     }
-
-    $(document).ready(function() {
-        var jqxhr = $.get( "get_match", function(data) {
-          if (data['success']) {
-              startGame(data['data']);
-          }
-        })
-          .fail(function() {
-            console.log("Failed to get match");
-          });
-
-
-    });
+    {% if match_id != None %}
+        $(document).ready(function() {
+            var jqxhr = $.get("get_match/{{ match_id }}", function(data) {
+              if (data['success']) {
+                  startGame(data['data']);
+              }
+            })
+              .fail(function() {
+                console.log("Failed to get match");
+              });
+        });
+    {% endif %}
 </script>
 {% endblock %}
 
