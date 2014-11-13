@@ -261,7 +261,9 @@ class BattleGroundArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
-        return self.match.__json__()
+        from pprint import pprint
+        pprint(self.match.__json__())
+        return ''
 
     def _check_player_boundaries(self, player, new_x):
         assert player.x_factor in [-1, 1]
@@ -285,7 +287,7 @@ class BattleGroundArena(object):
         # Trace what just happened in the match
         self.match.trace_action(dict(action="make_move",
                                      player=player.username,
-                                     position=[player.x, player.y], ))
+                                     position=[player.x * SCALE, player.y], ))
 
     def adjust_player_shoot_trajectory(self, player, trajectory):
         """Depending on which side of the arena :player: is, we need or not to
@@ -296,8 +298,15 @@ class BattleGroundArena(object):
         initial_x = trajectory[0][0]  # x of the first coord
         delta_x = player.x - initial_x
         trajectory = [(x + delta_x, y) for x, y in trajectory]
-        x_off = lambda i: round(i, 1) if player.x_factor == -1 else int(i)
-        return [(x_off(x), round(y, 1)) for x, y in trajectory]
+        #x_off = lambda i: int(i) if player.x_factor == -1 else int(i)
+        #return [(int(x), int(y)) for x, y in trajectory]
+        initial_x = player.x 
+        shoot_x = initial_x + int((trajectory[1][0] )/SCALE)
+        
+        shoot = [(initial_x,0) ,( shoot_x,0)]
+     #   print("SHOOT %s Factor %s Trajectory %s" % (shoot, player.x_factor, trajectory[1][0]))
+        return shoot
+        
 
     def _scale_coords(self, (x, y)):
         """Given impact coords (x, y), translate their numbers to our arena
@@ -315,6 +324,8 @@ class BattleGroundArena(object):
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle, x_limit=self.width)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
+        x_m_origen, x_m_destino = trajectory[0][0], trajectory[1][0]               
+                
         # Log the shoot made by the player
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
@@ -323,26 +334,30 @@ class BattleGroundArena(object):
                                      trajectory=trajectory,
                                      ))
         # Get the impact coordinates
-        x_imp, y_imp = self._scale_coords(trajectory[-1])
+        #x_imp, y_imp = self._scale_coords(trajectory[-1])
         # Correct x_imp according to our scale
-        x_imp = x_imp // SCALE
+        x_imp = x_m_destino
         try:
             affected_players = [p for p in self.players
-                                if p.x in(x_imp - 1, x_imp, x_imp + 1)]
+                                if p.x == x_imp]
+#            for p in self.players:
+#                print "player %s p.x %s x_imp %s" % (p.username, p.x, x_imp) 
             if not affected_players:
                 raise MissedTargetException
-        except MissedTargetException:
+        except MissedTargetException:  
             other_x = [p.x for p in self.players if p is not player][0]
             difference = (x_imp - other_x) * player.x_factor
             self.context.shoot_feedback(player, ok=False,
                                         difference=difference)
         else:
+   
             self.context.shoot_feedback(player, ok=True)
             for p in affected_players:
+                #print "affected players found"
                 self.context.decrease_life(p, DAMAGE_DELTA)
-                self.match.trace_action(dict(action="health_status",
+                self.match.trace_action(dict(action="make_healthy",
                                              player=p.username,
-                                             health=self.context.life(p)))
+                                             health_value=self.context.life(p)))
 
 
 class BattleGroundMatchLog(object):
