@@ -71,15 +71,12 @@
                         <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
                     {% else %}
 
-                    {% if user_prof.current_bot in challenged_bots %}
-                        <a href="#" class="btn btn-success btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Played!</a>
-                    {% else %}
                         {% if user_prof.current_bot in pending_challenged_bots%}
                             <a href="#" type="button" class="btn btn-primary btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Pending</a>
                         {% else %}
                             <a href="#" type="button" class="btn btn-primary btn-xs" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Challenge</a>
                         {% endif %}
-                    {% endif %}
+
 {% endif %}
                 {% endif %}
             {% endif %}
