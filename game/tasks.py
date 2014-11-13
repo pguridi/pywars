@@ -41,7 +41,6 @@ def run_match(challengue_id, players):
     python_cmdargs = ["/usr/bin/python", 'arena.py']
 
     cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), 'arena.py']
-    cmdargs = [PYPYSANDBOX_EXE, 'arena.py']
 
     cmdargs.extend(['bots/' + p + '.py' for p in players.keys()])
     print 'CMDARGS: ', cmdargs

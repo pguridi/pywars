@@ -16,7 +16,7 @@ env.project_name = 'pywars'
 
 def prd():
     """This pushes to the intranet prd environment"""
-    env.hosts = ['ec2-50-16-103-96.compute-1.amazonaws.com']
+    env.hosts = ['pyconar.onapsis.com']
     env.user = 'pywars'
     env.code_root = '/home/pywars/environment'
 
