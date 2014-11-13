@@ -21,7 +21,7 @@
 
     function verifyTurnEnd(player) {
         if (player.busy == true) {
-            console.log("player busy");
+            //console.log("player busy");
             return
         } else {
             current_turn = null;
@@ -55,8 +55,11 @@
                 
                 player.shoot(current_turn['speed'], current_turn['angle']);
                 turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 500);
-            }
-             else {
+            } else if (current_turn['action'] == 'make_healthy') {
+                console.log(current_turn);
+                player = getPlayer(current_turn['player']);
+                player.health = current_turn["health_value"];
+            } else {
                 console.log("turn action: " + current_turn['action']);
                 current_turn = null;
             }

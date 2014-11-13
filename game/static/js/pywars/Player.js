@@ -3,8 +3,8 @@ Player = function(game, username, position) {
 	this.game = game;
 	this.username = username;
 	this.player_position = position[0];
-	this.health = 100;
-	this.sprite = null;
+    this.health = 100;	
+    this.sprite = null;
 	this.cursors = null;
 	this.bulletPool = null;
 	this.move_position = null;
@@ -84,7 +84,6 @@ Player.prototype = {
 
 	update_shooting: function() {
 	    if (game.physics.arcade.collide(this.bullet, this.ground) || (this.bullet.position.x > this.game.world.width || this.bullet.position.x < 0)) {
-	        console.log("bullet collided!");
 	        // Create an explosion
             this.getExplosion(this.bullet.x, this.bullet.y - 30);
             this.busy = false;
@@ -97,10 +96,7 @@ Player.prototype = {
             bullet.rotation = Math.atan2(bullet.body.velocity.y, bullet.body.velocity.x);
         }, this);
         
-        console.log(this.bullet.position.x + " : " + this.bullet.position.y);
-        //game.camera.unfollow();
         game.camera.setPosition(this.bullet.position.x - 200,this.bullet.position.y);
-        //game.camera.update();
 	},
 	
 	update: function() {
@@ -110,13 +106,12 @@ Player.prototype = {
 	        if (this.move_position == parseInt(this.sprite.position.x)) {
 	            // not moving anymore
 	            this.moving_sound.stop();
-	            if (this.sprite.body.position.x < 400) {
+	            if (this.sprite.body.position.x < 900) {
 	               // left player
 	               this.sprite.frame = 4;
 	            } else {
 	               this.sprite.frame = 0;
 	            }
-	            this.sprite.body.velocity.x = 0;
 	            this.move_position = null;
 	            this.sprite.animations.stop();
 	            this.busy = false;
@@ -153,7 +148,6 @@ Player.prototype = {
 	    game.camera.unfollow();
 	    this.busy = true;
 	    this.bullet = this.bulletPool.getFirstDead();
-	    console.log(this.username + " shooting" + angle + " " + speed);
 	        
 	    if (this.bullet === null || this.bullet === undefined) return;
 	    speed = speed * 10;
@@ -176,6 +170,11 @@ Player.prototype = {
         
         this.firing_sound.play();
 	},
+
+    make_healthy: function(health_value) {
+        console.log(health_value)
+        this.health = health_value;
+    },
 	
 	getExplosion: function(x, y) {
         // Get the first dead explosion from the explosionGroup
