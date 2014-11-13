@@ -209,6 +209,7 @@ class BattleGroundArena(object):
                 # angle must be an integer between 10 and 89
                 if not (10 <= int(bot_output['ANGLE']) < 90):
                     raise InvalidBotOutput("Angle must be between 10 and 89")
+
                 if int(bot_output['VEL']) >= 132:
                     bot_output['VEL'] = 132
         except Exception as e:

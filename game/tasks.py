@@ -11,7 +11,7 @@ import json
 ENGINE_LOCATION = os.path.abspath(os.path.join("game_engine", "arena.py"))
 ENGINE_EXCEPS = os.path.abspath(os.path.join("game_engine", "exc.py"))
 
-PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'python')
+PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
 
 
 @shared_task
@@ -38,9 +38,10 @@ def run_match(challengue_id, players):
 
     start_time = time.time()
     # call the engine_match cli script
-    cmdargs = [PYPYSANDBOX_EXE, 
-             #  '--tmp={}'.format(match_dir),
-               'arena.py']
+    python_cmdargs = ["/usr/bin/python", 'arena.py']
+
+    cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), 'arena.py']
+
     cmdargs.extend(['bots/' + p + '.py' for p in players.keys()])
     print 'CMDARGS: ', cmdargs
     proc = subprocess.Popen(cmdargs, cwd=match_dir, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -76,6 +77,8 @@ def validate_bot(bot_id, bot_code):
                '--tmp={}'.format(match_dir),
                'arena.py',
                tmp_bot_filename, tmp_bot_filename]
+    cmdargs = [PYPYSANDBOX_EXE, 'arena.py']
+    print "CMD: ", cmdargs
     proc = subprocess.Popen(cmdargs,
                             cwd=match_dir,
                             stdin=subprocess.PIPE,

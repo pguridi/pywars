@@ -16,7 +16,7 @@ env.project_name = 'pywars'
 
 def prd():
     """This pushes to the intranet prd environment"""
-    env.hosts = ['pywars.corp.onapsis.com']
+    env.hosts = ['pyconar.onapsis.com']
     env.user = 'pywars'
     env.code_root = '/home/pywars/environment'
 
@@ -146,6 +146,9 @@ def push_code():
     local('rm -fr %s' % (env.release,))
     local('rm %s' % (tar_file,))
     symlink_current_release()
+    with settings(warn_only=True):
+        # copy the local_settings for deployment
+        run("cp /home/%s/local_settings.py %s/releases/%s/pywars/battleground/" % (env.user, env.code_root, env.release))
     with prefix('source %s/bin/activate' % (env.code_root,)):
         run("cd %s/releases/%s/pywars; python manage.py migrate" % (env.code_root, env.release))
 
