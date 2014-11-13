@@ -77,7 +77,7 @@ def validate_bot(bot_id, bot_code):
                '--tmp={}'.format(match_dir),
                'arena.py',
                tmp_bot_filename, tmp_bot_filename]
-    cmdargs = [PYPYSANDBOX_EXE, 'arena.py']
+    #cmdargs = [PYPYSANDBOX_EXE, 'arena.py']
     print "CMD: ", cmdargs
     proc = subprocess.Popen(cmdargs,
                             cwd=match_dir,
