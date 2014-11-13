@@ -244,6 +244,9 @@ class BattleGroundArena(object):
                     except (InvalidBotOutput,
                             BotTimeoutException,
                             TankDestroyedException) as e:
+                        self.match.trace_action(dict(action="make_healthy",
+                                                     player=p.username,
+                                                     health_value=self.context.life(p)))
                         self.match.lost(self.context.affected_player or player,
                                         e.reason)
                         raise GameOverException(str(e))
@@ -301,13 +304,13 @@ class BattleGroundArena(object):
         trajectory = [(x + delta_x, y) for x, y in trajectory]
         #x_off = lambda i: int(i) if player.x_factor == -1 else int(i)
         #return [(int(x), int(y)) for x, y in trajectory]
-        initial_x = player.x 
+        initial_x = player.x
         shoot_x = initial_x + int((trajectory[1][0] )/SCALE)
-        
+
         shoot = [(initial_x,0) ,( shoot_x,0)]
      #   print("SHOOT %s Factor %s Trajectory %s" % (shoot, player.x_factor, trajectory[1][0]))
         return shoot
-        
+
 
     def _scale_coords(self, (x, y)):
         """Given impact coords (x, y), translate their numbers to our arena
@@ -325,8 +328,8 @@ class BattleGroundArena(object):
     def resolve_shoot_action(self, player, speed, angle):
         trajectory = shoot_projectile(speed, angle, x_limit=self.width)
         trajectory = self.adjust_player_shoot_trajectory(player, trajectory)
-        x_m_origen, x_m_destino = trajectory[0][0], trajectory[1][0]               
-                
+        x_m_origen, x_m_destino = trajectory[0][0], trajectory[1][0]
+
         # Log the shoot made by the player
         self.match.trace_action(dict(action="make_shoot",
                                      player=player.username,
@@ -342,16 +345,16 @@ class BattleGroundArena(object):
             affected_players = [p for p in self.players
                                 if p.x == x_imp]
 #            for p in self.players:
-#                print "player %s p.x %s x_imp %s" % (p.username, p.x, x_imp) 
+#                print "player %s p.x %s x_imp %s" % (p.username, p.x, x_imp)
             if not affected_players:
                 raise MissedTargetException
-        except MissedTargetException:  
+        except MissedTargetException:
             other_x = [p.x for p in self.players if p is not player][0]
             difference = (x_imp - other_x) * player.x_factor
             self.context.shoot_feedback(player, ok=False,
                                         difference=difference)
         else:
-   
+
             self.context.shoot_feedback(player, ok=True)
             for p in affected_players:
                 #print "affected players found"

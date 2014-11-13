@@ -145,11 +145,11 @@ def my_matches(request):
 
 
 @login_required
-def get_match(request):
-    challenges = Challenge.objects.filter(played=True)
-    if challenges.count() > 0:
-        return JsonResponse({'success': True, 'data': json.loads(challenges[0].result)})
-    else:
+def get_match(request, match_id):
+    try:
+        challenge = Challenge.objects.get(pk=match_id)
+        return JsonResponse({'success': True, 'data': json.loads(challenge.result)})
+    except ObjectDoesNotExist:
         return JsonResponse({'success': False})
 
 @login_required
@@ -184,4 +184,5 @@ def get_playlist(request):
     data = json.loads(serializers.serialize('json', challenges))
     for d in data:
         del d['fields']['result']
+        d['fields']['label'] = Challenge.objects.get(pk=int(d['pk'])).__str__()
     return JsonResponse({'success': True, 'data': data})

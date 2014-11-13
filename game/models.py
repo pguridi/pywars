@@ -106,6 +106,13 @@ class Challenge(models.Model):
         if self.result:
             return 'Result description..'
 
+    def __unicode__(self):
+        return u'{} vs. {} [{}]'.format(self.challenger_bot.owner.user.username,
+                                        self.challenged_bot.owner.user.username,
+                                        self.creation_date.strftime("%a %d-%H:%M:%S"))
+    def __str__(self):
+        return self.__unicode__()
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

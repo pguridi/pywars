@@ -18,6 +18,9 @@ theGame.prototype = {
     init: function(players){
         this.players = players;
         this.turnEndTimer = null;
+        for (playerK in this.players) {
+            this.players[playerK].health = 100;
+        }
     },
 
     turnsTimer: function() {
@@ -52,9 +55,9 @@ theGame.prototype = {
                 current_turn = null;
             } else if (current_turn['action'] == 'result') {
                 if (current_turn['draw'] == true) {
-                    this.game.state.start("GameOver",true,false,'Draw');
+                    this.game.state.start("GameOver",true,false,this.players, gameData, 'Draw');
                 } else if (current_turn['winner'] != null) {
-                    this.game.state.start("GameOver",true,false,current_turn['winner']);
+                    this.game.state.start("GameOver",true,false, this.players, gameData, current_turn['winner']);
                 }
             } else {
                 console.log("turn action: " + current_turn['action']);
@@ -100,7 +103,9 @@ theGame.prototype = {
         );
         
         for (playerK in this.players) {
-            this.players[playerK].create(this.ground);
+            if (this.players[playerK] != null) {
+                this.players[playerK].create(this.ground);
+            }
         }
         gameTimer = game.time.events.loop(Phaser.Timer.SECOND, this.turnsTimer, this);
 	},

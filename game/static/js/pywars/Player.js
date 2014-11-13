@@ -19,7 +19,7 @@ Player = function(game, username, position) {
 Player.prototype = {
 
 	preload: function () {
-		this.game.load.spritesheet('tank', 'static/assets/tank2.png', 74, 62);
+		this.game.load.spritesheet('tank', 'static/assets/tank2.png', 68, 62);
 		this.game.load.spritesheet('explosion', 'static/assets/GrenadeExplosion.png', 50, 128);
 		this.game.load.image('bullet', 'static/assets/bullet3.png');
 		this.game.load.audio('tank_running', 'static/assets/tank_running.mp3');
