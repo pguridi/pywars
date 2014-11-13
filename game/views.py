@@ -184,4 +184,5 @@ def get_playlist(request):
     data = json.loads(serializers.serialize('json', challenges))
     for d in data:
         del d['fields']['result']
+        d['fields']['label'] = Challenge.objects.get(pk=int(d['pk'])).__str__()
     return JsonResponse({'success': True, 'data': data})
