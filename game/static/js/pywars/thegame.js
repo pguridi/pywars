@@ -50,6 +50,12 @@ theGame.prototype = {
                 player = this.getPlayer(current_turn['player']);
                 player.health = current_turn["health_value"];
                 current_turn = null;
+            } else if (current_turn['action'] == 'result') {
+                if (current_turn['draw'] == true) {
+                    this.game.state.start("GameOver",true,false,'Draw');
+                } else if (current_turn['winner'] != null) {
+                    this.game.state.start("GameOver",true,false,current_turn['winner']);
+                }
             } else {
                 console.log("turn action: " + current_turn['action']);
                 current_turn = null;
