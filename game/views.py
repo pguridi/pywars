@@ -121,7 +121,7 @@ def challenge(request):
         #    return HttpResponse("Already played against this bot!. Upload a new one.")
         if (user_prof.current_bot.valid != Bot.READY
                 or challenge_bot.valid != Bot.READY):
-            return JsonResponse({'success': False})
+            return JsonResponse({'success': False, 'msg': 'One of the bot is not READY' })
 
         new_challengue = Challenge()
         new_challengue.requested_by = user_prof
