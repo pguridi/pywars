@@ -14,7 +14,11 @@
                 contentType: "application/json"
             }).fail(function(xhr, textStatus, errorThrown) {
                 alert(xhr.responseText);
-              }).done(function() {
+              }).done(function(data) {
+                if ( data['success'] == false ){
+                    alert(data['msg']);
+                    return;
+                }
                 location.reload();
               })
         }
