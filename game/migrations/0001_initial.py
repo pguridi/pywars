@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('description', models.TextField(default=b'Final Challenge')),
-                ('creation_date', models.DateTimeField(default=datetime.datetime(2014, 11, 12, 14, 27, 57, 425421), auto_now=True)),
+                ('creation_date', models.DateTimeField(default=datetime.datetime(2014, 11, 13, 17, 47, 51, 992002), auto_now=True)),
             ],
             options={
             },
