@@ -59,8 +59,7 @@ def _run_match(challengue_id, players):
     challng.save()
 
 
-@shared_task
-def validate_bot(bot_id, bot_code):
+def _validate_bot(bot_id, bot_code):
     from game.models import Bot
     bot = Bot.objects.get(pk=bot_id)
 
@@ -101,7 +100,25 @@ def validate_bot(bot_id, bot_code):
     return valid
 
 
-def _match_has_timeouted(challengue_id, players):
+def _bot_validation_time_outed(bot_id):
+    from game.models import Bot
+    bot = Bot.objects.get(pk=bot_id)
+    bot.valid = Bot.INVALID
+    bot.invalid_reason = "Bot code timeouts"
+    bot.save()
+    return False
+
+
+@shared_task(time_limit=HARD_TIME_LIMIT, soft_time_limit=SOFT_TIME_LIMIT)
+def validate_bot(bot_id, bot_code):
+    try:
+        _validate_bot(bot_id, bot_code)
+    except SoftTimeLimitExceeded:
+        _bot_validation_time_outed(bot_id)
+
+
+def _match_has_timeouted(challengue_id):
+    from game.models import Challenge
     challng = Challenge.objects.get(pk=challengue_id)
     challng.elapsed_time = SOFT_TIME_LIMIT
     challng.played = True
@@ -114,5 +131,5 @@ def run_match(challengue_id, players):
     try:
         _run_match(challengue_id, players)
     except SoftTimeLimitExceeded:
-        _match_has_timeouted(challengue_id, players)
+        _match_has_timeouted(challengue_id)
 
