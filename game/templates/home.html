@@ -7,7 +7,12 @@
   <script src="{% static '/static/phaser/build/phaser.js' %}"></script>
   <!--<script src="{% static '/static/js/phaser-debug.js' %}"></script>-->
   <script src="{% static '/static/js/pywars/Player.js' %}"></script>
-  <script src="{% static '/static/js/pywars/Level.js' %}"></script>
+    <script src="{% static '/static/js/pywars/boot.js' %}"></script>
+    <script src="{% static '/static/js/pywars/preload.js' %}"></script>
+    <script src="{% static '/static/js/pywars/gametitle.js' %}"></script>
+    <script src="{% static '/static/js/pywars/thegame.js' %}"></script>
+    <script src="{% static '/static/js/pywars/gameover.js' %}"></script>
+
   <script type="text/javascript">
     var game = null;
     var gameData = [];
@@ -19,111 +24,19 @@
     var current_turn = null;
     var play_number = 0;
 
-    function verifyTurnEnd(player) {
-        if (player.busy == true) {
-            //console.log("player busy");
-            return
-        } else {
-            current_turn = null;
-            clearInterval(turnEndTimer);
-        }
-    }
-
-    function turnsTimer() {
-        if (gameData['actions'].length > 0) {
-            if (current_turn != null) {
-                return;
-            }
-            current_turn = gameData['actions'].shift();
-            if (current_turn['action'] == 'make_move') {
-                player = getPlayer(current_turn['player']);
-                game.camera.follow(player.sprite);
-                
-                player.move(current_turn['position']);
-                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 500);
-            } else if (current_turn['action'] == 'make_shoot') {
-                player = getPlayer(current_turn['player']);
-                game.camera.follow(player.sprite);
-                
-                // shoot in 2 secs
-                player.busy = true;
-                /*game.time.events.add(Phaser.Timer.SECOND * 2, player.shoot, this, current_turn['speed'], 
-                    current_turn['angle']);*/
-                
-                /*setTimeout(function () {player.shoot(current_turn['speed'], 
-                    current_turn['angle'])}, 2000);*/
-                
-                player.shoot(current_turn['speed'], current_turn['angle']);
-                turnEndTimer = setInterval(function () {verifyTurnEnd(player)}, 500);
-            } else if (current_turn['action'] == 'make_healthy') {
-                console.log(current_turn);
-                player = getPlayer(current_turn['player']);
-                player.health = current_turn["health_value"];
-                current_turn = null;
-            } else {
-                console.log("turn action: " + current_turn['action']);
-                current_turn = null;
-            }
-        } else {
-            console.log("end");
-            game.time.events.remove(gameTimer)
-        }
-    }
-
-    function getPlayer(username) {
-        for (i = 0; i < players.length; i++) {
-            if (players[i].username == username) {
-                console.log("moving player: "+ players[i].username);
-                return players[i];
-            }
-        }
-        return;
-    }
+    
 
     function startGame(data) {
         gameData = data;
-        this.level = null;
-        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render });
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+        game.state.add("Boot",boot);
+        game.state.add("Preload",preload);
+        game.state.add("GameTitle",gameTitle);
+        game.state.add("TheGame",theGame);
+        game.state.add("GameOver",gameOver);
 
+        game.state.start("Boot", true, false, gameData);
 
-        function preload()
-        {
-	        this.level = new Level(game);
-            this.level.preload();
-
-            for (var k in gameData['actions']) {
-                playerData = gameData['actions'][k];
-                if (playerData['action'] == 'new_player') {
-                    var new_player = new Player(game, playerData['name'], playerData['position']);
-                    new_player.preload();
-                    players.push(new_player);
-                }
-            }
-         //game.add.plugin(Phaser.Plugin.Debug);
-        }
-
-        function create()
-        {
-            this.level.create();
-            for (playerK in players) {
-                players[playerK].create(this.level.ground);
-            }
-            gameTimer = game.time.events.loop(Phaser.Timer.SECOND, turnsTimer, this);
-            //hud.create();
-        }
-
-        function update()
-        {
-            this.level.update();
-            for (i = 0; i < players.length; i++) {
-               game.physics.arcade.collide(players[i].sprite, this.level.ground);
-               players[i].update();
-            }
-        }
-        
-        function render() {
-            game.debug.cameraInfo(game.camera, 32, 500);
-        }
     }
 
     $(document).ready(function() {
@@ -145,7 +58,6 @@
     <div class="col-md-offset-1 main">
         <div class="row">
             <div id="header">
-              <img src="{% static '/static/img/PyWars_arena.png'%}"/>
               <h1>Challenge</h1>
             </div>
         </div>
