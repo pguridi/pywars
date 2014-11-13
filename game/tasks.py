@@ -84,9 +84,9 @@ def _validate_bot(bot_id, bot_code):
     if os.path.exists(PYPYSANDBOX_EXE):
         cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), 'arena.py']
     else:
-        cmdargs = [PYTHON_EXE, 'arena.py']    
+        cmdargs = [PYTHON_EXE, 'arena.py']
 
-    cmdargs.expand([tmp_bot_filename, tmp_bot_filename])
+    cmdargs.extend([tmp_bot_filename, tmp_bot_filename])
 
     print "CMD: ", cmdargs
     proc = subprocess.Popen(cmdargs,
