@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from celery import shared_task
+from celery.exceptions import SoftTimeLimitExceeded
 import time
 import subprocess
 import tempfile
