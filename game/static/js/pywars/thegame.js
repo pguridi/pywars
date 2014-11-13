@@ -54,7 +54,7 @@ theGame.prototype = {
                 if (current_turn['draw'] == true) {
                     this.game.state.start("GameOver",true,false,'Draw');
                 } else if (current_turn['winner'] != null) {
-                    this.game.state.start("GameOver",true,false,current_turn['winner']);
+                    this.game.state.start("GameOver",true,false, gameData, current_turn['winner']);
                 }
             } else {
                 console.log("turn action: " + current_turn['action']);

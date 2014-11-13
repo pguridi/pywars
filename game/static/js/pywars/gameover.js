@@ -1,7 +1,10 @@
-var gameOver = function(game){}
+var gameOver = function(game) {
+    this.gameData = null;
+    }
 
 gameOver.prototype = {
-	init: function(msg){
+	init: function(gameData,  msg){
+        this.gameData = null;
 		alert(msg);
 	},
   	create: function(){
@@ -11,6 +14,6 @@ gameOver.prototype = {
 		playButton.anchor.setTo(0.5,0.5);
 	},
 	playTheGame: function(){
-		this.game.state.start("TheGame");
+        this.game.state.start("TheGame", true, false, this.gameData);
 	}
 }
