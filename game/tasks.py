@@ -8,14 +8,14 @@ import os
 import shutil
 import json
 
+
 ENGINE_LOCATION = os.path.abspath(os.path.join("game_engine", "arena.py"))
 ENGINE_EXCEPS = os.path.abspath(os.path.join("game_engine", "exc.py"))
 
 PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
 
 
-@shared_task
-def run_match(challengue_id, players):
+def _run_match(challengue_id, players):
     from game.models import Challenge
     challng = Challenge.objects.get(pk=challengue_id)
 
@@ -47,11 +47,13 @@ def run_match(challengue_id, players):
     challng.elapsed_time = time.time() - start_time
 
     challng.played = True
+    challng.canceled = False
 
     # Muy sucio.. pero es lo que hay.. :O
     r = eval(stdo)
     challng.result = json.dumps(r)
     challng.save()
+
 
 @shared_task
 def validate_bot(bot_id, bot_code):
@@ -93,4 +95,20 @@ def validate_bot(bot_id, bot_code):
     bot.invalid_reason = invalid_reason
     bot.save()
     return valid
+
+
+def _match_has_timeouted(challengue_id, players):
+    challng = Challenge.objects.get(pk=challengue_id)
+    challng.elapsed_time = SOFT_TIME_LIMIT
+    challng.played = True
+    challng.canceled = True
+    challng.save()
+
+
+@shared_task(time_limit=HARD_TIME_LIMIT, soft_time_limit=SOFT_TIME_LIMIT)
+def run_match(challengue_id, players):
+    try:
+        _run_match(challengue_id, players)
+    except SoftTimeLimitExceeded:
+        _match_has_timeouted(challengue_id, players)
 
