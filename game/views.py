@@ -119,8 +119,8 @@ def challenge(request):
         #if played_challs.count() > 0:
         #    # has already played against this bot, must upload a new one
         #    return HttpResponse("Already played against this bot!. Upload a new one.")
-        if (user_prof.current_bot.valid is False
-                or challenge_bot.valid is False):
+        if (user_prof.current_bot.valid != Bot.READY
+                or challenge_bot.valid != Bot.READY):
             return JsonResponse({'success': False})
 
         new_challengue = Challenge()
