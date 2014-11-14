@@ -60,9 +60,8 @@ def _run_match(challengue_id, players):
     challng.played = True
     challng.canceled = False
 
-    # Muy sucio.. pero es lo que hay.. :O
     try:
-        r = eval(stdo)
+        r = eval(stdo) # Muy sucio.. pero es lo que hay.. :O
         LOSER = 'loser'
         WINNER = 'winner'
         DRAW = 'draw'
@@ -74,6 +73,7 @@ def _run_match(challengue_id, players):
         draw = result.get(DRAW, False)
 
         challng.result = json.dumps(r)
+        
         if draw:
             challng.draw_player1 = challng.challenger_bot.owner
             challng.draw_player2 = challng.challenged_bot.owner
@@ -83,7 +83,8 @@ def _run_match(challengue_id, players):
             challng.winner_player = winner
             challng.loser_player = loser
         challng.save()
-    except Exception:
+    
+    except Exception as e:
         challng.played = True
         challng.canceled = True
         challng.save()
