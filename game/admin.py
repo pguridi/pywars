@@ -21,7 +21,7 @@ class BotAdmin(admin.ModelAdmin):
 admin.site.register(Bot, BotAdmin)
 
 class ChallengeAdmin(admin.ModelAdmin):
-    list_display = ('creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_bot', 'canceled')
+    list_display = ('creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_player', 'canceled')
 admin.site.register(Challenge, ChallengeAdmin)
 
 
