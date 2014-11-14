@@ -81,7 +81,8 @@ def _run_match(challengue_id, players):
             loser = UserProfile.objects.get(user__username=loser_username)
             challng.winner_player = winner_username
             challng.loser_player = loser_player
-    except Exception:
+        challng.save()
+    except Exception as e:
         challng.played = True
         challng.canceled = True
         challng.save()
