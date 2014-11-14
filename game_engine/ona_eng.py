@@ -277,7 +277,7 @@ class PywarsArena(object):
             #Do not include half for ANY player, to avoid crashes
             return 0 <= new_x < half
         #player.x_factor == -1, idem: half is not valid location:
-        return half < new_x <= self.width
+        return half < new_x < self.width
 
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
