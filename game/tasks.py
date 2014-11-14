@@ -60,8 +60,11 @@ def _run_match(challengue_id, players):
     challng.canceled = False
 
     # Muy sucio.. pero es lo que hay.. :O
-    r = eval(stdo)
-    challng.result = json.dumps(r)
+    try:
+        r = eval(stdo)
+        challng.result = json.dumps(r)
+    except Exception:
+        challng.canceled = True
     challng.save()
 
 
