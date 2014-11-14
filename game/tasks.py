@@ -45,7 +45,6 @@ def _run_match(challengue_id, players):
 
     start_time = time.time()
     # call the engine_match cli script
-
     if os.path.exists(PYPYSANDBOX_EXE):
         cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), ENGINE_NAME]
     else:
