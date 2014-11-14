@@ -148,7 +148,10 @@ def my_matches(request):
 def get_match(request, match_id):
     try:
         challenge = Challenge.objects.get(pk=match_id)
-        return JsonResponse({'success': True, 'data': json.loads(challenge.result)})
+        if challenge.canceled:
+            return JsonResponse({'success': False})
+        else:
+            return JsonResponse({'success': True, 'data': json.loads(challenge.result)})
     except ObjectDoesNotExist:
         return JsonResponse({'success': False})
 
