@@ -50,10 +50,10 @@ def _resolve_missing(distance):
 def _x_for_players(players, limit):
     """Given the list of players, return the numbers which will indicate the
     initial position of each one, according to the formula."""
-    quarter = limit // 2
+    half = limit // 2
     m = len(''.join(p.username for p in players))
     n = sum(xrange(m))
-    k = (n * m * 12832) % quarter
+    k = (n * m * 12832) % half
     return k, limit - k - 1
 
 
@@ -277,7 +277,7 @@ class PywarsArena(object):
             #Do not include half for ANY player, to avoid crashes
             return 0 <= new_x < half
         #player.x_factor == -1, idem: half is not valid location:
-        return half < new_x <= self.width
+        return half < new_x < self.width
 
     def resolve_move_action(self, player, where):
         new_x = player.x + (player.x_factor * where)
