@@ -10,6 +10,7 @@ import shutil
 import json
 
 
+
 ENGINE_LOCATION = os.path.abspath(os.path.join("game_engine", "arena.py"))
 ENGINE_EXCEPS = os.path.abspath(os.path.join("game_engine", "exc.py"))
 
@@ -21,7 +22,7 @@ SOFT_TIME_LIMIT = 30
 
 
 def _run_match(challengue_id, players):
-    from game.models import Challenge
+    from game.models import Challenge, UserProfile
     challng = Challenge.objects.get(pk=challengue_id)
 
     # create the match temp dir
@@ -62,11 +63,30 @@ def _run_match(challengue_id, players):
     # Muy sucio.. pero es lo que hay.. :O
     try:
         r = eval(stdo)
-        challng.result = json.dumps(r)
-    except Exception:
-        challng.canceled = True
-    challng.save()
+        LOSER = 'loser'
+        WINNER = 'winner'
+        DRAW = 'draw'
+        RESULT = 'result'
+        ACTION = 'action'
+        result = r['actions'][-1]
+        winner_username = result.get(WINNER)
+        loser_username = result.get(WINNER)
+        draw = result.get(DRAW, False)
 
+        challng.result = json.dumps(r)
+        if draw:
+            challng.draw_player1 = challng.challenger_bot.owner
+            challng.draw_player2 = challng.challenged_bot.owner
+        else:
+            winner = UserProfile.objects.get(user__username=winner_username)
+            loser = UserProfile.objects.get(user__username=loser_username)
+            challng.winner_player = winner_username
+            challng.loser_player = loser_player
+        challng.save()
+    except Exception:
+        challng.played = True
+        challng.canceled = True
+        challng.save()
 
 def _validate_bot(bot_id, bot_code):
     from game.models import Bot
@@ -141,8 +161,14 @@ def _match_has_timeouted(challengue_id):
 
 @shared_task(time_limit=HARD_TIME_LIMIT, soft_time_limit=SOFT_TIME_LIMIT)
 def run_match(challengue_id, players):
+    from game.models import Challenge
     try:
         _run_match(challengue_id, players)
     except SoftTimeLimitExceeded:
         _match_has_timeouted(challengue_id)
+    except Exception as e:
+        challng = Challenge.objects.get(pk=challengue_id)
+        challng.played = True
+        challng.canceled = True
+        challng.save()
 
