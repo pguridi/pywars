@@ -91,6 +91,17 @@ theGame.prototype = {
         this.ground.body.immovable = true;
         this.ground.body.collideWorldBounds = true;
         this.ground.body.allowGravity = false;
+
+        for (i = 0; i < 3; i++) {
+            cloud1 = game.add.sprite((Math.random() * (1900-800) + 800), (Math.random() * (300-0) + 0), 'cloud1');
+            cloud1.anchor.x = 0.5;
+            cloud2 = game.add.sprite((Math.random() * (800-0) + 0), (Math.random() * (200-0) + 0), 'cloud2');
+            cloud2.anchor.x = 0.5;
+            cloud3 = game.add.sprite((Math.random() * (1200-600) + 600), (Math.random() * (200-00) + 0), 'cloud3');
+            cloud3.anchor.x = 0.5;
+        }        
+
+        
         
         cursors = this.game.input.keyboard.createCursorKeys();
         

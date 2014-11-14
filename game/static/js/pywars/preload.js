@@ -8,12 +8,15 @@ preload.prototype = {
     },
 
 	preload: function(){ 
-          var loadingBar = this.add.sprite(160,240,"loading");
+          var loadingBar = this.add.sprite(400,240,"loading");
           loadingBar.anchor.setTo(0.5,0.5);
           this.load.setPreloadSprite(loadingBar);
 
         this.game.load.image('ground', 'static/assets/platform.png');
-	    this.game.load.image('background', 'static/assets/bg_castle.png');
+	    this.game.load.image('background', 'static/assets/bg.png');
+        this.game.load.image('cloud1', 'static/assets/cloud1.png');
+        this.game.load.image('cloud2', 'static/assets/cloud2.png');
+        this.game.load.image('cloud3', 'static/assets/cloud3.png');
 	    this.game.load.audio('background_music', 'static/assets/background_music.mp3');
 
         this.game.load.spritesheet('tank', 'static/assets/tank2.png', 74, 62);
