@@ -70,19 +70,21 @@ def _run_match(challengue_id, players):
         ACTION = 'action'
         result = r['actions'][-1]
         winner_username = result.get(WINNER)
-        loser_username = result.get(WINNER)
+        loser_username = result.get(LOSER)
         draw = result.get(DRAW, False)
 
         challng.result = json.dumps(r)
+        
         if draw:
             challng.draw_player1 = challng.challenger_bot.owner
             challng.draw_player2 = challng.challenged_bot.owner
         else:
             winner = UserProfile.objects.get(user__username=winner_username)
             loser = UserProfile.objects.get(user__username=loser_username)
-            challng.winner_player = winner_username
-            challng.loser_player = loser_player
+            challng.winner_player = winner
+            challng.loser_player = loser
         challng.save()
+    
     except Exception as e:
         challng.played = True
         challng.canceled = True

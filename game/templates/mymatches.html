@@ -21,7 +21,13 @@
                 <td>{{ forloop.revcounter }}</td>
                 <td>{{ match.challenger_bot.owner }}</td>
                 <td>{{ match.challenged_bot.owner }}</td>
-                <td>{{ match.winner_bot.owner|default:"-" }}</td>
+                <td>{% if match.winner_player%} 
+                        {{ match.winner_player }}
+                    {% endif %} 
+                    {% if match.draw_player1 %} 
+                        Draw 
+                    {% endif %}
+                </td>
                 <td>{{ match.creation_date }}</td>
                 <td><a class="btn btn-primary btn-warning" href="{% url 'view_match' match_id=match.id %}" {% if not match.result %}disabled="disabled"{% endif %} title="{{ match.result_description|escape }}">View</a></td>
             </tr>

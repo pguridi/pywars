@@ -140,7 +140,8 @@ def main_match(request):
 
 @login_required
 def my_matches(request):
-    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user) & Q(canceled=False)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
+    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | 
+                                        Q(challenged_bot__owner=request.user)).filter(canceled=False).filter(played=True).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
     return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
 
 
