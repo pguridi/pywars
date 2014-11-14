@@ -105,7 +105,7 @@ def _validate_bot(bot_id, bot_code):
         if key in stderr:
             valid = False
             i = stderr.index(key)
-            invalid_reason = stderr[i:]
+            invalid_reason = stderr[i].splitlines()[-1]
 
     bot.valid = Bot.READY if valid else Bot.INVALID
     bot.invalid_reason = invalid_reason
