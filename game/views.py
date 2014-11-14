@@ -26,7 +26,7 @@ def scoreboard(request):
     #bots = Bot.objects.all().order_by('-points')
     users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
     users = ((user, request.user.profile.latest_match_id(user)) for user in users)
-    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False)
+    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False, canceled=False)
 #    if challenges.count() > 0:
 #        pending_challenges = True
 #    else:
@@ -34,7 +34,7 @@ def scoreboard(request):
 
     pending_challenged_bots = [c.challenged_bot for c in challenges]
 
-    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True)
+    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True, canceled=False)
     challenged_bots = [c.challenged_bot for c in played_challenges]
 
     return render(request, 'scoreboard.html', {'tab': 'score',
@@ -107,7 +107,7 @@ def challenge(request):
         print "Got a challenge for bot: ", challenge_bot
 
         # Get pending challenges for this user
-        challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
+        challenges = Challenge.objects.filter(requested_by=user_prof, played=False, canceled=False)
         if challenges.count() > 0:
             # has pending challenges, must wait.
             return HttpResponse("Can not challenge more than one bot at a time")
@@ -149,7 +149,10 @@ def my_matches(request):
 def get_match(request, match_id):
     try:
         challenge = Challenge.objects.get(pk=match_id)
-        return JsonResponse({'success': True, 'data': json.loads(challenge.result)})
+        if challenge.canceled:
+            return JsonResponse({'success': False})
+        else:
+            return JsonResponse({'success': True, 'data': json.loads(challenge.result)})
     except ObjectDoesNotExist:
         return JsonResponse({'success': False})
 
@@ -179,7 +182,11 @@ def bot_code(request, bot_pk):
 
 @login_required
 def get_playlist(request):
+<<<<<<< HEAD
     challenges = Challenge.objects.filter(played=True)[:25]
+=======
+    challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')
+>>>>>>> 1cecae8e2b4ccb73119b17cd7386e422162fd3ea
     if not challenges:
         return JsonResponse({'success': False, 'data': []})
     data = json.loads(serializers.serialize('json', challenges))

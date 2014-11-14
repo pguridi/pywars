@@ -10,8 +10,9 @@ import shutil
 import json
 
 
+ENGINE_NAME = "ona_eng.py"
 
-ENGINE_LOCATION = os.path.abspath(os.path.join("game_engine", "arena.py"))
+ENGINE_LOCATION = os.path.abspath(os.path.join("game_engine", ENGINE_NAME))
 ENGINE_EXCEPS = os.path.abspath(os.path.join("game_engine", "exc.py"))
 
 PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
@@ -40,15 +41,15 @@ def _run_match(challengue_id, players):
 
     for player in players.keys():
         with open(os.path.join(bots_dir, player + '.py'), 'w') as f:
-            f.write(players[player])
+            bot_code = players[player].replace('gc.', '')
+            f.write(bot_code)
 
     start_time = time.time()
     # call the engine_match cli script
-
     if os.path.exists(PYPYSANDBOX_EXE):
-        cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), 'arena.py']
+        cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), ENGINE_NAME]
     else:
-        cmdargs = [PYTHON_EXE, 'arena.py']
+        cmdargs = [PYTHON_EXE, ENGINE_NAME]
 
     cmdargs.extend(['bots/' + p + '.py' for p in players.keys()])
     print 'CMDARGS: ', cmdargs
@@ -99,6 +100,7 @@ def _validate_bot(bot_id, bot_code):
     os.mkdir(bots_dir)
     tmp_bot_filename = 'testing.py'
     with open(os.path.join(match_dir, tmp_bot_filename), 'w') as f:
+        bot_code = bot_code.replace('gc.', '')
         f.write(bot_code)
 
     # dump the engine and bots file in temp dir
@@ -106,9 +108,9 @@ def _validate_bot(bot_id, bot_code):
     shutil.copy2(ENGINE_EXCEPS, match_dir)
 
     if os.path.exists(PYPYSANDBOX_EXE):
-        cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), 'arena.py']
+        cmdargs = [PYPYSANDBOX_EXE, '--tmp={}'.format(match_dir), ENGINE_NAME]
     else:
-        cmdargs = [PYTHON_EXE, 'arena.py']
+        cmdargs = [PYTHON_EXE, ENGINE_NAME]
 
     cmdargs.extend([tmp_bot_filename, tmp_bot_filename])
 
@@ -126,7 +128,8 @@ def _validate_bot(bot_id, bot_code):
         if key in stderr:
             valid = False
             i = stderr.index(key)
-            invalid_reason = stderr[i:]
+            invalid_reason = ', '.join(stderr[i:].splitlines()[-2:])
+            invalid_reason = invalid_reason.replace(ENGINE_NAME, '*****')
 
     bot.valid = Bot.READY if valid else Bot.INVALID
     bot.invalid_reason = invalid_reason
