@@ -153,6 +153,14 @@ class PywarsContext(object):
         return {p: d.get(self.LIFE) for p, d in self.info.iteritems()}
 
 
+def _check_allowed_modules():
+    unallowed_modules = ('gc', )
+    import sys;
+    for mod in unallowed_modules:
+        if mod in sys.modules:
+            raise ImportError("Module %s is not allowed" % mod)
+
+
 class PywarsArena(object):
     """The game arena."""
 
@@ -171,6 +179,7 @@ class PywarsArena(object):
         self.setup()
 
     def setup(self):
+        _check_allowed_modules()
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
