@@ -140,7 +140,8 @@ def main_match(request):
 
 @login_required
 def my_matches(request):
-    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
+    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | 
+                                        Q(challenged_bot__owner=request.user)).filter(canceled=False).filter(played=True).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
     return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
 
 
@@ -178,9 +179,12 @@ def bot_code(request, bot_pk):
 
 @login_required
 def get_playlist(request):
-    challenges = Challenge.objects.filter(played=True).order_by('-creation_date')
+    challenges = Challenge.objects.filter(played=True)[:25]
     if not challenges:
         return JsonResponse({'success': False, 'data': []})
-    challs = [ [ch.id, str(ch)] for ch in challenges ]
+    data = json.loads(serializers.serialize('json', challenges))
     
-    return JsonResponse({'success': True, 'data': challs})
+    for d in data:
+        del d['fields']['result']
+        d['fields']['label'] = Challenge.objects.get(pk=int(d['pk'])).__str__()
+    return JsonResponse({'success': True, 'data': data})
