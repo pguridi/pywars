@@ -26,7 +26,7 @@ def scoreboard(request):
     #bots = Bot.objects.all().order_by('-points')
     users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
     users = ((user, request.user.profile.latest_match_id(user)) for user in users)
-    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False)
+    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False, canceled=False)
 #    if challenges.count() > 0:
 #        pending_challenges = True
 #    else:
@@ -34,7 +34,7 @@ def scoreboard(request):
 
     pending_challenged_bots = [c.challenged_bot for c in challenges]
 
-    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True)
+    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True, canceled=False)
     challenged_bots = [c.challenged_bot for c in played_challenges]
 
     return render(request, 'scoreboard.html', {'tab': 'score',
@@ -107,7 +107,7 @@ def challenge(request):
         print "Got a challenge for bot: ", challenge_bot
 
         # Get pending challenges for this user
-        challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
+        challenges = Challenge.objects.filter(requested_by=user_prof, played=False, canceled=False)
         if challenges.count() > 0:
             # has pending challenges, must wait.
             return HttpResponse("Can not challenge more than one bot at a time")
@@ -140,7 +140,7 @@ def main_match(request):
 
 @login_required
 def my_matches(request):
-    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
+    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user) & Q(canceled=False)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
     return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
 
 
@@ -178,7 +178,7 @@ def bot_code(request, bot_pk):
 
 @login_required
 def get_playlist(request):
-    challenges = Challenge.objects.filter(played=True).order_by('-creation_date')
+    challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')
     if not challenges:
         return JsonResponse({'success': False, 'data': []})
     challs = [ [ch.id, str(ch)] for ch in challenges ]
