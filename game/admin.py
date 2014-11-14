@@ -17,7 +17,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 
 class BotAdmin(admin.ModelAdmin):
-    list_display = ('creation_date', 'modification_date', 'owner')
+    list_display = ('creation_date', 'modification_date', 'owner', 'valid')
 admin.site.register(Bot, BotAdmin)
 
 class ChallengeAdmin(admin.ModelAdmin):
