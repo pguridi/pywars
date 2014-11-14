@@ -51,7 +51,7 @@ Player.prototype = {
 		    this.sprite.frame = 6;
 		} else {
 		    // is the right player
-		    this.health_status.x = 600;
+		    this.health_status.x = 500;
 		    this.health_status.y = 16;
 		    this.sprite.frame = 8;
 		}
