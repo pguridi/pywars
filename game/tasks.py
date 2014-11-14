@@ -74,7 +74,7 @@ def _run_match(challengue_id, players):
         draw = result.get(DRAW, False)
 
         challng.result = json.dumps(r)
-        
+
         if draw:
             challng.draw_player1 = challng.challenger_bot.owner
             challng.draw_player2 = challng.challenged_bot.owner
@@ -84,7 +84,7 @@ def _run_match(challengue_id, players):
             challng.winner_player = winner
             challng.loser_player = loser
         challng.save()
-    
+
     except Exception as e:
         challng.played = True
         challng.canceled = True
@@ -124,12 +124,12 @@ def _validate_bot(bot_id, bot_code):
     valid = True
     key = 'Traceback'
     invalid_reason = ''
-    if stderr:
-        if key in stderr:
-            valid = False
-            i = stderr.index(key)
-            invalid_reason = ', '.join(stderr[i:].splitlines()[-2:])
-            invalid_reason = invalid_reason.replace(ENGINE_NAME, '*****')
+    failed_log = stderr if key in stderr else stdout
+    if key in failed_log:
+        valid = False
+        i = stderr.index(key)
+        invalid_reason = ', '.join(stderr[i:].splitlines()[-2:])
+        invalid_reason = invalid_reason.replace(ENGINE_NAME, '*****')
 
     bot.valid = Bot.READY if valid else Bot.INVALID
     bot.invalid_reason = invalid_reason
@@ -149,9 +149,12 @@ def _bot_validation_time_outed(bot_id):
 @shared_task(time_limit=HARD_TIME_LIMIT, soft_time_limit=SOFT_TIME_LIMIT)
 def validate_bot(bot_id, bot_code):
     try:
-        _validate_bot(bot_id, bot_code)
+        result = _validate_bot(bot_id, bot_code)
     except SoftTimeLimitExceeded:
         _bot_validation_time_outed(bot_id)
+    else:
+        return result
+
 
 
 def _match_has_timeouted(challengue_id):

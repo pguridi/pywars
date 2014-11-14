@@ -252,7 +252,7 @@ class PywarsArena(object):
                                         e.reason)
                         raise GameOverException(str(e))
                     except Exception as e:
-                        self.match.lost(player, u'Crashed: %s' % str(e))
+                        self.match.lost(player, u'Crashed')
                         raise GameOverException(str(e))
             except GameOverException as e:
                 break
@@ -343,10 +343,7 @@ class PywarsArena(object):
         # Correct x_imp according to our scale
         x_imp = x_m_destino
         try:
-            affected_players = [p for p in self.players
-                                if p.x == x_imp]
-#            for p in self.players:
-#                print "player %s p.x %s x_imp %s" % (p.username, p.x, x_imp)
+            affected_players = [p for p in self.players if p.x == x_imp]
             if not affected_players:
                 raise MissedTargetException
         except MissedTargetException:
@@ -459,7 +456,7 @@ def main(argv):
     except ImportError, e:
         print "Error importing bot scripts: %s." % str(e)
         usage()
-        sys.exit(EXIT_ERROR_MODULE)
+        raise e
     except AttributeError, e:
         print "Error instancing Bot : %s." % str(e)
         usage()
