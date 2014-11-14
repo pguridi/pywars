@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 import os
 from game.tasks import run_match
-from django.utils import timezone
+from datetime import datetime
 
 
 sample_bot_location = os.path.join(settings.PROJECT_ROOT, 'game_engine', 'default_user_bot.py')
@@ -82,7 +82,7 @@ class Bot(models.Model):
 
 class FinalChallenge(models.Model):
     description = models.TextField(default='Final Challenge', null=False)
-    creation_date = models.DateTimeField(auto_now=True, default=timezone.now())
+    creation_date = models.DateTimeField(auto_now=True, default=datetime.now())
 
 
 class Challenge(models.Model):
