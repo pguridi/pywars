@@ -30,9 +30,8 @@ class UserProfile(models.Model):
         try:
             if other_prof != self:
                 return Challenge.objects.filter(
-                    (Q(challenger_bot__owner=self) & Q(challenged_bot__owner=other_prof)) |
-                    (Q(challenged_bot__owner=self) & Q(challenger_bot__owner=other_prof)) &
-                    (Q(canceled=False))
+                    (Q(canceled=False) & Q(challenger_bot__owner=self) & Q(challenged_bot__owner=other_prof)) |
+                    (Q(canceled=False) & Q(challenged_bot__owner=self) & Q(challenger_bot__owner=other_prof))
                 ).latest('creation_date').pk
         except ObjectDoesNotExist:
             return None
