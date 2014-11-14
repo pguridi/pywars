@@ -182,16 +182,9 @@ def bot_code(request, bot_pk):
 
 @login_required
 def get_playlist(request):
-<<<<<<< HEAD
-    challenges = Challenge.objects.filter(played=True)[:25]
-=======
     challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')
->>>>>>> 1cecae8e2b4ccb73119b17cd7386e422162fd3ea
     if not challenges:
         return JsonResponse({'success': False, 'data': []})
-    data = json.loads(serializers.serialize('json', challenges))
+    challs = [ [ch.id, str(ch)] for ch in challenges ]
     
-    for d in data:
-        del d['fields']['result']
-        d['fields']['label'] = Challenge.objects.get(pk=int(d['pk'])).__str__()
-    return JsonResponse({'success': True, 'data': data})
+    return JsonResponse({'success': True, 'data': challs})
