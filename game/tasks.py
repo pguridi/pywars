@@ -41,7 +41,8 @@ def _run_match(challengue_id, players):
 
     for player in players.keys():
         with open(os.path.join(bots_dir, player + '.py'), 'w') as f:
-            f.write(players[player])
+            bot_code = players[player].replace('gc.', '')
+            f.write(bot_code)
 
     start_time = time.time()
     # call the engine_match cli script
@@ -97,6 +98,7 @@ def _validate_bot(bot_id, bot_code):
     os.mkdir(bots_dir)
     tmp_bot_filename = 'testing.py'
     with open(os.path.join(match_dir, tmp_bot_filename), 'w') as f:
+        bot_code = bot_code.replace('gc.', '')
         f.write(bot_code)
 
     # dump the engine and bots file in temp dir

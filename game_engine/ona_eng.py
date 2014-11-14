@@ -95,7 +95,7 @@ class ArenaGrid(object):
         self.arena[x] = value
 
 
-class Context(object):
+class PywarsContext(object):
     FEEDBACK = 1
     LIFE = 2
 
@@ -153,7 +153,7 @@ class Context(object):
         return {p: d.get(self.LIFE) for p, d in self.info.iteritems()}
 
 
-class BattleGroundArena(object):
+class PywarsArena(object):
     """The game arena."""
 
     PLAYING = 0
@@ -165,9 +165,9 @@ class BattleGroundArena(object):
         self.height = height
         self.rounds = xrange(100)
         self.players = players
-        self.match = BattleGroundMatchLog(width, height, players)
+        self.match = PywarsGroundMatchLog(width, height, players)
         self.arena = ArenaGrid(self.width, self.height)
-        self.context = Context(players)
+        self.context = PywarsContext(players)
         self.setup()
 
     def setup(self):
@@ -365,7 +365,7 @@ class BattleGroundArena(object):
                                              health_value=self.context.life(p)))
 
 
-class BattleGroundMatchLog(object):
+class PywarsGroundMatchLog(object):
     """Represents the match log among players, the entire game."""
 
     def __init__(self, width, height, players):
@@ -389,11 +389,11 @@ class BattleGroundMatchLog(object):
         self.trace_action(self.game_over_template)
 
     def winner(self, player):
-        player.status = BattleGroundArena.WINNER
+        player.status = PywarsArena.WINNER
         self._trace_game_over(WINNER, LOSER, player, 'Max points')
 
     def lost(self, player, cause):
-        player.status = BattleGroundArena.LOST
+        player.status = PywarsArena.LOST
         self._trace_game_over(LOSER, WINNER, player, cause)
 
     def _trace_game_over(self, k1, k2, player, cause):
@@ -468,7 +468,7 @@ def main(argv):
     bot1 = BotPlayer(bot1_username, bot1)
     bot2 = BotPlayer(bot2_username, bot2)
 
-    engine = BattleGroundArena(players=[bot1, bot2])
+    engine = PywarsArena(players=[bot1, bot2])
     game_result = engine.start()
     print game_result
     sys.exit(0)
