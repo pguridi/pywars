@@ -168,7 +168,7 @@ class PywarsArena(object):
     LOST = 1
     WINNER = 2
 
-    def __init__(self, players, width=30, height=50):
+    def __init__(self, players, width=30, height=50, randoms=None):
         self.width = width
         self.height = height
         self.rounds = xrange(100)
@@ -176,6 +176,7 @@ class PywarsArena(object):
         self.match = PywarsGroundMatchLog(width, height, players)
         self.arena = ArenaGrid(self.width, self.height)
         self.context = PywarsContext(players)
+        self.randoms = randoms if randoms else []
         self.setup()
 
     def setup(self):
@@ -183,7 +184,10 @@ class PywarsArena(object):
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
-        x1, x2 = _x_for_players(self.players, limit=self.width)
+        if self.randoms:
+            x1, x2 = map(int, self.randoms)
+        else:
+            x1, x2 = _x_for_players(self.players, limit=self.width)
         for i, player in enumerate(self.players, start=1):
             player.color = i
             player.status = self.PLAYING
@@ -457,6 +461,7 @@ def main(argv):
     bot_mod2 = argv[1].replace(".py", "")
     bot2_username = bot_mod2.split("/")[-1]
     bot_mod2 = bot_mod2.replace('/', '.')
+    randoms = argv[2:]
     try:
         bot_module1 = importlib.import_module(bot_mod1, package='bots')
         bot_module2 = importlib.import_module(bot_mod2, package='bots')
@@ -474,7 +479,7 @@ def main(argv):
     bot1 = BotPlayer(bot1_username, bot1)
     bot2 = BotPlayer(bot2_username, bot2)
 
-    engine = PywarsArena(players=[bot1, bot2])
+    engine = PywarsArena(players=[bot1, bot2], randoms=randoms)
     game_result = engine.start()
     print game_result
     sys.exit(0)

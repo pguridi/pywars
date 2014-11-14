@@ -8,6 +8,7 @@ import tempfile
 import os
 import shutil
 import json
+import random
 
 
 ENGINE_NAME = "ona_eng.py"
@@ -20,6 +21,7 @@ PYTHON_EXE = os.path.join('/usr', 'bin', 'python')
 
 HARD_TIME_LIMIT = 40
 SOFT_TIME_LIMIT = 30
+GRID_LIMIT = 30
 
 
 def _run_match(challengue_id, players):
@@ -52,6 +54,9 @@ def _run_match(challengue_id, players):
         cmdargs = [PYTHON_EXE, ENGINE_NAME]
 
     cmdargs.extend(['bots/' + p + '.py' for p in players.keys()])
+    randoms = [random.choice(range(GRID_LIMIT//2)),
+               random.choice(range(GRID_LIMIT//2, GRID_LIMIT))]
+    cmdargs.extend(map(str, randoms))
     print 'CMDARGS: ', cmdargs
     proc = subprocess.Popen(cmdargs, cwd=match_dir, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     stdo, stde = proc.communicate()
