@@ -140,7 +140,7 @@ def main_match(request):
 
 @login_required
 def my_matches(request):
-    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | 
+    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) |
                                         Q(challenged_bot__owner=request.user)).filter(canceled=False).filter(played=True).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
     return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
 
@@ -185,6 +185,6 @@ def get_playlist(request):
     challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')
     if not challenges:
         return JsonResponse({'success': False, 'data': []})
-    challs = [ [ch.id, str(ch)] for ch in challenges ]
-    
+    challs = [ [ch.id, ch.caption()] for ch in challenges ]
+
     return JsonResponse({'success': True, 'data': challs})

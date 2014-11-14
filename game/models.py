@@ -1,3 +1,4 @@
+#-*-coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
@@ -112,6 +113,22 @@ class Challenge(models.Model):
                                         self.creation_date.strftime("%a %d-%H:%M:%S"))
     def __str__(self):
         return self.__unicode__()
+
+    def _resolve_players(self, p1, p2):
+        _win_tmp = u"{} ♛"
+        if not self.winner_player:
+            return p1, "{} - [DRAW]".format(p2)
+        if self.winner_player.user.username == p1:
+            return _win_tmp.format(p1), p2
+        if self.winner_player.user.username == p2:
+            return p1, _win_tmp.format(p2)
+
+    def caption(self):
+        first, second = self._resolve_players(
+            self.challenger_bot.owner.user.username,
+            self.challenged_bot.owner.user.username
+        )
+        return u'{first} <-> {second}'.format(first=first, second=second)
 
 
 def create_user_profile(sender, instance, created, **kwargs):
