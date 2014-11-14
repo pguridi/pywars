@@ -18,7 +18,7 @@ $(document).ready(function() {
             }
             var list = $('<ul>');
             $.each(JsonData, function(i, d){
-                var link = $('<li><a href="/' + d.pk + '">'+ d.fields.label +  '<a/><li/>' )[0];
+                var link = $('<li><a href="/' + d[0] + '">'+ d[1] +  '<a/><li/>' )[0];
                 list.append( link );
             });
             console.log('html: ' + list);
