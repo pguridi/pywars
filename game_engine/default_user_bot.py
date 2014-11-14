@@ -1,19 +1,21 @@
 # Example responses:
 #
-# Move to the right:
+# Move forwards:
 #   return {'ACTION': 'MOVE', 'WHERE': 1}
 #
-# Move to the left:
+# Move backwards:
 #   return {'ACTION': 'MOVE', 'WHERE': -1}
 #
 # Shooting projectile:
 #   return {'ACTION': 'SHOOT', 'VEL': 100, 'ANGLE': 35}
-#   # 'VEL' should be an integer x, 0 < x < 50
-#   # 'ANGLE' should be an integer x, 10 <= x < 90
+#   # 'VEL' should be a value x, 0 < x < 150
+#   # 'ANGLE' should be an x, 10 <= x < 90
 #
 #
 # Do nothing:
 #   return None
+#
+# For full API description and usage please visit the Rules section
 
 class Bot(object):
 
