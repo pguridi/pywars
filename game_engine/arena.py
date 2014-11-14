@@ -244,6 +244,7 @@ class BattleGroundArena(object):
                     except (InvalidBotOutput,
                             BotTimeoutException,
                             TankDestroyedException) as e:
+                        p = self.context.affected_player or player
                         self.match.trace_action(dict(action="make_healthy",
                                                      player=p.username,
                                                      health_value=self.context.life(p)))

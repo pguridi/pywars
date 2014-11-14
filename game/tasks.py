@@ -16,8 +16,8 @@ ENGINE_EXCEPS = os.path.abspath(os.path.join("game_engine", "exc.py"))
 PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
 PYTHON_EXE = os.path.join('/usr', 'bin', 'python')
 
-HARD_TIME_LIMIT = 20
-SOFT_TIME_LIMIT = 15
+HARD_TIME_LIMIT = 40
+SOFT_TIME_LIMIT = 30
 
 
 def _run_match(challengue_id, players):

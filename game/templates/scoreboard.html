@@ -35,7 +35,7 @@
 
     <div class="container main scoreboard">
 
-      <h1>Tournament Rank</h1>
+      <h1>Not ranked challengues</h1>
     {% if pending_challenged_bots|length > 0 %}
     * Pending challenges
     {% endif%}
@@ -43,9 +43,7 @@
 <table id="score_table" class="table table-striped">
         <thead>
           <tr>
-            <th>Position</th>
             <th>Username</th>
-            <th>Score</th>
             <th>Action</th>
             <th>Latest match</th>
           </tr>
@@ -53,9 +51,7 @@
         <tbody>
             {% for user_prof, latest_match_id in users %}
             <tr>
-            <td>{{forloop.counter}}</td>
             <td>{{ user_prof }} </td>
-            <td>{{ user_prof.score }}</td>
             <td>
             {% if user_prof.user != user %}
                 {% if pending_challenges %}
