@@ -179,7 +179,7 @@ class PywarsArena(object):
         self.setup()
 
     def setup(self):
-        _check_allowed_modules()
+        #_check_allowed_modules()
         self.match.trace_action(dict(action="new_arena",
                                      width=self.width,
                                      height=self.height,))
