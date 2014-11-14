@@ -60,28 +60,31 @@ def _run_match(challengue_id, players):
     challng.played = True
     challng.canceled = False
 
-    # Muy sucio.. pero es lo que hay.. :O
-    r = eval(stdo)
-    LOSER = 'loser'
-    WINNER = 'winner'
-    DRAW = 'draw'
-    RESULT = 'result'
-    ACTION = 'action'
-    result = r['actions'][-1]
-    winner_username = result.get(WINNER)
-    loser_username = result.get(WINNER)
-    draw = result.get(DRAW, False)
+    try:
+        r = eval(stdo) # Muy sucio.. pero es lo que hay.. :O
+        LOSER = 'loser'
+        WINNER = 'winner'
+        DRAW = 'draw'
+        RESULT = 'result'
+        ACTION = 'action'
+        result = r['actions'][-1]
+        winner_username = result.get(WINNER)
+        loser_username = result.get(WINNER)
+        draw = result.get(DRAW, False)
 
-    challng.result = json.dumps(r)
-    if draw:
-        challng.draw_player1 = challng.challenger_bot.owner
-        challng.draw_player2 = challng.challenged_bot.owner
-    else:
-        winner = UserProfile.objects.get(user__username=winner_username)
-        loser = UserProfile.objects.get(user__username=loser_username)
-        challng.winner_player = winner_username
-        challng.loser_player = loser_player
-    challng.save()
+        challng.result = json.dumps(r)
+        if draw:
+            challng.draw_player1 = challng.challenger_bot.owner
+            challng.draw_player2 = challng.challenged_bot.owner
+        else:
+            winner = UserProfile.objects.get(user__username=winner_username)
+            loser = UserProfile.objects.get(user__username=loser_username)
+            challng.winner_player = winner_username
+            challng.loser_player = loser_player
+    except Exception:
+        challng.played = True
+        challng.canceled = True
+        challng.save()
 
 def _validate_bot(bot_id, bot_code):
     from game.models import Bot
