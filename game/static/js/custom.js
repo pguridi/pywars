@@ -38,6 +38,8 @@ function updateBots(){
             $item.removeClass('list-group-item-warning');
             $item.addClass('list-group-item-success');
             $item.attr('title', data['status']);
+            $item.find('i').removeClass('glyphicon-time');
+            $item.find('i').addClass('glyphicon-ok');
           }
           if (data['status'] === 'INVALID') {
             $item.removeClass('list-group-item-warning');
@@ -45,17 +47,18 @@ function updateBots(){
             $item.attr('content', '<span class="color-red">' + data['reason'] +
                        '</span><br>' + '<span class="color-black">' + data['code'] + '</span>');
             $item.attr('title', data['status']);
+            $item.find('i').removeClass('glyphicon-time');
+            $item.find('i').addClass('glyphicon-remove');
           }
         }
       }).fail(function() {
         console.log("Failed to get bot");
       });
-
     });
 }
 
 $(document).ready(function() {
     if ($('.bot-pending').length > 0 ) {
-        setInterval( function() { updateBots(); }, 5000);
+        setInterval( function() { updateBots(); }, 7000);
     }
 });
