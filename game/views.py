@@ -6,7 +6,6 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.db.models import Q
-from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import BotBufferForm
 from models import Challenge, Bot, UserProfile
