@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="container main about">
+
+  <div id="header">
+    <img src="{% static '/static/img/PyWars.png'%}"/>
+  </div>
+
+  <div id="now_playing">
+    <p>El torneo ya est&aacute; en curso. Estamos procesando las partidas.</p>
+    <p>Los resultados ser&aacute;n dados en la entrega de premios.</p>
+    <br>
+    <p>The tournament has just begun. The matches are being processed.</p>
+    <p>The results will be published in the awards ceremony.</p>
+  </div>
+  
+</div> <!-- /container -->
+
+{% endblock %}
