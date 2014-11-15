@@ -18,22 +18,12 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'score', 'current_bot', 'code_update_date')
 
 
-admin.site.register(UserProfile, UserProfileAdmin)
-
-
 class BotAdmin(admin.ModelAdmin):
     list_display = ('creation_date', 'modification_date', 'owner', 'valid')
 
 
-admin.site.register(Bot, BotAdmin)
-
-
 class ChallengeAdmin(admin.ModelAdmin):
-    list_display = (
-        'creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_player', 'canceled')
-
-
-admin.site.register(Challenge, ChallengeAdmin)
+    list_display = ('creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_player', 'canceled')
 
 
 class FinalChallengeAdmin(admin.ModelAdmin):
@@ -82,3 +72,6 @@ class FinalChallengeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(FinalChallenge, FinalChallengeAdmin)
+admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(Challenge, ChallengeAdmin)
+admin.site.register(Bot, BotAdmin)
