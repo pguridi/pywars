@@ -44,8 +44,11 @@ def scoreboard(request):
 
 @login_required
 def tournament(request):
-    users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
-
+    user_query = UserProfile.objects.filter(current_bot__isnull=False, user__is_superuser=False)
+    for user in user_query.all():
+        user.score = user.points
+        user.save()
+    users = user_query.order_by('-score')
     return render(request, 'tournament.html', {'tab': 'tournament', 'users': users})
 
 
@@ -182,9 +185,8 @@ def bot_code(request, bot_pk):
 @login_required
 @cache_page(10)
 def get_playlist(request):
-    challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')
+    challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')[:50]
     if not challenges:
         return JsonResponse({'success': False, 'data': []})
     challs = [ [ch.id, ch.caption()] for ch in challenges ]
-
     return JsonResponse({'success': True, 'data': challs})
