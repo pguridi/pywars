@@ -266,3 +266,8 @@ margin-left: 1em;
 .main span.color-black{
   color:black;
 }
+
+#now_playing p{
+  font-size: 25px;
+  text-align: center;
+}
