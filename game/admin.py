@@ -39,7 +39,9 @@ class FinalChallengeAdmin(admin.ModelAdmin):
 
     def final_challenge(self, request, queryset):
         profiles = UserProfile.objects.filter(user__is_superuser=False).all()
-        final_challenge = FinalChallenge()
+        if not queryset:
+		return HttpResponseRedirect('/admin')
+        final_challenge = queryset[0]
         for up_player1, up_player2 in itertools.product(profiles, repeat=2):
             if (up_player1 == up_player2
                 or not up_player1.current_bot
@@ -49,6 +51,7 @@ class FinalChallengeAdmin(admin.ModelAdmin):
             challenge.requested_by = up_player1
             challenge.challenger_bot = up_player1.current_bot
             challenge.challenged_bot = up_player2.current_bot
+            challenge.final_challenge = final_challenge
             challenge.save()
             final_challenge.challenge_set.add(challenge)
             # dispatch the new task

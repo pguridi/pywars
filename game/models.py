@@ -38,6 +38,10 @@ class UserProfile(models.Model):
             return None
 
     @property
+    def points(self):
+        return (3 * self.win) + self.tie
+
+    @property
     def win(self):
         return Challenge.objects.filter(final_challenge__isnull = False, winner_player = self).count()
 
