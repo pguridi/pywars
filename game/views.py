@@ -181,6 +181,7 @@ def bot_code(request, bot_pk):
 
 
 @login_required
+@cache_page(10)
 def get_playlist(request):
     challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')
     if not challenges:
