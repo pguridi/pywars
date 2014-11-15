@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.conf.urls import patterns
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 import itertools
 
 # Register your models here.
@@ -11,6 +11,8 @@ from game.models import (
     UserProfile,
     FinalChallenge,
 )
+from game.tasks import run_match
+
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'score', 'current_bot', 'code_update_date')
@@ -33,19 +35,29 @@ class FinalChallengeAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-    def final_challenge(self, request):
+    actions = ['final_challenge']
+
+    def final_challenge(self, request, queryset):
         profiles = UserProfile.objects.filter(user__is_superuser=False).all()
         final_challenge = FinalChallenge()
-        for x, y in itertools.product(profiles, repeat=2):
-            if x == y:
+        for up_player1, up_player2 in itertools.product(profiles, repeat=2):
+            if (up_player1 == up_player2
+                or not up_player1.current_bot
+                or not up_player2.current_bot):
                 continue
             challenge = Challenge()
-            challenge.requested_by = x
-            challenge.challenger_bot = x.current_bot
-            challenge.challenged_bot = y.current_bot
+            challenge.requested_by = up_player1
+            challenge.challenger_bot = up_player1.current_bot
+            challenge.challenged_bot = up_player2.current_bot
             challenge.save()
-            final_challenge.add(challenge)
+            final_challenge.challenge_set.add(challenge)
+            # dispatch the new task
+            players = {up_player1.user.username: up_player1.current_bot.code,
+                       up_player2.user.username: up_player2.current_bot.code,
+            }
+            run_match.delay(challenge.id, players)
+
         final_challenge.save()
-        return HttpResponse('/')
+        return HttpResponseRedirect('/admin')
 
 admin.site.register(FinalChallenge, FinalChallengeAdmin)
