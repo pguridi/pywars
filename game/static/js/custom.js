@@ -59,6 +59,6 @@ function updateBots(){
 
 $(document).ready(function() {
     if ($('.bot-pending').length > 0 ) {
-        setInterval( function() { updateBots(); }, 7000);
+        setInterval( function() { updateBots(); }, 10000);
     }
 });
