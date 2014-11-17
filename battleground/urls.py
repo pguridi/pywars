@@ -12,7 +12,7 @@ class RegistrationViewUniqueEmail(RegistrationView):
 urlpatterns = patterns('',
     # Examples:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^.*$', TemplateView.as_view(template_name='now_playing.html'), name='now_playing'),
+    #url(r'^.*$', TemplateView.as_view(template_name='now_playing.html'), name='now_playing'),
     url(r'^accounts/register$', RegistrationViewUniqueEmail.as_view(), name='registration_register'),
     url(r'^$', 'game.views.index', name='index'),
     url(r'^(?P<match_id>\d+)$', 'game.views.index', name='view_match'),
