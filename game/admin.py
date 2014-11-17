@@ -45,7 +45,7 @@ class FinalChallengeAdmin(admin.ModelAdmin):
     actions = ['final_challenge']
 
     def final_challenge(self, request, queryset):
-        profiles = UserProfile.objects.filter(user__is_superuser=False, user__is_active=False).all()
+        profiles = UserProfile.objects.filter(user__is_superuser=False, user__is_active=True).all()
         if not queryset:
 		return HttpResponseRedirect('/admin')
         final_challenge = queryset[0]
