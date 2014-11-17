@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.conf.urls import patterns
 from django.http import HttpResponseRedirect
+from game.tasks import validate_bot
 import itertools
 
 # Register your models here.
@@ -19,15 +20,19 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 class BotAdmin(admin.ModelAdmin):
+    actions = ['validate_bot']
     list_display = ('creation_date', 'modification_date', 'owner', 'valid')
-
+    
+    def validate_bot(self, request, queryset):
+        for bot in queryset:
+            validate_bot.delay(bot.id, bot.code)
 
 class ChallengeAdmin(admin.ModelAdmin):
     list_display = ('creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_player', 'canceled')
 
 
-class BotAdmin(admin.ModelAdmin):
-    list_display = ('creation_date', 'modification_date', 'owner', 'valid')
+#class BotAdmin(admin.ModelAdmin):
+#    list_display = ('creation_date', 'modification_date', 'owner', 'valid')
 
 
 class ChallengeAdmin(admin.ModelAdmin):
@@ -43,7 +48,7 @@ class FinalChallengeAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     actions = ['final_challenge']
-
+    
     def final_challenge(self, request, queryset):
         profiles = UserProfile.objects.filter(user__is_superuser=False, user__is_active=True).all()
         if not queryset:
