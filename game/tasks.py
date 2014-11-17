@@ -3,6 +3,8 @@ from __future__ import absolute_import
 from celery import shared_task
 from celery.exceptions import SoftTimeLimitExceeded
 import time
+import threading
+import signal
 import subprocess
 import tempfile
 import os
@@ -19,9 +21,33 @@ ENGINE_EXCEPS = os.path.abspath(os.path.join("game_engine", "exc.py"))
 PYPYSANDBOX_EXE = os.path.join('/usr', 'bin', 'pypy-sandbox')
 PYTHON_EXE = os.path.join('/usr', 'bin', 'python')
 
-HARD_TIME_LIMIT = 40
-SOFT_TIME_LIMIT = 30
+HARD_TIME_LIMIT = 20
+SOFT_TIME_LIMIT = 15
 GRID_LIMIT = 30
+
+
+def run_popen_with_timeout(command_string, timeout, cwd):
+    """
+    Run a sub-program in subprocess.Popen, pass it the input_data,
+    kill it if the specified timeout has passed.
+    returns a tuple of success, stdout, stderr
+    """
+    kill_check = threading.Event()
+    def _kill_process_after_a_timeout(pid):
+        os.kill(pid, signal.SIGTERM)
+        kill_check.set() # tell the main routine that we had to kill
+        # use SIGKILL if hard to kill...
+        return
+    p = Popen(command_string, bufsize=1, shell=True, cwd=cwd,
+              stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    pid = p.pid
+    watchdog = threading.Timer(timeout, _kill_process_after_a_timeout, args=(pid, ))
+    watchdog.start()
+    (stdout, stderr) = p.communicate(input_data)
+    watchdog.cancel() # if it's still waiting to run
+    success = not kill_check.isSet()
+    kill_check.clear()
+    return (success, stdout, stderr)
 
 
 def _run_match(challengue_id, players):
@@ -58,8 +84,7 @@ def _run_match(challengue_id, players):
                random.choice(range(GRID_LIMIT // 2, GRID_LIMIT))]
     cmdargs.extend(map(str, randoms))
     print 'CMDARGS: ', cmdargs
-    proc = subprocess.Popen(cmdargs, cwd=match_dir, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    stdo, stde = proc.communicate()
+    success, stdo, stde = run_popen_with_timeout(cmdargs, HARD_TIME_LIMIT, match_dir)
     print stdo, stde
     challng.elapsed_time = time.time() - start_time
 
