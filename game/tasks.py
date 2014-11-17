@@ -38,12 +38,13 @@ def run_popen_with_timeout(command_string, timeout, cwd):
         kill_check.set() # tell the main routine that we had to kill
         # use SIGKILL if hard to kill...
         return
-    p = Popen(command_string, bufsize=1, shell=True, cwd=cwd,
+    print "RUNNING: ", command_string
+    p = Popen(command_string, bufsize=1, cwd=cwd,
               stdin=PIPE, stdout=PIPE, stderr=PIPE)
     pid = p.pid
     watchdog = threading.Timer(timeout, _kill_process_after_a_timeout, args=(pid, ))
     watchdog.start()
-    (stdout, stderr) = p.communicate(input_data)
+    (stdout, stderr) = p.communicate()
     watchdog.cancel() # if it's still waiting to run
     success = not kill_check.isSet()
     kill_check.clear()
@@ -83,7 +84,7 @@ def _run_match(challengue_id, players):
     randoms = [random.choice(range(GRID_LIMIT // 2)),
                random.choice(range(GRID_LIMIT // 2, GRID_LIMIT))]
     cmdargs.extend(map(str, randoms))
-    print 'CMDARGS: ', cmdargs
+    #print 'CMDARGS: ', cmdargs
     success, stdo, stde = run_popen_with_timeout(cmdargs, HARD_TIME_LIMIT, match_dir)
     print stdo, stde
     challng.elapsed_time = time.time() - start_time
