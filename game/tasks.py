@@ -2,8 +2,10 @@ from __future__ import absolute_import
 
 from celery import shared_task
 from celery.exceptions import SoftTimeLimitExceeded
+
 import time
 import threading
+from subprocess import Popen, PIPE
 import signal
 import subprocess
 import tempfile
@@ -86,7 +88,7 @@ def _run_match(challengue_id, players):
     cmdargs.extend(map(str, randoms))
     #print 'CMDARGS: ', cmdargs
     success, stdo, stde = run_popen_with_timeout(cmdargs, HARD_TIME_LIMIT, match_dir)
-    print stdo, stde
+    print "OUTPUT: ", stdo, stde
     challng.elapsed_time = time.time() - start_time
 
     challng.played = True
@@ -191,8 +193,9 @@ def run_match(challengue_id, players):
         _run_match(challengue_id, players)
     except SoftTimeLimitExceeded:
         _match_has_timeouted(challengue_id)
-    except Exception:
+    except Exception, e:
         challng = Challenge.objects.get(pk=challengue_id)
         challng.played = True
         challng.canceled = True
         challng.save()
+        raise e
