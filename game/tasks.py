@@ -88,12 +88,20 @@ def _run_match(challengue_id, players):
     cmdargs.extend(map(str, randoms))
     #print 'CMDARGS: ', cmdargs
     success, stdo, stde = run_popen_with_timeout(cmdargs, HARD_TIME_LIMIT, match_dir)
+    
     print "OUTPUT: ", stdo, stde
-    challng.elapsed_time = time.time() - start_time
-
     challng.played = True
+    challng.elapsed_time = time.time() - start_time
+    
+    if not success:
+        # proc was killed by timeout
+        print "KILLED BY TIMEOUT"
+        challng.canceled = True
+        challng.save()
+        return
+        
     challng.canceled = False
-
+    
     try:
         r = eval(stdo)  # Muy sucio.. pero es lo que hay.. :O
         LOSER = 'loser'
@@ -115,10 +123,11 @@ def _run_match(challengue_id, players):
             challng.winner_player = winner
             challng.loser_player = loser
         challng.save()
-    except Exception:
+    except Exception, e:
         challng.played = True
         challng.canceled = True
         challng.save()
+        raise e
 
 
 def _validate_bot(bot_id, bot_code):
