@@ -194,6 +194,7 @@ def _match_has_timeouted(challengue_id):
     challng.elapsed_time = SOFT_TIME_LIMIT
     challng.played = True
     challng.canceled = True
+    challng.information = "Timeout"
     challng.save()
 
 
@@ -208,5 +209,6 @@ def run_match(challengue_id, players):
         challng = Challenge.objects.get(pk=challengue_id)
         challng.played = True
         challng.canceled = True
+        challng.information = str(e)
         challng.save()
         raise e
