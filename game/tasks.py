@@ -123,6 +123,8 @@ def _run_match(challengue_id, players):
             loser = UserProfile.objects.get(user__username=loser_username)
             challng.winner_player = winner
             challng.loser_player = loser
+            if 'CRASHED' in result["reason"].upper():
+                challng.information = "Crashed"
         challng.save()
     except Exception, e:
         challng.played = True

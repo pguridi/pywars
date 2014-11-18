@@ -122,6 +122,12 @@ class Challenge(models.Model):
         _win_tmp = u"{} ♛"
         if not self.winner_player:
             return p1, "{} - [DRAW]".format(p2)
+        if self.information.upper() == "CRASHED":
+            if self.loser_player.user.username == p1:
+                return "{} &#9760;".format(p1), _win_tmp.format(p2)
+            else:
+                return _win_tmp.format(p1), "{} &#9760;".format(p2)
+                
         if self.winner_player.user.username == p1:
             return _win_tmp.format(p1), p2
         if self.winner_player.user.username == p2:
