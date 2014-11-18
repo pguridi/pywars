@@ -37,6 +37,16 @@ HOT = 'HOT'
 WARM = 'WARM'
 COLD = 'COLD'
 
+class NullDevice:
+	def write(self, s):
+		pass
+	def flush(self):
+		pass
+
+sys.stdout = NullDevice()
+
+def print(msg):
+    sys.__stdout__.write(msg)
 
 def _resolve_missing(distance):
     if distance <= 3:
@@ -279,9 +289,7 @@ class PywarsArena(object):
                 self.match.draw()
             else:  # The player with more resistence wins
                 self.match.winner(points[top][0])
-        from pprint import pprint
-        pprint(self.match.__json__())
-        return ''
+        return self.match.__json__()
 
     def _check_player_boundaries(self, player, new_x):
         assert player.x_factor in [-1, 1]
@@ -414,8 +422,9 @@ class PywarsGroundMatchLog(object):
         self.trace_action(self.game_over_template)
 
     def print_trace(self):
-        for i, log in enumerate(self.trace, start=1):
-            print("{} - {}".format(i, log))
+        return
+        #for i, log in enumerate(self.trace, start=1):
+        #    print("{} - {}".format(i, log))
 
     def __json__(self):
         data = dict(width=self.width,
@@ -450,7 +459,7 @@ class BotPlayer(object):
 
 
 def usage():
-    print "Usage: python %s player1.py player2.py. Make sure both files are valid Python scripts, importable, and implement a Bot class." % sys.argv[0]
+    print("Usage: python %s player1.py player2.py. Make sure both files are valid Python scripts, importable, and implement a Bot class." % sys.argv[0])
 
 
 def main(argv):
@@ -468,11 +477,11 @@ def main(argv):
         bot1 = bot_module1.Bot()
         bot2 = bot_module2.Bot()
     except ImportError, e:
-        print "Error importing bot scripts: %s." % str(e)
+        print("Error importing bot scripts: %s." % str(e))
         usage()
         raise e
     except AttributeError, e:
-        print "Error instancing Bot : %s." % str(e)
+        print("Error instancing Bot : %s." % str(e))
         usage()
         sys.exit(EXIT_ERROR_BOT_INSTANCE)
 
@@ -481,7 +490,8 @@ def main(argv):
 
     engine = PywarsArena(players=[bot1, bot2], randoms=randoms)
     game_result = engine.start()
-    print game_result
+    from pprint import pprint
+    pprint(game_result, stream=sys.__stdout__)
     sys.exit(0)
 
 
