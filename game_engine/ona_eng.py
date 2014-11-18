@@ -491,7 +491,7 @@ def main(argv):
     engine = PywarsArena(players=[bot1, bot2], randoms=randoms)
     game_result = engine.start()
     from pprint import pprint
-    pprint_msg(game_result, stream=sys.__stdout__)
+    pprint(game_result, stream=sys.__stdout__)
     sys.exit(0)
 
 
