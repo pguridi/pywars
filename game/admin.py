@@ -17,13 +17,13 @@ from game.tasks import run_match
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'score', 'current_bot', 'code_update_date')
-    list_filter = ('current_bot')
+    list_filter = ('current_bot',)
 
 
 class BotAdmin(admin.ModelAdmin):
     actions = ['validate_bot']
     list_display = ('creation_date', 'modification_date', 'owner', 'valid')
-    list_filter = ('valid')
+    list_filter = ('valid',)
     
     def validate_bot(self, request, queryset):
         for bot in queryset:
