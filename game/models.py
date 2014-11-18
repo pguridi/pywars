@@ -46,7 +46,7 @@ class UserProfile(models.Model):
     @property
     def win(self):
         win_matches = Challenge.objects.filter(final_challenge__isnull=False, winner_player=self).count()
-        return (float(win_matches) / self.finalmatches) * 100
+        return round((float(win_matches) / self.finalmatches) * 100, 2)
 
     @property
     def finalmatches(self):
@@ -56,17 +56,17 @@ class UserProfile(models.Model):
     @property
     def lost(self):
         lost = Challenge.objects.filter(final_challenge__isnull = False, loser_player=self).count()
-        return (float(lost) / self.finalmatches) * 100
+        return round((float(lost) / self.finalmatches) * 100, 2)
 
     @property
     def timedout(self):
         timedout = Challenge.objects.filter(Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self) & Q(final_challenge__isnull=False) & Q (canceled=True)).count()
-        return (float(timedout) / self.finalmatches) * 100
+        return round((float(timedout) / self.finalmatches) * 100, 2)
 
     @property
     def tie(self):
         ties = Challenge.objects.filter((Q(draw_player1 = self) | Q(draw_player2 = self)), final_challenge__isnull = False).count()
-        return (float(ties) / self.finalmatches) * 100
+        return round((float(ties) / self.finalmatches) * 100, 2)
 
 
 class Bot(models.Model):
