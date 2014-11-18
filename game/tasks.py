@@ -97,6 +97,7 @@ def _run_match(challengue_id, players):
         # proc was killed by timeout
         print "KILLED BY TIMEOUT"
         challng.canceled = True
+        challng.information = "Timeout"
         challng.save()
         return
         
@@ -126,6 +127,7 @@ def _run_match(challengue_id, players):
     except Exception, e:
         challng.played = True
         challng.canceled = True
+        challng.information = str(e)
         challng.save()
         raise e
 

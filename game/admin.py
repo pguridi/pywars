@@ -17,11 +17,13 @@ from game.tasks import run_match
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'score', 'current_bot', 'code_update_date')
+    list_filter = ('current_bot')
 
 
 class BotAdmin(admin.ModelAdmin):
     actions = ['validate_bot']
     list_display = ('creation_date', 'modification_date', 'owner', 'valid')
+    list_filter = ('valid')
     
     def validate_bot(self, request, queryset):
         for bot in queryset:
@@ -29,15 +31,8 @@ class BotAdmin(admin.ModelAdmin):
 
 class ChallengeAdmin(admin.ModelAdmin):
     list_display = ('creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_player', 'canceled')
-
-
-#class BotAdmin(admin.ModelAdmin):
-#    list_display = ('creation_date', 'modification_date', 'owner', 'valid')
-
-
-class ChallengeAdmin(admin.ModelAdmin):
-    list_display = ('creation_date', 'requested_by', 'challenger_bot', 'challenged_bot', 'played', 'winner_player', 'canceled')
-
+    list_filter = ('canceled', 'final_challenge')
+    
 
 class FinalChallengeAdmin(admin.ModelAdmin):
     def get_urls(self):
