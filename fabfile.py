@@ -131,7 +131,7 @@ def push_code():
     env.release = time.strftime('%Y%m%d%H%M%S')
     tar_file = '%s.tar.gz' % (env.release,)
 
-    local('git archive --format=tar develop | gzip > %s' % (tar_file,))
+    local('git archive --format=tar master | gzip > %s' % (tar_file,))
 
     put(tar_file, '%s/packages/' % env.code_root)
 
