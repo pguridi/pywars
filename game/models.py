@@ -39,34 +39,44 @@ class UserProfile(models.Model):
 
     @property
     def points(self):
-        win_matches = Challenge.objects.filter(final_challenge__isnull = False, winner_player = self).count()
+        win_matches = Challenge.objects.filter(final_challenge__isnull = False, winner_player = self).exclude(information__contains="Timeout").count()
         ties = Challenge.objects.filter((Q(draw_player1 = self) | Q(draw_player2 = self)), final_challenge__isnull = False).count()
         return (3 * win_matches) + ties
 
     @property
     def win(self):
         win_matches = Challenge.objects.filter(final_challenge__isnull=False, winner_player=self).exclude(information__contains="Timeout").count()
-        return round((float(win_matches) / self.finalmatches) * 100, 2)
+        perc_win = (float(win_matches) * 100) / self.finalmatches
+        return perc_win, round(perc_win)
 
     @property
     def finalmatches(self):
         final = Challenge.objects.filter((Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self)), final_challenge__isnull=False).count()
-        return float(final)
+        return final
 
     @property
     def lost(self):
-        lost = Challenge.objects.filter(final_challenge__isnull=False, loser_player=self).count()
-        return round((float(lost) / self.finalmatches) * 100, 2)
+        lost = Challenge.objects.filter(final_challenge__isnull=False, loser_player=self).exclude(information__contains="Timeout").count()
+        perc_lost = (float(lost) * 100) / self.finalmatches
+        return perc_lost, round(perc_lost)
 
     @property
     def timedout(self):
-        timedout = Challenge.objects.filter((Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self)), final_challenge__isnull=False, canceled=True).count()
-        return round((float(timedout) / self.finalmatches) * 100, 2)
+        timedout = Challenge.objects.filter((Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self)), 
+            (Q(information__contains="Timeout") | Q(information__contains="Crashed")),
+            final_challenge__isnull=False, canceled=True).count()
+        perc_timedout = (float(timedout) * 100) / self.finalmatches
+        return perc_timedout, round(perc_timedout)
 
     @property
     def tie(self):
         ties = Challenge.objects.filter((Q(draw_player1 = self) | Q(draw_player2 = self)), final_challenge__isnull = False).count()
-        return round((float(ties) / self.finalmatches) * 100, 2)
+        perc_ties = (float(ties) * 100) / self.finalmatches
+        return perc_ties, round(perc_ties)
+        
+    @property
+    def totalmatches(self):
+        return round(self.win[0] + self.lost[0] + self.timedout[0] + self.tie[0])
 
 
 class Bot(models.Model):

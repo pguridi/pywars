@@ -129,7 +129,7 @@ def _run_match(challengue_id, players):
     except Exception, e:
         challng.played = True
         challng.canceled = True
-        challng.information = str(e)
+        challng.information = "Crashed " + str(e)
         challng.save()
         raise e
 

@@ -43,7 +43,7 @@
             <th>Loses</th>
             <th>Ties</th>
             <th>Timed out / Crashed</th>
-            <!--<th>Final Matches</th>-->
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -52,11 +52,11 @@
             <td>{{forloop.counter}}</td>
             <td>{{ user_prof }} </td>
             <td>{{ user_prof.points }}</td>
-            <td>{{ user_prof.win }} %</td>
-            <td>{{ user_prof.lost }} %</td>
-            <td>{{ user_prof.tie }} %</td>
-            <td>{{ user_prof.timedout }} %</td>
-            <!--<td>{{ user_prof.finalmatches }}</td>-->
+            <td>{{ user_prof.win.1 }} %</td>
+            <td>{{ user_prof.lost.1 }} %</td>
+            <td>{{ user_prof.tie.1 }} %</td>
+            <td>{{ user_prof.timedout.1 }} %</td>
+            <td>{{ user_prof.totalmatches }} %</td>
           </tr>
             {% endfor %}
         </tbody>
