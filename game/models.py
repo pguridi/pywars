@@ -45,7 +45,7 @@ class UserProfile(models.Model):
 
     @property
     def win(self):
-        win_matches = Challenge.objects.filter(final_challenge__isnull=False, winner_player=self).count()
+        win_matches = Challenge.objects.filter(final_challenge__isnull=False, winner_player=self).exclude(information__contains="Timeout").count()
         return round((float(win_matches) / self.finalmatches) * 100, 2)
 
     @property
@@ -55,7 +55,7 @@ class UserProfile(models.Model):
 
     @property
     def lost(self):
-        lost = Challenge.objects.filter(final_challenge__isnull = False, loser_player=self).count()
+        lost = Challenge.objects.filter(final_challenge__isnull=False, loser_player=self).count()
         return round((float(lost) / self.finalmatches) * 100, 2)
 
     @property
