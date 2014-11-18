@@ -23,7 +23,7 @@ def about(request):
 @login_required
 def scoreboard(request):
     #bots = Bot.objects.all().order_by('-points')
-    users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
+    users = UserProfile.objects.filter(current_bot__isnull=False, user__is_active=True).order_by('-score')
     users = ((user, request.user.profile.latest_match_id(user)) for user in users)
     challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False, canceled=False)
 #    if challenges.count() > 0:
@@ -44,7 +44,8 @@ def scoreboard(request):
 
 @login_required
 def tournament(request):
-    user_query = UserProfile.objects.filter(current_bot__isnull=False, user__is_superuser=False)
+    user_query = UserProfile.objects.filter(current_bot__isnull=False, user__is_active=True,
+        user__is_superuser=False)
     for user in user_query.all():
         user.score = user.points
         user.save()
