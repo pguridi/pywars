@@ -50,7 +50,7 @@ class UserProfile(models.Model):
 
     @property
     def finalmatches(self):
-        final = Challenge.objects.filter(Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self)).count()
+        final = Challenge.objects.filter((Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self)), final_challenge__isnull=False).count()
         return float(final)
 
     @property
@@ -60,7 +60,7 @@ class UserProfile(models.Model):
 
     @property
     def timedout(self):
-        timedout = Challenge.objects.filter(Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self) & Q(final_challenge__isnull=False) & Q (canceled=True)).count()
+        timedout = Challenge.objects.filter((Q(challenger_bot__owner=self) | Q(challenged_bot__owner=self)), final_challenge__isnull=False, canceled=True).count()
         return round((float(timedout) / self.finalmatches) * 100, 2)
 
     @property
