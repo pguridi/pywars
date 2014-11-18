@@ -5,31 +5,69 @@
 {% block js %}
   <script src="{% static '/static/js/custom.js' %}"></script>
   <script src="{% static '/static/phaser/build/phaser.js' %}"></script>
-  <script src="{% static '/static/js/pywars.js' %}"></script>
+  <!--<script src="{% static '/static/js/phaser-debug.js' %}"></script>-->
+  <script src="{% static '/static/js/pywars/Player.js' %}"></script>
+    <script src="{% static '/static/js/pywars/boot.js' %}"></script>
+    <script src="{% static '/static/js/pywars/preload.js' %}"></script>
+    <script src="{% static '/static/js/pywars/gametitle.js' %}"></script>
+    <script src="{% static '/static/js/pywars/thegame.js' %}"></script>
+    <script src="{% static '/static/js/pywars/gameover.js' %}"></script>
+
+  <script type="text/javascript">
+    var game = null;
+    var gameData = [];
+    var gameTimer = null;
+    var turnEndTimer = null;
+    var players = [];
+    var level = null;
+    var hud = null;
+    var current_turn = null;
+    var play_number = 0;
+
+    
+
+    function startGame(data) {
+        gameData = data;
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+        game.state.add("Boot",boot);
+        game.state.add("Preload",preload);
+        game.state.add("GameTitle",gameTitle);
+        game.state.add("TheGame",theGame);
+        game.state.add("GameOver",gameOver);
+
+        game.state.start("Boot", true, false, gameData);
+
+    }
+    {% if match_id != None %}
+        $(document).ready(function() {
+            var jqxhr = $.get("get_match/{{ match_id }}", function(data) {
+              if (data['success']) {
+                  startGame(data['data']);
+              }
+            })
+              .fail(function() {
+                console.log("Failed to get match");
+              });
+        });
+    {% endif %}
+</script>
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid main">
-        <div class="row-fluid">
-            <div class="span4">
-                <div>
-                    <h3>Playlist</h3>
-                    <div id="playlist"></div>
-                </div>
-            </div>
-            <div class="span8">
-                <div id="header">
-                  <h1>Onapsis <img src="{% static '/static/img/pytron_logo.png' %}"/> Challenge</h1>
-                </div>
-                <div id="players_divs">
-                        <img id="p1_img" src="/static/media/lightcycle-start-transparent.png" />
-                        <span id="player1"></span>
-                        <span id="vs_text"> vs</span>
-                        <span id="player2"></span>
-                        <img id="p2_img" src="/static/media/lightcycle-start-transparent-2.png" />
-                </div>
-                <div id=“game”></div>
+    <div class="col-md-offset-1 main">
+        <div class="row">
+            <div id="header">
+              <h1>Challenge</h1>
             </div>
         </div>
-    </div> <!-- /container -->
+        <div class="row">
+            <div class="col-md-8">
+                <div id="game"></div>
+            </div>
+            <div class="col-md-4 playlist-box">
+                <h3>Playlist</h3>
+                <div id="div-playlist"></div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

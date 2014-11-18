@@ -1,39 +1,31 @@
 import json
-
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.utils.html import escape
-from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.db.models import Q
-
+from django.core.exceptions import ObjectDoesNotExist
 from .forms import BotBufferForm
-#from tournament.tools import compare_bots
-#from game_engine.arena import LightCycleArena
-#from game_engine.basebot import LightCycleRandomBot
-#from game_engine.player import Player
-
-
 from models import Challenge, Bot, UserProfile
+from game.tasks import validate_bot
 
 
 def index(request, match_id=None):
-    return render(request, 'home.html', {'tab' : 'arena', 'match_id': match_id})
+    return render(request, 'home.html', {'tab': 'arena', 'match_id': match_id})
+
 
 def about(request):
-    return render(request, 'about.html', {'tab' : 'about'})
+    return render(request, 'about.html', {'tab': 'about'})
 
 
 @login_required
 def scoreboard(request):
     #bots = Bot.objects.all().order_by('-points')
-    users = UserProfile.objects.filter(current_bot__isnull=False).order_by('-score')
+    users = UserProfile.objects.filter(current_bot__isnull=False, user__is_active=True).order_by('-score')
     users = ((user, request.user.profile.latest_match_id(user)) for user in users)
-    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False)
+    challenges = Challenge.objects.filter(requested_by=request.user.profile, challenger_bot=request.user.profile.current_bot, played=False, canceled=False)
 #    if challenges.count() > 0:
 #        pending_challenges = True
 #    else:
@@ -41,13 +33,25 @@ def scoreboard(request):
 
     pending_challenged_bots = [c.challenged_bot for c in challenges]
 
-    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True)
+    played_challenges = Challenge.objects.filter(requested_by=request.user.profile, played=True, canceled=False)
     challenged_bots = [c.challenged_bot for c in played_challenges]
 
     return render(request, 'scoreboard.html', {'tab': 'score',
                 'users': users,
                 'challenged_bots': challenged_bots,
                 'pending_challenged_bots': pending_challenged_bots})
+
+
+@login_required
+def tournament(request):
+    user_query = UserProfile.objects.filter(current_bot__isnull=False, user__is_active=True,
+        user__is_superuser=False)
+    for user in user_query.all():
+        user.score = user.points
+        user.save()
+    users = user_query.order_by('-score')
+    return render(request, 'tournament.html', {'tab': 'tournament', 'users': users})
+
 
 @login_required
 def mybots(request):
@@ -65,6 +69,7 @@ def mybots(request):
             bot.owner = user_prof
             bot.code = new_code
             bot.save()
+            validate_bot.delay(bot.id, new_code)
             user_prof.current_bot = bot
 
         user_prof.save()
@@ -105,7 +110,7 @@ def challenge(request):
         print "Got a challenge for bot: ", challenge_bot
 
         # Get pending challenges for this user
-        challenges = Challenge.objects.filter(requested_by=user_prof, played=False)
+        challenges = Challenge.objects.filter(requested_by=user_prof, played=False, canceled=False)
         if challenges.count() > 0:
             # has pending challenges, must wait.
             return HttpResponse("Can not challenge more than one bot at a time")
@@ -117,6 +122,9 @@ def challenge(request):
         #if played_challs.count() > 0:
         #    # has already played against this bot, must upload a new one
         #    return HttpResponse("Already played against this bot!. Upload a new one.")
+        if (user_prof.current_bot.valid != Bot.READY
+                or challenge_bot.valid != Bot.READY):
+            return JsonResponse({'success': False, 'msg': 'One of the bot is not READY' })
 
         new_challengue = Challenge()
         new_challengue.requested_by = user_prof
@@ -126,23 +134,44 @@ def challenge(request):
 
         return JsonResponse({'success': True})
 
+
 @login_required
 @cache_page(60)
 def main_match(request):
     return HttpResponse(None)
 
+
 @login_required
 def my_matches(request):
-    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) | Q(challenged_bot__owner=request.user)).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
-    return render(request, 'mymatches.html', {'matches': matches})
+    matches = Challenge.objects.filter(Q(challenger_bot__owner=request.user) |
+                                        Q(challenged_bot__owner=request.user)).filter(canceled=False).filter(played=True).order_by('-creation_date').select_related('challenger_bot__owner__user', 'challenged_bot__owner__user', 'winner_bot__owner__user')
+    return render(request, 'mymatches.html', {'matches': matches, 'tab': 'my-matches'})
+
 
 @login_required
 def get_match(request, match_id):
-    return HttpResponse(None)
+    try:
+        challenge = Challenge.objects.get(pk=match_id)
+        if challenge.canceled:
+            return JsonResponse({'success': False})
+        else:
+            return JsonResponse({'success': True, 'data': json.loads(challenge.result)})
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False})
+
+@login_required
+def get_bot_status(request, bot_id):
+    try:
+        bot = Bot.objects.get(pk=bot_id)
+        return JsonResponse({'success': True, 'status': bot.valid, 'code': bot.code ,'reason': bot.invalid_reason})
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False})
+
 
 @login_required
 def random_test_match(request):
     return HttpResponse(None)
+
 
 @login_required
 def bot_code(request, bot_pk):
@@ -152,3 +181,13 @@ def bot_code(request, bot_pk):
 
     bot_code = Bot.objects.get(pk=bot_pk, owner=request.user).code
     return HttpResponse(bot_code)
+
+
+@login_required
+@cache_page(10)
+def get_playlist(request):
+    challenges = Challenge.objects.filter(played=True, canceled=False).order_by('-creation_date')[:50]
+    if not challenges:
+        return JsonResponse({'success': False, 'data': []})
+    challs = [ [ch.id, ch.caption()] for ch in challenges ]
+    return JsonResponse({'success': True, 'data': challs})

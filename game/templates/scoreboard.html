@@ -14,7 +14,11 @@
                 contentType: "application/json"
             }).fail(function(xhr, textStatus, errorThrown) {
                 alert(xhr.responseText);
-              }).done(function() {
+              }).done(function(data) {
+                if ( data['success'] == false ){
+                    alert(data['msg']);
+                    return;
+                }
                 location.reload();
               })
         }
@@ -31,17 +35,15 @@
 
     <div class="container main scoreboard">
 
-      <h1>Tournament Rank</h1>
-{% if pending_challenged_bots|length > 0 %}
-* Pending challenges
-{% endif%}
+      <h1>Not ranked challengues</h1>
+    {% if pending_challenged_bots|length > 0 %}
+    * Pending challenges
+    {% endif%}
 
 <table id="score_table" class="table table-striped">
         <thead>
           <tr>
-            <th>Position</th>
             <th>Username</th>
-            <th>Score</th>
             <th>Action</th>
             <th>Latest match</th>
           </tr>
@@ -49,9 +51,7 @@
         <tbody>
             {% for user_prof, latest_match_id in users %}
             <tr>
-            <td>{{forloop.counter}}</td>
             <td>{{ user_prof }} </td>
-            <td>{{ user_prof.score }}</td>
             <td>
             {% if user_prof.user != user %}
                 {% if pending_challenges %}
@@ -67,22 +67,19 @@
                         <button type="button" class="btn btn-primary btn-xs" disabled="disabled">Challenge</button>
                     {% else %}
 
-                    {% if user_prof.current_bot in challenged_bots %}
-                        <a href="#" class="btn btn-success btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Played!</a>
-                    {% else %}
                         {% if user_prof.current_bot in pending_challenged_bots%}
                             <a href="#" type="button" class="btn btn-primary btn-xs" disabled="disabled" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Pending</a>
                         {% else %}
                             <a href="#" type="button" class="btn btn-primary btn-xs" onclick="postBot({{user_prof.current_bot.id}}, '/challenge')">Challenge</a>
                         {% endif %}
-                    {% endif %}
+
 {% endif %}
                 {% endif %}
             {% endif %}
             </td>
             <td>
             {% if latest_match_id %}
-              <a class="btn btn-primary btn-warning" href="{% url 'view_match' match_id=latest_match_id %}">View</a>
+              <a class="btn btn-xs btn-warning" href="{% url 'view_match' match_id=latest_match_id %}">View</a>
             {% endif %}
             </td>
           </tr>

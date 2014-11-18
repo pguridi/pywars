@@ -4,19 +4,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Battleground Onapsis</title>
+    <title>PyWars by Onapsis</title>
+    <link rel="icon" href="/static/img/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     {% compress css %}
       <link href="{% static 'bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet" media="screen">
       <link rel="stylesheet" href="{% static 'css/game.css' %}">
-      {% block css %}{% endblock %}
+    {% block css %}
+    {% endblock %}
     {% endcompress %}
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
     {% compress js %}
     <script src="{% static 'jquery/dist/jquery.js' %}"></script>
     <script src="{% static 'bootstrap/dist/js/bootstrap.js' %}"></script>
-      {% block js %}{% endblock %}
+    {% block js %}{% endblock %}
       <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
       <!--[if lt IE 9]>
         <script src="/static/js/html5shiv.js"></script>
@@ -24,34 +26,73 @@
       <![endif]-->
     {% endcompress %}
     {% block head %}{% endblock %}
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56765355-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
 </head>
   <body>
   {% if user.is_authenticated %}
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<a href="https://github.com/pguridi/pywars"><img style="position: absolute; top: 200; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Battleground</a>
-          <div class="nav-collapse collapse">
-            <p class="navbar-text pull-right">
-              Logged in as {{ user }}, <a href="/accounts/logout">logout</a>
-            </p>
-            <ul class="nav">
-              <li {% if tab == "arena" %}class="active"{% endif %}><a href="/">Arena</a></li>
-              <li {% if tab == "score" %}class="active"{% endif %}><a href="/scoreboard">Tournament</a></li>
-              <li {% if tab == "mymatches" %}class="active"{% endif %}><a href="/my-matches">My Challenges</a></li>
-              <li {% if tab == "mybots" %}class="active"{% endif %}><a href="/mybots">My bots</a></li>
-              <li {% if tab == "about" %}class="active"{% endif %}><a href="/about">About the game</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+          <a href="/"><img id="img_menu" src="{% static '/static/img/PyWars_menu.png'%}"/></a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li role="presentation" {% if tab == "arena" %}class="active"{% endif %}>
+              <a href="/">Arena</a>
+            </li>
+            <li role="presentation"{% if tab == "score" %}class="active"{% endif %}>
+              <a href="/scoreboard">Free Play</a>
+            </li>
+            <li role="presentation"{% if tab == "tournament" %}class="active"{% endif %}>
+              <a href="/tournament">Tournament</a>
+            </li>
+            <li role="presentation"{% if tab == "my-matches" %}class="active"{% endif %}>
+              <a href="/my-matches">My Matches</a>
+            </li>
+            <li role="presentation"{% if tab == "mybots" %}class="active"{% endif %}>
+              <a href="/mybots">My bots</a>
+            </li>
+            <li role="presentation"{% if tab == "about" %}class="active"{% endif %}>
+              <a href="/about">Rules</a>
+              </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <!--<li><a href="#">Link</a></li>-->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">User: <strong>{{ user }}</strong> &nbsp;<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/accounts/logout">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-    {% block content %}{% endblock %}
+    </nav>
+    {% block content %}
+    {% endblock %}
   {% else %}
     <div class="container">
       <form method="post" action="/accounts/login/" class="form-signin">
@@ -75,8 +116,7 @@
         <p></p>
         <p>{% trans "Not registered" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
       </form>
-
     </div> <!-- /container -->
-{% endif %}
+  {% endif %}
   </body>
 </html>

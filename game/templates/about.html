@@ -1,143 +1,139 @@
-{% extends "base_anon.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 {% load i18n %}
 
 {% block content %}
+
 <div class="container main about">
 
-    <div id="header">
-      <img src="{% static '/static/img/pytron_logo.png'%}"/><h1>Onapsis Challenge</h1>
-            <h3>PyCon Argentina 2013</h3>
-    </div>
+  <div id="header">
+    <img src="{% static '/static/img/PyWars.png'%}"/><h1>Onapsis Challenge</h1>
+          <h3>PyCon Argentina 2014</h3>
+  </div>
 
+  <h4>WARNING: Las reglas del juego estar&aacute;n sujetas a cambios hasta que la competencia final comience!!</h4>
 
-<h4>Mecánica de juego</h4>
+  <h4>Mec&aacute;nica de juego</h4>
 
-<p>A. Los jugadores deberán suscribirse a la competencia ingresando en el sitio
-publicado para tal fin.</p>
-
-<p>B. Una vez registrados, los jugadores podrán subir una estrategia, escrita en el
-lenguaje de programación Python, mediante la cual controlarán los movimientos de
-la moto de luz, siendo una competencia entre estrategias autónomas (sin interacción
-de un humano, planta o animal). La estrategia podrá ser actualizada en cualquier
-momento mientras dure la competencia. El sistema determinará si el cambio a la
-estrategia es significativo como para considerarla distinta a la existente.</p>
-
-<p>C. El juego consiste en 2 (dos) motos de luz representadas por un punto en una grilla,
-siendo el objetivo del juego provocar que la moto de luz del adversario choque.</p>
-
-<p>D. Alternadamente, los jugadores reciben como input para calcular su estrategia, el
-estado completo de la arena, la posición actual de su moto de luz y la última dirección tomada
-por la misma. En base a estos datos, la estrategia del jugador debe devolver un movimiento,
-representado por la letra inicial de los puntos cardinales en inglés {N, S, E, W}.
-Al moverse, la moto de luz del jugador deja una traza.</p>
-
-<p>E. El jugador que primero choca es el perdedor. Un jugador puede chocar contra:</p>
+  <p>A. Los jugadores deberán suscribirse a la competencia ingresando en el sitio
+  publicado para tal fin.</p>
+  <br/>
+  <p>B. Una vez registrados, los jugadores podr&aacute;n subir una estrategia, escrita en el
+  lenguaje de programación Python, mediante la cual controlar&aacute;n las acciones de
+  un tanque de guerra, siendo una competencia entre estrategias aut&oacute;nomas (sin interacci&oacute;n
+  de un humano, planta o animal). La estrategia podrá ser actualizada en cualquier
+  momento mientras dure la competencia (salvo durante la competencia final).</p>
+  <br/>
+  <p>C. El juego consiste en una batalla entre 2 (dos) tanques de guerra, siendo el objetivo del juego
+  destruir el tanque enemigo.</p>
+  <br/>
+  <p>D. Para cumplir el objetivo el jugador contar&aacute; con diversas acciones que prodr&aacute;
+ realizar conforme pasen los turnos. Las acciones posibles son las siguientes:</p>
     <pre>
-    i. Una pared límite de la "pista",
-   ii. Con la traza dejada por la moto del oponente,
-  iii. Con su propia traza,
-   iv. Se considera choque la no devolución de un movimiento luego de 20ms (choque por timeout)</pre>
-
-<p>F. La posición inicial de los jugadores es sorteada al azar con algunas restricciones:</p>
+      - Disparar: El jugador decide disparar contra el enemigo. De esta acci&oacute; se desprenden
+      dos posibles resultados:
+        * El enemigo es alcanzado: Le pegamos a nuestro enemigo, reduciendo su vida.
+        * El tiro no impacta al enemigo.
+      - Moverse: El tanque puede moverse una posici&oacute;n ya sea hacia adelante o hacia atr&aacute;s.
+      - No hacer nada: Se rasca hasta el pr&oacute;ximo turno, pero el tanque regenera un porcentaje de su vida
+    </pre> 
+  <br/>
+  <p>E. Un tanque gana la partida si:</p>
     <pre>
-    i. Los jugadores se ubicarán dentro de la diagonal del tablero
-       (de izquierda a derecha y de arriba hacia abajo)
-   ii. Las posiciones iniciales serán equidistantes entre ellas y equidistantes a
-       los límites de la arena.
+      - Destruye a su oponente a fuerza de disparos, o
+      - El tanque enemigo se suicida (friendly fire)
     </pre>
-<p>G. Dado que los turnos son alternados, una partida se da por finalizada una vez que ambos
-jugadores hicieron sus movidas y uno de los dos, o los dos, chocaron. Por ejemplo, algunas
-partidas posibles son:</p>
-   <pre>
-   PARTIDA 1                               PARTIDA 2
-    J1-> N                                  J1-> N
-    J2-> S                                  J2-> N
-    J1-> O                                  J1-> O
-    J2-> S                                  J2-> E
-    J1-> S                                  J1-> S
-    J2-> S                                  J2-> S
-    J1-> E => Choca con su traza            J1-> E => Choca con su traza
-    J2-> S                                  J2-> O => Choca con su traza
-    GANADOR J2                              EMPATE
+ 
+  <h4>Interf&aacute;z</h4>
+  <p>F. La posición inicial de los jugadores es sorteada al azar. El jugador debe implementar el método evaluate_turn que recibe los siguientes parámetros:</p>
+    <pre>
+      - Feedback: El resultado del turno anterior, en forma de diccionario. Las posibles claves son:
+          * 'RESULT': Indica si la acci&oacute;n anterior fue exitosa o no. Sus valores son:
+            ** 'SUCCESS': La acción fue correcta. Por ejemplo, este valor estará presente si en la acción anterior disparamos y pudimos
+               darle a nuestro objetivo.
+            ** 'FAILED': La acción no fue correcta o no pudo realizarse. Por ejemplo, si el tanque no pudo moverse, o si el disparo no dio 
+               al objetivo.
+          * 'MISSING': Esta clave estar&aacute; presente en caso de que la clave 'RESULT' nos devuelva 'FAILED'. Representa la distancia en la
+                que cae el misil con respecto a la posición del tanque enemigo. Los valores posibles son:
+            ** 'HOT': El disparo cayó muy cerca del tanque.
+            ** 'WARM': El disparo cayó a una mediana distancia del objetivo.
+            ** 'COLD': El disparo cayó lejos. 
+          * 'POSITION': Puede devolver dos posibles typos de valores:
+            ** Tupla con coordenadas: En caso de que el valor de 'RESULT' sea 'FAILED', la tupla devuelta es la posici&oacute;n actual del tanque.
+                Si el valor de 'RESULT' es 'SUCCESS' devuele la posici&oacute;n a la que el tanque se translad&oacute;.
+            ** None: Es devuelto cuando el tanque dispara o decide no moverse.
+      - Life: Un n&uacute;mero entre 0-100 indicando la vida actual del tanque. Por ejemplo, si en el turno actual su tanque tiene 100 de vida y
+        recibe un disparo en el siguiente turno le llegar&aacute; life=75
     </pre>
+    <br/>
+   <p>G. Teniendo en cuenta el estado del juego como input, el método debería evaluar programáticamente la mejor estrategia para el tanque; para luego, devolver un diccionario indicando lo que va a hacer el tanque en su turno.
+   El jugador cuenta con varias opciones:</p>
+  <pre>
+      IMPORTANTE: En caso de mandar un valor diferente a 1 o -1 autom&aacute;ticamente el tanque perder&aacute; la partida.
+      - Move: Devuelve un diccionario de esta forma: {'ACTION': 'MOVE', 'WHERE': 1}, donde 1 es para moverse hacia adelante y -1 para moverse hacia atras.
+      - Shoot: Devuelve un diccionario de esta forma: {'ACTION': 'SHOOT', 'ANGLE': 35, 'VEL': 100} donde los valores de 'ANGLE' deben
+        estar entre 0 y 90 estricto y los valores de 'VEL' entre 0 y 150.
+      - Stay: El jugador decide no hacer nada, por lo tanto, devuelve None.
+  </pre>
+  <h4>Desafíos</h4>
 
-<h4>Desafíos</h4>
+  <p>H. Cada jugador podrá DESAFIAR a otros jugadores. Un desafío consiste en un enfrentamiento entre
+  tanques. Una vez hecho el desafío, éste queda encolado en la lista de desafíos.</p>
+<br/>
+  <p>I. Un jugador podrá tener sólo un desafío activo a la vez. En caso de querer desafiar a
+  más de un oponente, deberá esperar a que el desafío que tiene pendiente sea resuelto por
+  el sistema.</p>
+<br/>
+  <p> K. Una vez finalizado el desafío, los jugadores recibirán su correspondiente puntaje de
+  acuerdo al proceso descripto en la secci&oacute; "Puntuaci&oacute;n".
+  </p>
 
-<p>H. Cada jugador podrá DESAFIAR a otros jugadores. Un desafío consiste en una partida de
-motos de luz. Una vez hecho el desafío, éste queda encolado en la lista de desafíos.</p>
+  <h4>Puntuación</h4>
 
-<p>I. Un jugador podrá tener sólo un desafío activo a la vez. En caso de querer desafiar a
-más de un oponente, deberá esperar a que el desafío que tiene pendiente sea resuelto por
-el sistema.</p>
+  <p>L. Luego de un desafío, en el que J1 desafía a J2, los resultados esperados
+  con sus correspondientes puntuaciones son:</p>
 
-<p>J. Luego de un desafío entre los jugadores J1 y J2, el perdedor podrá volver a desafiar
-al ganador en cualquier momento. No así el ganador, que sólo podrá desafiar al perdedor
-una vez que este último actualice su estrategia. Por ejemplo:</p>
-   <pre>
-   Caso A: Suponga que J1 desafía a J2 y como resultado J2 pierde.
-   Entonces:
-        i. J1 no podrá volver a desafiar a J2 hasta que J2 actualice su estrategia.
-       ii. J2 podrá desafiar a J1 independientemente de si J1 actualizó o no su estrategia.
-
-   Caso B: Suponga que J1 desafía a J2 y como resultado J1 pierde.
-   Entonces:
-        i. J2 no podrá desafiar a J1 hasta que J1 actualice su estrategia.
-       ii. J1 podrá desafiar a J2 independientemente de si J1 actualizó o no su estrategia.
-    </pre>
-<p>
-K. Una vez finalizado el desafío, los jugadores recibirán o no puntos de
-acuerdo al proceso descrito en la sección "Puntuación".
-</p>
-
-<h4>Puntuación</h4>
-
-<p>L. Luego de un desafío, en el que J1 desafía a J2, los resultados esperados
-con sus correspondientes puntuaciones son:</p>
-
-<pre>
- Resultado | Puntos J1   | Puntos J2
------------+-------------+---------
-Gana J1    |   +2pts     |    0pts
-Gana J2    |   -1pts     |   +1pts
-Empate     |    0pts     |    0pts
-</pre>
+  <pre>
+  Resultado | Puntos J1   | Puntos J2
+  -----------+-------------+---------
+  Gana J1    |   +3pts     |    0pts
+  Gana J2    |    0pts     |   +3pts
+  Empate     |    1pts     |    1pts
+  </pre>
 
 
-<h4>Ganador de la competencia</h4>
+  <h4>Ganador de la competencia</h4>
 
-<pre>
-M. Gana la competencia el jugador con mayor puntuación
-
-N. Los primeros 3 puestos serán ganadores de premios a designar por la organización
-de la competencia y serán informados al momento de iniciarse la misma.
-
-O. Si dos jugadores obtienen la misma cantidad de puntos, quedará primero en la tabla
-de posiciones aquel que lo haya logrado antes (según el tiempo del server que ejecuta
-las partidas).
-</pre>
+  <p>M. Gana la competencia el jugador con mayor puntuación</p>
+<br/>
+  <p>N. Los primeros 3 puestos serán ganadores de premios a designar por la organización
+  de la competencia y serán informados al momento de iniciarse la misma.</p>
+<br/>
+  <p>O. Si dos jugadores obtienen la misma cantidad de puntos, quedará primero en la tabla
+  de posiciones aquel que lo haya logrado antes (según el tiempo del server que ejecuta
+  las partidas).</p>
 
 
-<h4>Consideraciones Generales</h4>
+  <h4>Consideraciones Generales</h4>
 
-<pre>
-1. La competencia comenzará el día Jueves 31/10 a las 18hs y finalizará el
-día 4/11 a las 18hs hora de Argentina.
+<!--  <pre>
+  1. La competencia comenzará el día Jueves 13/11 a las 18hs y finalizará el
+  día 15/11 a las 18hs hora de Argentina.
 
-2. El jurado se reserva el derecho a utilizar las herramientas que considere
-pertinentes para identificar violaciones a las reglas aquí descritas, reservándose
-el derecho a descalificar, sancionar con puntos o tomar cualquier otra medida que
-considere pertinente, sin dar explicaciones a los participantes involucrados en
-la violación a las reglas que fuere detectada.
+  2. El jurado se reserva el derecho a utilizar las herramientas que considere
+  pertinentes para identificar violaciones a las reglas aquí descritas, reservándose
+  el derecho a descalificar, sancionar con puntos o tomar cualquier otra medida que
+  considere pertinente, sin dar explicaciones a los participantes involucrados en
+  la violación a las reglas que fuere detectada.
 
-3. Onapsis se comunicará por email con los ganadores para coordinar la entrega
-de los premios.
+  3. Onapsis se comunicará por email con los ganadores para coordinar la entrega
+  de los premios.
 
-4. Si las personas premiadas no respondieran dicha notificación, se guardará
-el premio durante 10 días corridos. Pasado este tiempo, el premio quedará
-a disposición de Onapsis SRL.
-Que se diviertan!!
-</pre>
+  4. Si las personas premiadas no respondieran dicha notificación, se guardará
+  el premio durante 10 días corridos. Pasado este tiempo, el premio quedará
+  a disposición de Onapsis SRL.
+  Que se diviertan!!
+  </pre> -->
 </div> <!-- /container -->
 
 {% endblock %}
