@@ -45,7 +45,7 @@ class NullDevice:
 
 sys.stdout = NullDevice()
 
-def print(msg):
+def print_msg(msg):
     sys.__stdout__.write(msg)
 
 def _resolve_missing(distance):
@@ -330,7 +330,7 @@ class PywarsArena(object):
         shoot_x = initial_x + int((trajectory[1][0] )/SCALE)
 
         shoot = [(initial_x,0) ,( shoot_x,0)]
-     #   print("SHOOT %s Factor %s Trajectory %s" % (shoot, player.x_factor, trajectory[1][0]))
+     #   print_msg("SHOOT %s Factor %s Trajectory %s" % (shoot, player.x_factor, trajectory[1][0]))
         return shoot
 
 
@@ -424,7 +424,7 @@ class PywarsGroundMatchLog(object):
     def print_trace(self):
         return
         #for i, log in enumerate(self.trace, start=1):
-        #    print("{} - {}".format(i, log))
+        #    print_msg("{} - {}".format(i, log))
 
     def __json__(self):
         data = dict(width=self.width,
@@ -459,7 +459,7 @@ class BotPlayer(object):
 
 
 def usage():
-    print("Usage: python %s player1.py player2.py. Make sure both files are valid Python scripts, importable, and implement a Bot class." % sys.argv[0])
+    print_msg("Usage: python %s player1.py player2.py. Make sure both files are valid Python scripts, importable, and implement a Bot class." % sys.argv[0])
 
 
 def main(argv):
@@ -477,11 +477,11 @@ def main(argv):
         bot1 = bot_module1.Bot()
         bot2 = bot_module2.Bot()
     except ImportError, e:
-        print("Error importing bot scripts: %s." % str(e))
+        print_msg("Error importing bot scripts: %s." % str(e))
         usage()
         raise e
     except AttributeError, e:
-        print("Error instancing Bot : %s." % str(e))
+        print_msg("Error instancing Bot : %s." % str(e))
         usage()
         sys.exit(EXIT_ERROR_BOT_INSTANCE)
 
@@ -491,13 +491,13 @@ def main(argv):
     engine = PywarsArena(players=[bot1, bot2], randoms=randoms)
     game_result = engine.start()
     from pprint import pprint
-    pprint(game_result, stream=sys.__stdout__)
+    pprint_msg(game_result, stream=sys.__stdout__)
     sys.exit(0)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Please specify 2 bot files")
+        print_msg("Please specify 2 bot files")
         usage()
         sys.exit(EXIT_ERROR_NUMBER_OF_PARAMS)
 
