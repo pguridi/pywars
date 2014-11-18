@@ -49,15 +49,16 @@ class FinalChallengeAdmin(admin.ModelAdmin):
     actions = ['final_challenge']
     
     def final_challenge(self, request, queryset):
-        profiles = UserProfile.objects.filter(user__is_superuser=False, user__is_active=True).all()
+        profiles = UserProfile.objects.filter(user__is_superuser=False, 
+            user__is_active=True, current_bot__isnull=False).all()
         if not queryset:
-		return HttpResponseRedirect('/admin')
+		    return HttpResponseRedirect('/admin')
+		    
         final_challenge = queryset[0]
         for up_player1, up_player2 in itertools.product(profiles, repeat=2):
-            if (up_player1 == up_player2
-                or not up_player1.current_bot
-                or not up_player2.current_bot):
+            if up_player1 == up_player2:
                 continue
+                
             challenge = Challenge()
             challenge.requested_by = up_player1
             challenge.challenger_bot = up_player1.current_bot
