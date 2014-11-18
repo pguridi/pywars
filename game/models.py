@@ -70,7 +70,7 @@ class Bot(models.Model):
                              choices=STATUS_CHOICES,
                              default=PENDING)
     invalid_reason = models.TextField(null=True, default='')
-
+    
     def to_dict(self):
         return {"owner": self.owner, "code": self.code}
 

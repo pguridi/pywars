@@ -22,8 +22,12 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 class BotAdmin(admin.ModelAdmin):
     actions = ['validate_bot']
-    list_display = ('creation_date', 'modification_date', 'owner', 'valid')
+    list_display = ('creation_date', 'modification_date', 'owner', 'valid', 'is_current_bot')
     list_filter = ('valid',)
+    
+    def is_current_bot(self, obj):
+        return obj.owner.current_bot == obj
+    is_current_bot.boolean = True
     
     def validate_bot(self, request, queryset):
         for bot in queryset:
